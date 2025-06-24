@@ -1,0 +1,16 @@
+name: 'Retrieve ID Token'
+description: 'A GitHub Action to retrieve and log the ID token'
+
+inputs:
+  artifact:
+    description:
+      'The PURL of the artifact, used as the subject of the attestation'
+    required: true
+
+outputs:
+  status-md:
+    description: 'The results of the action.'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
