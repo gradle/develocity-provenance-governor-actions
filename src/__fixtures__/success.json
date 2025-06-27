@@ -1,0 +1,8 @@
+{
+  "publishedAttestations": [
+    {
+      "type": "sample-type",
+      "downloadUrl": "https://example.com/attestation"
+    }
+  ]
+}

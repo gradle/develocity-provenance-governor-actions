@@ -5,10 +5,10 @@
     "allowJs": true,
     "noEmit": true
   },
-  "exclude": ["dist", "node_modules"],
+  "exclude": ["dist", "node_modules", "script"],
   "include": [
-    "__fixtures__",
-    "__tests__",
+    "src/__fixtures__",
+    "src/__tests__",
     "src",
     "eslint.config.mjs",
     "jest.config.js",
