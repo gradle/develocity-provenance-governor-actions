@@ -56,11 +56,6 @@ export class SummaryReporter implements Reporter {
     digest: string,
     error?: PublishErrorResult
   ) {
-    core.setFailed(
-      `Attestation publisher for subject: ${subjectPurl} failed: ${error?.title}`
-    )
-    core.error(JSON.stringify(error, null, 2))
-
     header(
       'Attestations Publishing Failed',
       subjectPurl.toString(),
