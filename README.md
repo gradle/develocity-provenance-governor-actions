@@ -11,11 +11,13 @@ TODO
 ### Prerequisites
 
 - Node.js (version specified in `.node-version` file)
-  - We recommend using a Node version manager like `nvm` or `nodenv` to automatically pick up the correct version from the `.node-version` file
+  - We recommend using a Node version manager like `nvm` or `nodenv` to
+    automatically pick up the correct version from the `.node-version` file
 
 ### Setup
 
 1. Install the correct Node.js version:
+
    ```bash
    # If using nvm
    nvm install
@@ -53,5 +55,3 @@ npm run render 200 ./src/__fixtures__/success.json
 ```
 
 This will generate a successful publish report.
-
-
