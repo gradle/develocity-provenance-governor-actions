@@ -7,7 +7,7 @@ export async function run(): Promise<void> {
   try {
     const tenant = core.getInput('tenant', { required: true })
     const pkgType = core.getInput('subject-type', { required: true })
-    const pkgNamespace = core.getInput('subject-namespace', { required: true })
+    const pkgNamespace = core.getInput('subject-namespace', { required: false })
     const pkgName = core.getInput('subject-name', { required: true })
     const pkgVersion = core.getInput('subject-version', { required: true })
     const subjectPurl = new PackageURL(

@@ -29716,7 +29716,7 @@ async function run() {
     try {
         const tenant = coreExports.getInput('tenant', { required: true });
         const pkgType = coreExports.getInput('subject-type', { required: true });
-        const pkgNamespace = coreExports.getInput('subject-namespace', { required: true });
+        const pkgNamespace = coreExports.getInput('subject-namespace', { required: false });
         const pkgName = coreExports.getInput('subject-name', { required: true });
         const pkgVersion = coreExports.getInput('subject-version', { required: true });
         const subjectPurl = new packageurlJsExports.PackageURL(pkgType, pkgNamespace, pkgName, pkgVersion);
