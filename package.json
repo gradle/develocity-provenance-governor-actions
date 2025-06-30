@@ -36,6 +36,7 @@
   "devDependencies": {
     "@eslint/compat": "^1.3.1",
     "@github/local-action": "^3.2.1",
+    "@gradle/develocity-agent": "https://develocity-npm-pkgs.gradle.com/gradle-develocity-agent-0.10.1.tgz",
     "@jest/globals": "^30.0.0",
     "@rollup/plugin-commonjs": "^28.0.1",
     "@rollup/plugin-node-resolve": "^16.0.1",

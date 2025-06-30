@@ -27,7 +27,7 @@ export default {
   extensionsToTreatAsEsm: ['.ts'],
   moduleFileExtensions: ['ts', 'js'],
   preset: 'ts-jest',
-  reporters: ['default'],
+  reporters: ['default', '@gradle/develocity-agent/jest-reporter'],
   resolver: 'ts-jest-resolver',
   testEnvironment: 'node',
   testMatch: ['**/*.test.ts'],
