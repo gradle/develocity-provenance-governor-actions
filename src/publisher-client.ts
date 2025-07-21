@@ -1,36 +1,10 @@
+import { ErrorResponse, SuccessResponse } from './publish-models.js'
+
 export interface PublisherResult {
   status: number
   success: boolean
-  successPayload?: PublishSuccessResult
-  errorPayload?: PublishErrorResult
-}
-
-/**
- * Interface defining the structure of a success response from the Attestation Publisher.
- */
-export interface PublishSuccessResult {
-  publishedAttestations?: Array<PublishedAttestation>
-}
-
-export interface PublishedAttestation {
-  type: string
-  downloadUrl: string
-}
-export interface FailedAttestation {
-  type: string
-  detail: string
-}
-
-/**
- * Interface defining the structure of an error response from the Attestation Publisher.
- */
-export interface PublishErrorResult {
-  type?: string
-  title?: string
-  detail?: string
-  instance?: string
-  publishedAttestations?: Array<PublishedAttestation>
-  failedAttestations?: Array<FailedAttestation>
+  successPayload?: SuccessResponse
+  errorPayload?: ErrorResponse
 }
 
 export function createClient(
@@ -102,16 +76,7 @@ class ApiAttestationPublisher implements AttestationPublisher {
 
       resolve({
         status: 200,
-        success: true,
-        successPayload: {
-          publishedAttestations: [
-            {
-              type: 'https://cavendish.dev/java-toolchain/v1',
-              downloadUrl:
-                'https://todo.example.com/attestations/java-toolchain.json'
-            }
-          ]
-        }
+        success: true
       })
     })
   }

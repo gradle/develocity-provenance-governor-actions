@@ -66,9 +66,9 @@ const subjectPurl = new PackageURL('oci', '', 'name', digest)
 const reporter = new SummaryReporter()
 
 if (args.status === 200) {
-  reporter.reportSuccess(subjectPurl, digest, json)
+  reporter.reportSuccess(json)
 } else {
-  reporter.reportError(subjectPurl, digest, json)
+  reporter.reportError(json)
 }
 
 const markdown = core.summary.stringify()

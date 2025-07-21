@@ -27,7 +27,8 @@ export default [
       '**/dist',
       '**/linter',
       '**/node_modules',
-      '**/script'
+      '**/script',
+      '**/__fixtures__/*.md'
     ]
   },
   ...compat.extends(

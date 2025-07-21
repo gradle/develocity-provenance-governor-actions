@@ -61,11 +61,14 @@ export async function run(): Promise<void> {
     )
 
     const reporter = createReporter()
-
+    const subject = {
+      name: subjectPurl.toString(),
+      digest: { sha256: subjectDigest }
+    }
     if (result.success) {
-      reporter.reportSuccess(subjectPurl, subjectDigest, result.successPayload)
+      reporter.reportSuccess(subject, result.successPayload) // TODO add first method arg
     } else {
-      reporter.reportError(subjectPurl, subjectDigest, result.errorPayload)
+      reporter.reportError(subject, result.errorPayload)
       core.setFailed(
         `Attestation publisher for subject: ${subjectPurl} failed: ${result.errorPayload?.title}`
       )

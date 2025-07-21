@@ -1,0 +1,7 @@
+{
+  "servers": {
+    "develocity-tia-project": {
+      "url": "http://host.docker.internal:8080/sse"
+    }
+  }
+}

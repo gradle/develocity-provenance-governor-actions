@@ -1,8 +1,49 @@
 {
-  "publishedAttestations": [
+  "request": {
+    "uri": "http://localhost:8080/local-tenant/packages/oci/java-payment-calculator/1.0.0-SNAPSHOT-16152750186-3/attestations",
+    "tenant": {
+      "name": "default",
+      "develocityInstances": ["sdlc-demo"],
+      "artifactoryInstances": ["develocity-tia"]
+    },
+    "pkg": {
+      "type": "oci",
+      "name": "java-payment-calculator",
+      "version": "1.0.0-SNAPSHOT-16152750186-3"
+    },
+    "criteria": {
+      "sha256": "c317754f19b1643a51bd056f741bce639c87795ce720ac719951caff0bd0bc78",
+      "repositoryUrl": "develocitytia.jfrog.io/docker-trial",
+      "buildScan": {
+        "ids": ["shvi5rxoncfeu"]
+      }
+    }
+  },
+  "successes": [
     {
-      "type": "sample-type",
-      "downloadUrl": "https://example.com/attestation"
+      "storeType": "artifactory",
+      "storeUri": "https://develocitytia.jfrog.io",
+      "storeRequest": {
+        "uri": "https://develocitytia.jfrog.io/evidence/api/v1/subject/docker-trial/java-payment-calculator/1.0.0-SNAPSHOT-16152750186-3/manifest.json",
+        "body": {
+          "payload": "eyJfdHlwZSI6Imh0dHBzOi8vaW4tdG90by5pby9TdGF0ZW1lbnQvdjEiLCJzdWJqZWN0IjpbeyJuYW1lIjoicGtnOm9jaS9qYXZhLXBheW1lbnQtY2FsY3VsYXRvckBmOWIyZDI3ZmJlY2EyMDhjZDcxNDMwZmZhZTgxMzk4MDI0NjdjZjZkYjU2Yjc2YTI3MzljMmQ1ZTEzMzkwODRmP3JlcG9zaXRvcnlfdXJsPWRldmVsb2NpdHl0aWEuamZyb2cuaW8lMkZkb2NrZXItdHJpYWwmdGFnPTEuMC4wLVNOQVBTSE9ULTk5ODU5MjUwOTIiLCJkaWdlc3QiOnsic2hhMjU2IjoiZjliMmQyN2ZiZWNhMjA4Y2Q3MTQzMGZmYWU4MTM5ODAyNDY3Y2Y2ZGI1NmI3NmEyNzM5YzJkNWUxMzM5MDg0ZiJ9fV0sInByZWRpY2F0ZVR5cGUiOiJodHRwczovL2dyYWRsZS5jb20vYXR0ZXN0YXRpb25zL3JlcG9zaXRvcnkvdjEiLCJwcmVkaWNhdGUiOnsiYnVpbGRTY2FuVXJpIjoiaHR0cHM6Ly9kZXZlbG9jaXR5LmdyZGV2Lm5ldC9zL3U0Y3FhcW55dGJ3Z2EiLCJ1cmkiOiJodHRwczovL3JlcG8ubWF2ZW4uYXBhY2hlLm9yZy9tYXZlbjIvIn0sImNyZWF0ZWRBdCI6IjIwMjUtMDctMTBUMTg6MTE6MzEuOTYyWiIsImNyZWF0ZWRCeSI6InVzZXIifQ==",
+          "payloadType": "application/vnd.in-toto+json",
+          "signatures": [{}]
+        }
+      },
+      "storeResponse": {
+        "name": "gradle-attestations-repository-1752171092262-dc7d228c.json",
+        "sha256": "c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b",
+        "path": "java-payment-calculator/1.0.0-SNAPSHOT-16152750186-3/manifest.json",
+        "predicate_category": "Custom",
+        "created_at": "2025-07-10T18:11:31.962Z",
+        "predicate_slug": "gradle-attestations-repository",
+        "uri": "docker-trial/.evidence/aa2fa444849b0384f9ec5e8c70fd4c536ace38b3b83173eb295f3d848edadf7a/f9b2d27fbeca208cd71430ffae8139802467cf6db56b76a2739c2d5e1339084f/gradle-attestations-repository-1752171092262-dc7d228c.json",
+        "predicate_type": "https://gradle.com/attestations/repository/v1",
+        "created_by": "user",
+        "repository": "docker-trial",
+        "verified": false
+      }
     }
   ]
 }

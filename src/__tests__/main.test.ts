@@ -11,7 +11,7 @@ import { createClient } from '../__fixtures__/publisher-client.js'
 import { createReporter } from '../__fixtures__/reporter.js'
 import { AttestationPublisher } from '../publisher-client.js'
 import { Reporter } from '../reporter.js'
-import { PackageURL } from 'packageurl-js'
+import * as fs from 'node:fs'
 
 // Mocks should be declared before the module being tested is imported.
 jest.unstable_mockModule('@actions/core', () => core)
@@ -42,32 +42,21 @@ describe('main.ts', () => {
   })
 
   it('Creates attestation', async () => {
-    const payload = {
-      publishedAttestations: [
-        {
-          type: 'https://cavendish.dev/java-toolchain/v1',
-          downloadUrl:
-            'https://todo.example.com/attestations/java-toolchain.json'
-        },
-        {
-          type: 'https://cavendish.dev/npm-toolchain/v1',
-          downloadUrl:
-            'https://todo.example.com/attestations/npm-toolchain.json'
-        }
-      ]
+    const payload = JSON.parse(
+      fs.readFileSync('src/__fixtures__/success.json', 'utf8')
+    )
+
+    const publisher: AttestationPublisher = {
+      publishAttestation: jest.fn(() =>
+        Promise.resolve({
+          status: 200,
+          success: true,
+          successPayload: payload
+        })
+      )
     }
 
-    createClient.mockImplementation((): AttestationPublisher => {
-      return {
-        publishAttestation: jest.fn(() =>
-          Promise.resolve({
-            status: 200,
-            success: true,
-            successPayload: payload
-          })
-        )
-      }
-    })
+    createClient.mockImplementation((): AttestationPublisher => publisher)
 
     core.getInput
       .mockClear()
@@ -93,47 +82,42 @@ describe('main.ts', () => {
     )
 
     expect(createReporter).toHaveBeenCalledTimes(1)
+    expect(publisher.publishAttestation).toHaveBeenNthCalledWith(
+      1,
+      'tenant11',
+      'type11',
+      'namespace11',
+      'name11',
+      'version11',
+      'digest11',
+      'https://repo.example.com/'
+    )
+    const subject = {
+      name: 'pkg:type11/namespace11/name11@version11',
+      digest: { sha256: 'digest11' }
+    }
     expect(mockReporter.reportSuccess).toHaveBeenNthCalledWith(
       1,
-      new PackageURL('type11', 'namespace11', 'name11', 'version11'),
-      'digest11',
+      subject,
       payload
     )
   })
 
   it('Attestation creation partial error', async () => {
-    const payload = {
-      type: 'error-type22',
-      title: 'error-title22',
-      detail: 'error-detail22',
-      instance: 'error-instance22',
-      publishedAttestations: [
-        {
-          type: 'https://cavendish.dev/java-toolchain/v1',
-          downloadUrl:
-            'https://todo.example.com/attestations/java-toolchain.json'
-        }
-      ],
-      failedAttestations: [
-        {
-          type: 'https://cavendish.dev/npm-toolchain/v1',
-          detail: 'Access denied to repository.'
-        }
-      ]
-    }
+    const payload = JSON.parse(
+      fs.readFileSync('src/__fixtures__/partial-error.json', 'utf8')
+    )
 
-    createClient.mockImplementation((): AttestationPublisher => {
-      return {
-        publishAttestation: jest.fn(() =>
-          Promise.resolve({
-            status: 200,
-            success: false,
-            successPayload: {},
-            errorPayload: payload
-          })
-        )
-      }
-    })
+    const publisher: AttestationPublisher = {
+      publishAttestation: jest.fn(() =>
+        Promise.resolve({
+          status: 200,
+          success: false,
+          errorPayload: payload
+        })
+      )
+    }
+    createClient.mockImplementation((): AttestationPublisher => publisher)
 
     core.getInput
       .mockClear()
@@ -150,7 +134,7 @@ describe('main.ts', () => {
 
     // check error first, if something went wrong, fail fast
     expect(core.setFailed).toHaveBeenCalledWith(
-      'Attestation publisher for subject: pkg:type22/namespace22/name22@version22 failed: error-title22'
+      'Attestation publisher for subject: pkg:type22/namespace22/name22@version22 failed: Internal Server Error'
     )
 
     // expect interactions
@@ -161,10 +145,24 @@ describe('main.ts', () => {
     )
 
     expect(createReporter).toHaveBeenCalledTimes(1)
+    expect(publisher.publishAttestation).toHaveBeenNthCalledWith(
+      1,
+      'tenant22',
+      'type22',
+      'namespace22',
+      'name22',
+      'version22',
+      'digest22',
+      'https://repo.example.com/'
+    )
+
+    const subject = {
+      name: 'pkg:type22/namespace22/name22@version22',
+      digest: { sha256: 'digest22' }
+    }
     expect(mockReporter.reportError).toHaveBeenNthCalledWith(
       1,
-      new PackageURL('type22', 'namespace22', 'name22', 'version22'),
-      'digest22',
+      subject,
       payload
     )
   })

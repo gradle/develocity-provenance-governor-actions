@@ -13,8 +13,7 @@ describe('publisher-client.js', () => {
       publishAttestation: jest.fn(() =>
         Promise.resolve({
           status: 200,
-          success: true,
-          successPayload: {}
+          success: true
         })
       )
     }
@@ -31,8 +30,7 @@ describe('publisher-client.js', () => {
 
     expect(result).toEqual({
       status: 200,
-      success: true,
-      successPayload: {}
+      success: true
     })
   })
 })
