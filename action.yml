@@ -2,26 +2,35 @@ name: 'Retrieve ID Token'
 description: 'A GitHub Action to retrieve and log the ID token'
 
 inputs:
+  attestation-publisher-url:
+    description: 'The URL of the Develocity Attestation Publisher service'
+    required: true
   tenant:
     description:
       'The tenant ID configured in the Develocity Attestation Publisher service'
     required: true
+  build-scan-ids:
+    description: 'The Develocity Build Scan IDs to used to publish the package'
+    required: true
+  # TODO handle build scan query
   subject-type:
     description: 'The type of package being published'
     required: true
   subject-namespace:
     description: 'The namespace of package being published'
-    required: true
+    required: false
   subject-name:
     description: 'The name of package being published'
     required: true
   subject-version:
     description: 'The version of package being published'
     required: true
-  build-scan-ids:
-    description: 'The Develocity Build Scan IDs to used to publish the package'
+  subject-digest:
+    description: 'The sha256 digest of the package that was published'
     required: true
-  # TODO handle build scan query
+  subject-repository-url:
+    description: 'The base repository URL of the package that was published'
+    required: true
   username:
     description:
       'The username of the publishing user (It is recommended to use the GitHub
