@@ -28124,7 +28124,7 @@ class ApiAttestationPublisher {
             : `Basic ${Buffer.from(this.credentials.username + ':' + this.credentials.password).toString('base64')}`;
         const payload = JSON.stringify({
             repositoryUrl: repositoryUrl,
-            digest: digest,
+            sha256: digest,
             buildScan: {
                 ids: buildScanIds
             }

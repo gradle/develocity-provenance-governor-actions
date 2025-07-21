@@ -78,7 +78,7 @@ class ApiAttestationPublisher implements AttestationPublisher {
 
     const payload = JSON.stringify({
       repositoryUrl: repositoryUrl,
-      digest: digest,
+      sha256: digest,
       buildScan: {
         ids: buildScanIds
       }

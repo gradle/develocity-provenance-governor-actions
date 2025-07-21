@@ -47,7 +47,7 @@ describe('publisher-client.js', () => {
       method: 'POST',
       body: JSON.stringify({
         repositoryUrl: 'repository1',
-        digest: 'digest1',
+        sha256: 'digest1',
         buildScan: {
           ids: ['build-scan-id1', 'build-scan-id2']
         }
@@ -104,7 +104,7 @@ describe('publisher-client.js', () => {
       method: 'POST',
       body: JSON.stringify({
         repositoryUrl: 'repository1',
-        digest: 'digest1',
+        sha256: 'digest1',
         buildScan: {
           ids: ['build-scan-id1', 'build-scan-id2']
         }
@@ -161,7 +161,7 @@ describe('publisher-client.js', () => {
       method: 'POST',
       body: JSON.stringify({
         repositoryUrl: 'repository1',
-        digest: 'digest1',
+        sha256: 'digest1',
         buildScan: {
           ids: ['build-scan-id1', 'build-scan-id2']
         }
