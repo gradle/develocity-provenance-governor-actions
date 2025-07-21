@@ -9,9 +9,9 @@ export interface PublisherResult {
 
 export function createClient(
   baseUrl: string,
-  apiToken: string
+  credentials: Credentials
 ): AttestationPublisher {
-  return new ApiAttestationPublisher(baseUrl, apiToken)
+  return new ApiAttestationPublisher(baseUrl, credentials)
 }
 
 /**
@@ -25,20 +25,23 @@ export interface AttestationPublisher {
     pkgName: string,
     pkgVersion: string,
     digest: string,
-    repositoryUrl: string
+    repositoryUrl: string,
+    buildScanIds: string[]
   ): Promise<PublisherResult>
 }
+
+export type Credentials = string | { username: string; password: string }
 
 /**
  * Class implementing the attestation publisher functionality
  */
 class ApiAttestationPublisher implements AttestationPublisher {
   private readonly baseUrl: string
-  private readonly apiToken: string
+  private readonly credentials: Credentials
 
-  constructor(baseUrl: string, apiToken: string) {
-    this.baseUrl = baseUrl
-    this.apiToken = apiToken
+  constructor(baseUrl: string, credentials: Credentials) {
+    this.baseUrl = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/'
+    this.credentials = credentials
   }
 
   /**
@@ -51,6 +54,7 @@ class ApiAttestationPublisher implements AttestationPublisher {
    * @param pkgVersion Version of the package as defined by PURL spec (this could also be a sha256 digest for an OCI image)
    * @param digest The digest of the image, usually containing the digest type prefix (e.g. sha256:<digest-string-here>)
    * @param repositoryUrl The repository the subject artifact was published to.
+   * @param buildScanIds The build scan ID that created the subject artifact.
    * @returns Promise that resolves when the attestation is published
    */
   async publishAttestation(
@@ -60,24 +64,54 @@ class ApiAttestationPublisher implements AttestationPublisher {
     pkgName: string,
     pkgVersion: string,
     digest: string,
-    repositoryUrl: string
+    repositoryUrl: string,
+    buildScanIds: string[]
   ): Promise<PublisherResult> {
-    return new Promise((resolve) => {
-      const publisherUrl =
-        this.baseUrl +
-        `/${tenant}/packages/${pkgType}/${pkgNamespace}/${pkgName}/${pkgVersion}/`
-      console.log(
-        'Calling publisher: ',
-        publisherUrl,
-        repositoryUrl,
-        digest,
-        this.apiToken
-      ) // fixme: remove token this
+    const publisherUrl =
+      this.baseUrl +
+      `${tenant}/packages/${pkgType}/${pkgNamespace}/${pkgName}/${pkgVersion}/`
 
-      resolve({
-        status: 200,
-        success: true
+    const authHeader =
+      typeof this.credentials === 'string'
+        ? `Bearer ${this.credentials}`
+        : `Basic ${Buffer.from(this.credentials.username + ':' + this.credentials.password).toString('base64')}`
+
+    console.log('Calling publisher: ', publisherUrl)
+
+    try {
+      const response = fetch(publisherUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: authHeader
+        },
+        body: JSON.stringify({
+          repositoryUrl: repositoryUrl,
+          digest: digest,
+          buildScan: {
+            ids: buildScanIds
+          }
+        })
       })
-    })
+
+      return response.then(async (response) => {
+        const data = await response.json()
+        return {
+          status: response.status,
+          success: response.ok,
+          successPayload: response.ok ? data : null,
+          errorPayload: !response.ok ? data : null
+        }
+      }) as Promise<PublisherResult>
+    } catch (error) {
+      return Promise.resolve({
+        status: 0,
+        success: false,
+        errorPayload: {
+          detail:
+            error instanceof Error ? error.message : 'Unknown error occurred'
+        }
+      })
+    }
   }
 }

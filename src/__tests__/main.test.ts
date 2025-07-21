@@ -68,7 +68,11 @@ describe('main.ts', () => {
       .mockReturnValueOnce('digest11') // subject-digest
       .mockReturnValueOnce('https://repo.example.com/') // subject-repository-url
       .mockReturnValueOnce('https://attest.example.com/') // attestation-publisher-url
-      .mockReturnValueOnce('') // attestation-publisher-api-token
+      .mockReturnValueOnce('') // username
+      .mockReturnValueOnce('') // password
+    core.getMultilineInput
+      .mockClear()
+      .mockReturnValueOnce(['build-scan-id11', 'build-scan-id12']) // build-scan-ids
     await run()
 
     // check error first, if something went wrong, fail fast
@@ -90,7 +94,8 @@ describe('main.ts', () => {
       'name11',
       'version11',
       'digest11',
-      'https://repo.example.com/'
+      'https://repo.example.com/',
+      ['build-scan-id11', 'build-scan-id12']
     )
     const subject = {
       name: 'pkg:type11/namespace11/name11@version11',
@@ -129,7 +134,11 @@ describe('main.ts', () => {
       .mockReturnValueOnce('digest22') // subject-digest
       .mockReturnValueOnce('https://repo.example.com/') // subject-repository-url
       .mockReturnValueOnce('https://attest.example.com/') // attestation-publisher-url
-      .mockReturnValueOnce('') // attestation-publisher-api-token
+      .mockReturnValueOnce('') // username
+      .mockReturnValueOnce('') // password
+    core.getMultilineInput
+      .mockClear()
+      .mockReturnValueOnce(['build-scan-id21', 'build-scan-id22']) // build-scan-ids
     await run()
 
     // check error first, if something went wrong, fail fast
@@ -153,7 +162,8 @@ describe('main.ts', () => {
       'name22',
       'version22',
       'digest22',
-      'https://repo.example.com/'
+      'https://repo.example.com/',
+      ['build-scan-id21', 'build-scan-id22']
     )
 
     const subject = {

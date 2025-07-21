@@ -28089,18 +28089,18 @@ function requireCore () {
 
 var coreExports = requireCore();
 
-function createClient(baseUrl, apiToken) {
-    return new ApiAttestationPublisher(baseUrl, apiToken);
+function createClient(baseUrl, credentials) {
+    return new ApiAttestationPublisher(baseUrl, credentials);
 }
 /**
  * Class implementing the attestation publisher functionality
  */
 class ApiAttestationPublisher {
     baseUrl;
-    apiToken;
-    constructor(baseUrl, apiToken) {
-        this.baseUrl = baseUrl;
-        this.apiToken = apiToken;
+    credentials;
+    constructor(baseUrl, credentials) {
+        this.baseUrl = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
+        this.credentials = credentials;
     }
     /**
      * Publishes an attestation for the given subject.
@@ -28112,26 +28112,50 @@ class ApiAttestationPublisher {
      * @param pkgVersion Version of the package as defined by PURL spec (this could also be a sha256 digest for an OCI image)
      * @param digest The digest of the image, usually containing the digest type prefix (e.g. sha256:<digest-string-here>)
      * @param repositoryUrl The repository the subject artifact was published to.
+     * @param buildScanIds The build scan ID that created the subject artifact.
      * @returns Promise that resolves when the attestation is published
      */
-    async publishAttestation(tenant, pkgType, pkgNamespace, pkgName, pkgVersion, digest, repositoryUrl) {
-        return new Promise((resolve) => {
-            const publisherUrl = this.baseUrl +
-                `/${tenant}/packages/${pkgType}/${pkgNamespace}/${pkgName}/${pkgVersion}/`;
-            console.log('Calling publisher: ', publisherUrl, repositoryUrl, digest, this.apiToken); // fixme: remove token this
-            resolve({
-                status: 200,
-                success: true,
-                successPayload: {
-                    publishedAttestations: [
-                        {
-                            type: 'https://cavendish.dev/java-toolchain/v1',
-                            downloadUrl: 'https://todo.example.com/attestations/java-toolchain.json'
-                        }
-                    ]
+    async publishAttestation(tenant, pkgType, pkgNamespace, pkgName, pkgVersion, digest, repositoryUrl, buildScanIds) {
+        const publisherUrl = this.baseUrl +
+            `${tenant}/packages/${pkgType}/${pkgNamespace}/${pkgName}/${pkgVersion}/`;
+        const authHeader = typeof this.credentials === 'string'
+            ? `Bearer ${this.credentials}`
+            : `Basic ${Buffer.from(this.credentials.username + ':' + this.credentials.password).toString('base64')}`;
+        console.log('Calling publisher: ', publisherUrl);
+        try {
+            const response = fetch(publisherUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: authHeader
+                },
+                body: JSON.stringify({
+                    repositoryUrl: repositoryUrl,
+                    digest: digest,
+                    buildScan: {
+                        ids: buildScanIds
+                    }
+                })
+            });
+            return response.then(async (response) => {
+                const data = await response.json();
+                return {
+                    status: response.status,
+                    success: response.ok,
+                    successPayload: response.ok ? data : null,
+                    errorPayload: !response.ok ? data : null
+                };
+            });
+        }
+        catch (error) {
+            return Promise.resolve({
+                status: 0,
+                success: false,
+                errorPayload: {
+                    detail: error instanceof Error ? error.message : 'Unknown error occurred'
                 }
             });
-        });
+        }
     }
 }
 
@@ -29647,51 +29671,127 @@ function createReporter() {
     return new SummaryReporter();
 }
 class SummaryReporter {
-    reportSuccess(subjectPurl, digest, success) {
-        coreExports.info(`Attestation publishing for subject: ${subjectPurl} completed successfully!`);
-        header('Attestations Published', subjectPurl.toString(), 'https://todo.example.com', // TODO
-        digest);
-        // TODO merge this table creation with the one below
-        const rows = [headerRow()];
-        success?.publishedAttestations?.forEach((attestation) => {
-            rows.push(successRow(attestation));
-        });
-        coreExports.summary.addTable(rows);
+    report(status, subject, result) {
+        if (status === 200 && result) {
+            this.reportSuccess(subject, result);
+        }
+        else {
+            this.reportError(subject, result);
+        }
     }
-    reportError(subjectPurl, digest, error) {
-        header('Attestations Publishing Failed', subjectPurl.toString(), 'https://todo.example.com', // TODO
-        digest);
-        if (error?.title) {
-            coreExports.summary.addRaw('**Error:** ').addRaw(error?.title).addEOL();
-        }
-        if (error?.type) {
-            coreExports.summary.addRaw('**Type:** ').addRaw(error?.type).addEOL();
-        }
-        if (error?.detail) {
-            coreExports.summary.addRaw(error?.detail).addEOL();
-        }
-        const rows = [headerRow()];
-        error?.publishedAttestations?.forEach((attestation) => {
-            rows.push(successRow(attestation));
+    reportSuccess(subject, result) {
+        coreExports.info(`Attestation publishing for subject: ${subject.name} completed successfully!`);
+        header('Attestations Published');
+        subjectInfo(subject, result);
+        const items = groupSuccessByResource(result.successes);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        items.forEach(([_, successes]) => {
+            // TODO merge this table creation with the one below
+            const rows = [headerRow()];
+            successes.forEach((success) => {
+                const row = successItemToRow(success);
+                rows.push(row);
+                // console.log(` ${row}`)
+            });
+            coreExports.summary.addTable(rows);
         });
-        error?.failedAttestations?.forEach((attestation) => {
-            rows.push(errorRow(attestation));
-        });
-        coreExports.summary.addTable(rows);
+    }
+    reportError(subject, result) {
+        header('Attestations Publishing Failed');
+        if (result?.title) {
+            coreExports.summary.addRaw('**Error:** ').addRaw(result?.title).addEOL().addEOL();
+        }
+        if (result?.detail) {
+            coreExports.summary.addRaw('> ').addRaw(result?.detail).addEOL().addEOL();
+        }
+        if (result?.type) {
+            coreExports.summary.addRaw('**Type:** ').addRaw(result?.type).addEOL().addEOL();
+        }
+        // print table if we have errors or successes
+        if (result?.errors || result?.successes) {
+            subjectInfo(subject, result);
+            // header
+            const rows = [errorHeaderRow()];
+            if (result?.errors) {
+                result.errors.forEach((error) => {
+                    const row = errorRow(error);
+                    rows.push(row);
+                });
+            }
+            rows.push(...successRows(result));
+            coreExports.summary.addTable(rows);
+            coreExports.summary.addEOL();
+        }
     }
 }
-function header(heading, subjectPurl, subjectDownloadUrl, digest) {
+function subjectInfo(subject, result) {
+    let uiArtifactUri;
+    if (result && result.request) {
+        const repoUrlParts = result.request.criteria.repositoryUrl.split('/');
+        const tag = result.request.pkg.version;
+        let storeUri;
+        // get the artifact uri from the result items
+        if (result && result.successes && result.successes[0]) {
+            storeUri = result.successes[0].storeUri;
+        }
+        else if ('errors' in result && result.errors && result.errors[0]) {
+            storeUri = result.errors[0].storeUri;
+        }
+        uiArtifactUri = `${storeUri}/ui/repos/tree/General/${repoUrlParts[1]}/${result.request.pkg.name}/${tag}`;
+    }
+    subjectSubHeader(subject?.name ?? 'Unknown', subject?.digest?.sha256 ?? 'Unknown', uiArtifactUri);
+}
+function errorHeaderRow() {
+    return [
+        { data: 'Type', header: true },
+        { data: 'Published', header: true },
+        { data: 'Details', header: true }
+    ];
+}
+function errorRow(error) {
+    const predicateType = getStatement(error?.storeRequest)?.predicateType ?? 'Unknown';
+    return [
+        `\n\n\`${predicateType}\``,
+        { data: '❌' },
+        { data: error?.storeResponse?.message }
+    ];
+}
+function successRows(result) {
+    // TODO merge this table creation with the one below
+    // const rows: SummaryTableRow[] = [headerRow()]
+    const rows = [];
+    // successful published attestations
+    if (result?.successes) {
+        const items = groupSuccessByResource(result?.successes);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        items.forEach(([_, successes]) => {
+            successes.forEach((success) => {
+                const row = successItemToRow(success);
+                rows.push(row);
+                // console.log(` ${row}`)
+            });
+            // core.summary.addTable(rows)
+        });
+    }
+    return rows;
+}
+function header(heading) {
+    coreExports.summary.addBreak().addEOL().addRaw(`## ${heading}`).addEOL().addEOL();
+}
+function subjectSubHeader(subjectPurl, digest, subjectDownloadUrl) {
+    coreExports.summary.addRaw('**Subject:** ');
+    if (subjectDownloadUrl) {
+        coreExports.summary.addLink(subjectPurl, subjectDownloadUrl);
+    }
+    else {
+        coreExports.summary.addRaw(subjectPurl);
+    }
     coreExports.summary
-        .addBreak()
         .addEOL()
-        .addRaw(`## ${heading}`)
-        .addEOL()
-        .addEOL()
-        .addRaw('**Subject:** ')
-        .addLink(subjectPurl.toString(), subjectDownloadUrl)
-        .addEOL()
-        .addRaw('**Digest:** ')
+        .addRaw('**Digest:** `')
         .addRaw(digest)
+        .addRaw('`')
+        .addEOL()
         .addEOL();
 }
 function headerRow() {
@@ -29701,15 +29801,58 @@ function headerRow() {
         { data: 'Attestation', header: true }
     ];
 }
-function successRow(attestation) {
-    return [
-        attestation.type,
-        '✅',
-        `\n\n[download attestation](${attestation.downloadUrl})`
-    ];
+function groupSuccessByResource(items) {
+    // First, create a grouped structure using Map
+    const groupedSuccesses = items.reduce((acc, success) => {
+        const key = `${success.storeType}-${success.storeRequest.uri}`;
+        if (!acc.has(key)) {
+            acc.set(key, []);
+        }
+        acc.get(key)?.push(success);
+        return acc;
+    }, new Map());
+    // Convert to array and sort
+    return Array.from(groupedSuccesses.entries()).sort(([keyA], [keyB]) => {
+        const [storeTypeA, uriA] = keyA.split('-');
+        const [storeTypeB, uriB] = keyB.split('-');
+        // First sort by storeType
+        const storeTypeCompare = storeTypeA.localeCompare(storeTypeB);
+        if (storeTypeCompare !== 0)
+            return storeTypeCompare;
+        // Then by resourceUri
+        return uriA.localeCompare(uriB);
+    });
 }
-function errorRow(attestation) {
-    return [attestation.type, '❌', attestation.detail];
+function successItemToRow(item) {
+    const statement = getStatement(item.storeRequest);
+    const predicateType = item.storeResponse.predicate_type;
+    const downloadUri = `${item.storeUri}/ui/api/v1/download/${item.storeResponse.uri}`;
+    if (statement) {
+        const predicate = JSON.stringify(statement.predicate, null, 2);
+        const codeBlock = `\n\`\`\`json\n${predicate}\n\`\`\`\n`;
+        const open = codeBlock.length < 1000 ? 'open' : '';
+        const detailsBlock = `\n<details ${open}>\n\n<summary>Attestation</summary>\n${codeBlock}\n\n</details>`;
+        return [
+            `\n\n\`${predicateType}\``,
+            '✅',
+            `\n\n${detailsBlock}\n\n[Download](${downloadUri})\n`
+        ];
+    }
+    else {
+        return [
+            `\n\n\`${predicateType}\``,
+            '✅',
+            `\n\n[Download](${downloadUri})\n`
+        ];
+    }
+}
+function getStatement(storeRequest) {
+    if (!storeRequest?.body?.payload) {
+        return null;
+    }
+    const buffer = Buffer.from(storeRequest.body.payload, 'base64');
+    const tmp = JSON.parse(buffer.toString('utf-8'));
+    return tmp;
 }
 
 async function run() {
@@ -29719,6 +29862,9 @@ async function run() {
         const pkgNamespace = coreExports.getInput('subject-namespace', { required: false });
         const pkgName = coreExports.getInput('subject-name', { required: true });
         const pkgVersion = coreExports.getInput('subject-version', { required: true });
+        const buildScanIds = coreExports.getMultilineInput('build-scan-ids', {
+            required: true
+        });
         const subjectPurl = new packageurlJsExports.PackageURL(pkgType, pkgNamespace, pkgName, pkgVersion);
         // collect inputs
         const subjectDigest = coreExports.getInput('subject-digest', { required: true });
@@ -29728,29 +29874,27 @@ async function run() {
         const attestationPublisherUrl = coreExports.getInput('attestation-publisher-url', {
             required: true
         });
-        // two modes of authentication, API token or GH Actions ID token
-        const attestationPublisherApiToken = coreExports.getInput('attestation-publisher-api-token');
-        const idToken = await coreExports.getIDToken();
-        const authenticationType = attestationPublisherApiToken
-            ? 'token'
-            : 'api-token';
+        const username = coreExports.getInput('username');
+        const password = coreExports.getInput('password');
+        const credentials = username && password ? { username, password } : await coreExports.getIDToken();
         // helpful logging
         coreExports.startGroup(`Publishing attestation for subject: ${subjectPurl} - ${subjectDigest}`);
         coreExports.info(`Subject Repository URL: ${repositoryUrl}`);
         coreExports.info(`Publisher URL: ${attestationPublisherUrl} - in tenant: ${tenant}`);
-        coreExports.info(`Using authentication type: ${authenticationType}`);
-        // TODO: remove this
-        coreExports.debug(`Using idToken: ${idToken}`);
         coreExports.endGroup();
         // publish the attestations
-        const publisherClient = createClient(attestationPublisherUrl, idToken);
-        const result = await publisherClient.publishAttestation(tenant, pkgType, pkgNamespace, pkgName, pkgVersion, subjectDigest, repositoryUrl);
+        const publisherClient = createClient(attestationPublisherUrl, credentials);
+        const result = await publisherClient.publishAttestation(tenant, pkgType, pkgNamespace, pkgName, pkgVersion, subjectDigest, repositoryUrl, buildScanIds);
         const reporter = createReporter();
+        const subject = {
+            name: subjectPurl.toString(),
+            digest: { sha256: subjectDigest }
+        };
         if (result.success) {
-            reporter.reportSuccess(subjectPurl, subjectDigest, result.successPayload);
+            reporter.reportSuccess(subject, result.successPayload); // TODO add first method arg
         }
         else {
-            reporter.reportError(subjectPurl, subjectDigest, result.errorPayload);
+            reporter.reportError(subject, result.errorPayload);
             coreExports.setFailed(`Attestation publisher for subject: ${subjectPurl} failed: ${result.errorPayload?.title}`);
             coreExports.error(JSON.stringify(result.errorPayload, null, 2));
         }

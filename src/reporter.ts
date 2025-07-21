@@ -96,7 +96,7 @@ function subjectInfo(
   result?: SuccessResponse | ErrorResponse
 ) {
   let uiArtifactUri
-  if (result) {
+  if (result && result.request) {
     const repoUrlParts = result.request.criteria.repositoryUrl.split('/')
     const tag = result.request.pkg.version
 

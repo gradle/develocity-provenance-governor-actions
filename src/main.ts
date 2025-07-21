@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import { createClient } from './publisher-client.js'
+import { createClient, Credentials } from './publisher-client.js'
 import { PackageURL } from 'packageurl-js'
 import { createReporter } from './reporter.js'
 
@@ -10,6 +10,9 @@ export async function run(): Promise<void> {
     const pkgNamespace = core.getInput('subject-namespace', { required: false })
     const pkgName = core.getInput('subject-name', { required: true })
     const pkgVersion = core.getInput('subject-version', { required: true })
+    const buildScanIds = core.getMultilineInput('build-scan-ids', {
+      required: true
+    })
     const subjectPurl = new PackageURL(
       pkgType,
       pkgNamespace,
@@ -26,14 +29,11 @@ export async function run(): Promise<void> {
       required: true
     })
 
-    // two modes of authentication, API token or GH Actions ID token
-    const attestationPublisherApiToken = core.getInput(
-      'attestation-publisher-api-token'
-    )
-    const idToken = await core.getIDToken()
-    const authenticationType = attestationPublisherApiToken
-      ? 'token'
-      : 'api-token'
+    const username = core.getInput('username')
+    const password = core.getInput('password')
+
+    const credentials: Credentials =
+      username && password ? { username, password } : await core.getIDToken()
 
     // helpful logging
     core.startGroup(
@@ -43,13 +43,10 @@ export async function run(): Promise<void> {
     core.info(
       `Publisher URL: ${attestationPublisherUrl} - in tenant: ${tenant}`
     )
-    core.info(`Using authentication type: ${authenticationType}`)
-    // TODO: remove this
-    core.debug(`Using idToken: ${idToken}`)
     core.endGroup()
 
     // publish the attestations
-    const publisherClient = createClient(attestationPublisherUrl, idToken)
+    const publisherClient = createClient(attestationPublisherUrl, credentials)
     const result = await publisherClient.publishAttestation(
       tenant,
       pkgType,
@@ -57,7 +54,8 @@ export async function run(): Promise<void> {
       pkgName,
       pkgVersion,
       subjectDigest,
-      repositoryUrl
+      repositoryUrl,
+      buildScanIds
     )
 
     const reporter = createReporter()

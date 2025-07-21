@@ -3,20 +3,30 @@ import { jest } from '@jest/globals'
 /**
  * Unit tests for src/publisher-client.ts
  */
-import { AttestationPublisher } from '../publisher-client.js'
+import { AttestationPublisher, createClient } from '../publisher-client.js'
 
 describe('publisher-client.js', () => {
-  it('Creates an attestation', async () => {
-    // FIXME, this class isn't actually testing anything
+  afterEach(() => {
+    jest.restoreAllMocks()
+  })
 
-    const publisher: AttestationPublisher = {
-      publishAttestation: jest.fn(() =>
-        Promise.resolve({
-          status: 200,
-          success: true
-        })
-      )
+  it('Uses Token with API', async () => {
+    const jsonResponse = {
+      foo: 'bar'
     }
+
+    const fetchMock = jest.spyOn(global, 'fetch').mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(jsonResponse)
+      } as Response)
+    )
+
+    const publisher = createClient(
+      'https://attest.example.com/',
+      'gha-token'
+    ) as AttestationPublisher
 
     const result = await publisher.publishAttestation(
       'tenant1',
@@ -25,12 +35,92 @@ describe('publisher-client.js', () => {
       'name1',
       'version1',
       'digest1',
-      'repository1'
+      'repository1',
+      ['build-scan-id1', 'build-scan-id2']
+    )
+
+    const expected = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer gha-token'
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        repositoryUrl: 'repository1',
+        digest: 'digest1',
+        buildScan: {
+          ids: ['build-scan-id1', 'build-scan-id2']
+        }
+      })
+    }
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://attest.example.com/tenant1/packages/type1/namespace1/name1/version1/',
+      expected
     )
 
     expect(result).toEqual({
       status: 200,
-      success: true
+      success: true,
+      errorPayload: null,
+      successPayload: jsonResponse
+    })
+  })
+
+  it('Uses basic auth with API', async () => {
+    const jsonResponse = {
+      foo: 'bar'
+    }
+
+    const fetchMock = jest.spyOn(global, 'fetch').mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(jsonResponse)
+      } as Response)
+    )
+
+    const publisher = createClient('https://attest.example.com/', {
+      username: 'foo',
+      password: 'bar'
+    }) as AttestationPublisher
+
+    const result = await publisher.publishAttestation(
+      'tenant1',
+      'type1',
+      'namespace1',
+      'name1',
+      'version1',
+      'digest1',
+      'repository1',
+      ['build-scan-id1', 'build-scan-id2']
+    )
+
+    const expected = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Basic Zm9vOmJhcg=='
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        repositoryUrl: 'repository1',
+        digest: 'digest1',
+        buildScan: {
+          ids: ['build-scan-id1', 'build-scan-id2']
+        }
+      })
+    }
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://attest.example.com/tenant1/packages/type1/namespace1/name1/version1/',
+      expected
+    )
+
+    expect(result).toEqual({
+      status: 200,
+      success: true,
+      errorPayload: null,
+      successPayload: jsonResponse
     })
   })
 })

@@ -6,7 +6,7 @@ export interface ErrorResponse {
   title?: string
   detail?: string
   instance?: string
-  request: PublishRequest
+  request?: PublishRequest
   successes?: Array<PublishSuccessItem>
   errors?: Array<PublishFailedItem>
 }
