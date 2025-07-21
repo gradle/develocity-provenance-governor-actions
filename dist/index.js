@@ -28122,7 +28122,15 @@ class ApiAttestationPublisher {
         const authHeader = typeof this.credentials === 'string'
             ? `Bearer ${this.credentials}`
             : `Basic ${Buffer.from(this.credentials.username + ':' + this.credentials.password).toString('base64')}`;
+        const payload = JSON.stringify({
+            repositoryUrl: repositoryUrl,
+            digest: digest,
+            buildScan: {
+                ids: buildScanIds
+            }
+        });
         console.log('Calling publisher: ', publisherUrl);
+        console.debug('Calling publisher with payload: ', payload);
         try {
             const response = fetch(publisherUrl, {
                 method: 'POST',
@@ -28130,13 +28138,7 @@ class ApiAttestationPublisher {
                     'Content-Type': 'application/json',
                     Authorization: authHeader
                 },
-                body: JSON.stringify({
-                    repositoryUrl: repositoryUrl,
-                    digest: digest,
-                    buildScan: {
-                        ids: buildScanIds
-                    }
-                })
+                body: payload
             });
             return response.then(async (response) => {
                 const data = await response.json();

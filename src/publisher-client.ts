@@ -76,7 +76,16 @@ class ApiAttestationPublisher implements AttestationPublisher {
         ? `Bearer ${this.credentials}`
         : `Basic ${Buffer.from(this.credentials.username + ':' + this.credentials.password).toString('base64')}`
 
+    const payload = JSON.stringify({
+      repositoryUrl: repositoryUrl,
+      digest: digest,
+      buildScan: {
+        ids: buildScanIds
+      }
+    })
+
     console.log('Calling publisher: ', publisherUrl)
+    console.debug('Calling publisher with payload: ', payload)
 
     try {
       const response = fetch(publisherUrl, {
@@ -85,13 +94,7 @@ class ApiAttestationPublisher implements AttestationPublisher {
           'Content-Type': 'application/json',
           Authorization: authHeader
         },
-        body: JSON.stringify({
-          repositoryUrl: repositoryUrl,
-          digest: digest,
-          buildScan: {
-            ids: buildScanIds
-          }
-        })
+        body: payload
       })
 
       return response.then(async (response) => {
