@@ -106,6 +106,8 @@ describe('main.ts', () => {
       subject,
       payload
     )
+
+    expect(core.summary.write).toHaveBeenCalled()
   })
 
   it('Attestation creation partial error', async () => {
@@ -175,5 +177,7 @@ describe('main.ts', () => {
       subject,
       payload
     )
+
+    expect(core.summary.write).toHaveBeenCalled()
   })
 })

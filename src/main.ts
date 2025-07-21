@@ -64,7 +64,7 @@ export async function run(): Promise<void> {
       digest: { sha256: subjectDigest }
     }
     if (result.success) {
-      reporter.reportSuccess(subject, result.successPayload) // TODO add first method arg
+      reporter.reportSuccess(subject, result.successPayload)
     } else {
       reporter.reportError(subject, result.errorPayload)
       core.setFailed(
@@ -77,4 +77,5 @@ export async function run(): Promise<void> {
       core.setFailed(`Action failed with error: ${error.message}`)
     else core.setFailed(`Action failed with error: ${error}`)
   }
+  core.summary.write()
 }

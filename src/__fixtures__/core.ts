@@ -18,13 +18,5 @@ export const setSecret = jest.fn<typeof core.setSecret>()
 export const getBooleanInput = jest.fn<typeof core.getBooleanInput>()
 export const getMultilineInput = jest.fn<typeof core.getMultilineInput>()
 
-// Mock Summary class with chainable methods
-// const summaryInstance = {
-//     addBreak: jest.fn<typeof core.summary.addBreak>(),
-//     addRaw: jest.fn<typeof core.summary.addRaw>(),
-//     addEOL: jest.fn<typeof core.summary.addEOL>(),
-//     addLink: jest.fn<typeof core.summary.addLink>(),
-//     addTable: jest.fn<typeof core.summary.addTable>(),
-// }
-
 export const summary = coreSummary
+summary.write = jest.fn<typeof coreSummary.write>()

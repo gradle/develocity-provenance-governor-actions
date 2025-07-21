@@ -29894,7 +29894,7 @@ async function run() {
             digest: { sha256: subjectDigest }
         };
         if (result.success) {
-            reporter.reportSuccess(subject, result.successPayload); // TODO add first method arg
+            reporter.reportSuccess(subject, result.successPayload);
         }
         else {
             reporter.reportError(subject, result.errorPayload);
@@ -29908,6 +29908,7 @@ async function run() {
         else
             coreExports.setFailed(`Action failed with error: ${error}`);
     }
+    coreExports.summary.write();
 }
 
 /**
