@@ -21,7 +21,7 @@ export interface AttestationPublisher {
   publishAttestation(
     tenant: string,
     pkgType: string,
-    pkgNamespace: string,
+    pkgNamespace: string | null,
     pkgName: string,
     pkgVersion: string,
     digest: string,
@@ -67,9 +67,9 @@ class ApiAttestationPublisher implements AttestationPublisher {
     repositoryUrl: string,
     buildScanIds: string[]
   ): Promise<PublisherResult> {
-    const publisherUrl =
-      this.baseUrl +
-      `${tenant}/packages/${pkgType}/${pkgNamespace}/${pkgName}/${pkgVersion}/`
+    const publisherUrl = pkgNamespace
+      ? `${this.baseUrl}${tenant}/packages/${pkgType}/${pkgNamespace}/${pkgName}/${pkgVersion}/`
+      : `${this.baseUrl}${tenant}/packages/${pkgType}/${pkgName}/${pkgVersion}/`
 
     const authHeader =
       typeof this.credentials === 'string'

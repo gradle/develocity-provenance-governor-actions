@@ -28116,8 +28116,9 @@ class ApiAttestationPublisher {
      * @returns Promise that resolves when the attestation is published
      */
     async publishAttestation(tenant, pkgType, pkgNamespace, pkgName, pkgVersion, digest, repositoryUrl, buildScanIds) {
-        const publisherUrl = this.baseUrl +
-            `${tenant}/packages/${pkgType}/${pkgNamespace}/${pkgName}/${pkgVersion}/`;
+        const publisherUrl = pkgNamespace
+            ? `${this.baseUrl}${tenant}/packages/${pkgType}/${pkgNamespace}/${pkgName}/${pkgVersion}/`
+            : `${this.baseUrl}${tenant}/packages/${pkgType}/${pkgName}/${pkgVersion}/`;
         const authHeader = typeof this.credentials === 'string'
             ? `Bearer ${this.credentials}`
             : `Basic ${Buffer.from(this.credentials.username + ':' + this.credentials.password).toString('base64')}`;
