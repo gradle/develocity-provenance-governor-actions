@@ -68,8 +68,8 @@ class ApiAttestationPublisher implements AttestationPublisher {
     buildScanIds: string[]
   ): Promise<PublisherResult> {
     const publisherUrl = pkgNamespace
-      ? `${this.baseUrl}${tenant}/packages/${pkgType}/${pkgNamespace}/${pkgName}/${pkgVersion}/`
-      : `${this.baseUrl}${tenant}/packages/${pkgType}/${pkgName}/${pkgVersion}/`
+      ? `${this.baseUrl}${tenant}/packages/${pkgType}/${pkgNamespace}/${pkgName}/${pkgVersion}/attestations`
+      : `${this.baseUrl}${tenant}/packages/${pkgType}/${pkgName}/${pkgVersion}/attestations`
 
     const authHeader =
       typeof this.credentials === 'string'

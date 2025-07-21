@@ -55,7 +55,7 @@ describe('publisher-client.js', () => {
     }
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://attest.example.com/tenant1/packages/type1/namespace1/name1/version1/',
+      'https://attest.example.com/tenant1/packages/type1/namespace1/name1/version1/attestations',
       expected
     )
 
@@ -112,7 +112,7 @@ describe('publisher-client.js', () => {
     }
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://attest.example.com/tenant1/packages/oci/name1/version1/',
+      'https://attest.example.com/tenant1/packages/oci/name1/version1/attestations',
       expected
     )
 
@@ -169,7 +169,7 @@ describe('publisher-client.js', () => {
     }
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://attest.example.com/tenant1/packages/type1/namespace1/name1/version1/',
+      'https://attest.example.com/tenant1/packages/type1/namespace1/name1/version1/attestations',
       expected
     )
 

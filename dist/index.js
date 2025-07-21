@@ -28117,8 +28117,8 @@ class ApiAttestationPublisher {
      */
     async publishAttestation(tenant, pkgType, pkgNamespace, pkgName, pkgVersion, digest, repositoryUrl, buildScanIds) {
         const publisherUrl = pkgNamespace
-            ? `${this.baseUrl}${tenant}/packages/${pkgType}/${pkgNamespace}/${pkgName}/${pkgVersion}/`
-            : `${this.baseUrl}${tenant}/packages/${pkgType}/${pkgName}/${pkgVersion}/`;
+            ? `${this.baseUrl}${tenant}/packages/${pkgType}/${pkgNamespace}/${pkgName}/${pkgVersion}/attestations`
+            : `${this.baseUrl}${tenant}/packages/${pkgType}/${pkgName}/${pkgVersion}/attestations`;
         const authHeader = typeof this.credentials === 'string'
             ? `Bearer ${this.credentials}`
             : `Basic ${Buffer.from(this.credentials.username + ':' + this.credentials.password).toString('base64')}`;
