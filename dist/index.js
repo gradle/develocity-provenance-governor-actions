@@ -29786,10 +29786,10 @@ function header(heading) {
     coreExports.summary
         .addBreak()
         .addEOL()
-        .addImage(headerImage, 'Attestation Publisher', {
-        width: '100%',
-        height: 'auto'
-    })
+        .addRaw('![Attestation Publisher](')
+        .addRaw(headerImage)
+        .addRaw(')')
+        .addEOL()
         .addEOL()
         .addRaw(`## ${heading}`)
         .addEOL()
