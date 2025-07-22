@@ -41,20 +41,14 @@ export class SummaryReporter implements Reporter {
     subjectInfo(subject, result)
 
     const items = groupSuccessByResource(result.successes)
+    const rows: SummaryTableRow[] = [headerRow()]
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    items.forEach(([_, successes]) => {
-      // TODO merge this table creation with the one below
-      const rows: SummaryTableRow[] = [headerRow()]
-
-      successes.forEach((success) => {
-        const row = successItemToRow(success)
-        rows.push(row)
-        // console.log(` ${row}`)
-      })
-
-      core.summary.addTable(rows)
+    items.forEach((success) => {
+      const row = successItemToRow(success)
+      rows.push(row)
     })
+
+    core.summary.addTable(rows)
   }
 
   reportError(subject: ResourceDescriptor, result?: ErrorResponse) {
@@ -147,15 +141,9 @@ function successRows(result: SuccessResponse | ErrorResponse) {
   if (result?.successes) {
     const items = groupSuccessByResource(result?.successes)
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    items.forEach(([_, successes]) => {
-      successes.forEach((success) => {
-        const row = successItemToRow(success)
-        rows.push(row)
-        // console.log(` ${row}`)
-      })
-
-      // core.summary.addTable(rows)
+    items.forEach((success) => {
+      const row = successItemToRow(success)
+      rows.push(row)
     })
   }
   return rows
@@ -208,28 +196,16 @@ function headerRow() {
 
 function groupSuccessByResource(
   items: PublishSuccessItem[]
-): [string, PublishSuccessItem[]][] {
-  // First, create a grouped structure using Map
-  const groupedSuccesses = items.reduce((acc, success) => {
-    const key = `${success.storeType}-${success.storeRequest.uri}`
-    if (!acc.has(key)) {
-      acc.set(key, [])
-    }
-    acc.get(key)?.push(success)
-    return acc
-  }, new Map<string, PublishSuccessItem[]>())
-
-  // Convert to array and sort
-  return Array.from(groupedSuccesses.entries()).sort(([keyA], [keyB]) => {
-    const [storeTypeA, uriA] = keyA.split('-')
-    const [storeTypeB, uriB] = keyB.split('-')
-
+): PublishSuccessItem[] {
+  return [...items].sort((a, b) => {
     // First sort by storeType
-    const storeTypeCompare = storeTypeA.localeCompare(storeTypeB)
+    const storeTypeCompare = a.storeType.localeCompare(b.storeType)
     if (storeTypeCompare !== 0) return storeTypeCompare
 
-    // Then by resourceUri
-    return uriA.localeCompare(uriB)
+    // Then by predicate_type
+    return a.storeResponse.predicate_type.localeCompare(
+      b.storeResponse.predicate_type
+    )
   })
 }
 
