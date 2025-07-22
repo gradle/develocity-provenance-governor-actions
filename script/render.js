@@ -65,10 +65,11 @@ const subjectPurl = new PackageURL('oci', '', 'name', digest)
 // Create a reporter
 const reporter = new SummaryReporter()
 
+const resource = { name: 'test-render', digest: { sha256: 'test-digest' } }
 if (args.status === 200) {
-  reporter.reportSuccess(json)
+  reporter.reportSuccess(resource, json)
 } else {
-  reporter.reportError(json)
+  reporter.reportError(resource, json)
 }
 
 const markdown = core.summary.stringify()
