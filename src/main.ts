@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
-import { createClient, Credentials } from './publisher-client.js'
+import { createClient, Credentials } from './client.js'
 import { PackageURL } from 'packageurl-js'
-import { createReporter } from './reporter.js'
+import { createPublisherReporter } from './reporter-publisher.js'
 
 export async function run(): Promise<void> {
   try {
@@ -58,20 +58,21 @@ export async function run(): Promise<void> {
       buildScanIds
     )
 
-    const reporter = createReporter()
+    // if error set failure status
+    result.onError((error) => {
+      core.setFailed(
+        `Attestation publisher for subject: ${subjectPurl} failed: ${error?.title}`
+      )
+      core.error(JSON.stringify(error, null, 2))
+    })
+
+    // create summary
+    const reporter = createPublisherReporter()
     const subject = {
       name: subjectPurl.toString(),
       digest: { sha256: subjectDigest }
     }
-    if (result.success) {
-      reporter.reportSuccess(subject, result.successPayload)
-    } else {
-      reporter.reportError(subject, result.errorPayload)
-      core.setFailed(
-        `Attestation publisher for subject: ${subjectPurl} failed: ${result.errorPayload?.title}`
-      )
-      core.error(JSON.stringify(result.errorPayload, null, 2))
-    }
+    reporter.report(result.status, subject, result.result)
   } catch (error) {
     if (error instanceof Error)
       core.setFailed(`Action failed with error: ${error.message}`)

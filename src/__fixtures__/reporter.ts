@@ -1,4 +1,7 @@
 import { jest } from '@jest/globals'
 
-export const createReporter =
-  jest.fn<typeof import('../reporter.js').createReporter>()
+export const createPublisherReporter =
+  jest.fn<typeof import('../reporter-publisher.js').createPublisherReporter>()
+
+export const createPolicyReporter =
+  jest.fn<typeof import('../reporter-policy.js').createPolicyReporter>()

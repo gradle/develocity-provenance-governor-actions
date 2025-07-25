@@ -1,5 +1,5 @@
 import { PackageURL } from 'packageurl-js'
-import { SummaryReporter } from '../src/reporter.js'
+import { PublisherSummaryReporter } from '../src/reporter.js'
 import * as fs from 'fs'
 import * as core from '@actions/core'
 import { Marked } from 'marked'
@@ -63,7 +63,7 @@ const digest =
 const subjectPurl = new PackageURL('oci', '', 'name', digest)
 
 // Create a reporter
-const reporter = new SummaryReporter()
+const reporter = new PublisherSummaryReporter()
 
 const resource = { name: 'test-render', digest: { sha256: 'test-digest' } }
 if (args.status === 200) {

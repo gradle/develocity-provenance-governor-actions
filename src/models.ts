@@ -1,15 +1,23 @@
-/**
- * Interface defining the structure of an error response from the Attestation Publisher.
- */
-export interface ErrorResponse {
+export interface BaseError {
   type?: string
   title?: string
   detail?: string
   instance?: string
+}
+/**
+ * Interface defining the structure of an error response from the Attestation Publisher.
+ */
+export interface PublishErrorResponse extends BaseError {
   request?: PublishRequest
   successes?: Array<PublishSuccessItem>
   errors?: Array<PublishFailedItem>
 }
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface PolicyErrorResponse extends BaseError {}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface PolicySuccessResponse {}
 
 export interface DevelocityInstance {
   uri: string
@@ -130,7 +138,16 @@ export interface ResourceDescriptor {
   }
 }
 
-export class SuccessResponse {
+export interface Statement {
+  _type: 'https://in-toto.io/Statement/v1'
+  subject: ResourceDescriptor[]
+  predicateType: string
+  predicate: object
+  createdAt: string
+  createdBy: string
+}
+
+export class PublishSuccessResponse {
   request: PublishRequest
   successes: PublishSuccessItem[]
 
@@ -163,6 +180,6 @@ export class SuccessResponse {
   }
 }
 
-export function fromJSON(json: string): SuccessResponse {
-  return new SuccessResponse(JSON.parse(json))
+export function fromJSON(json: string): PublishSuccessResponse {
+  return new PublishSuccessResponse(JSON.parse(json))
 }

@@ -1,0 +1,31 @@
+name: 'Retrieve ID Token'
+description: 'A GitHub Action to retrieve and log the ID token'
+
+inputs:
+  policy-evaluator-url:
+    description: 'The URL of the Develocity Policy Evaluator service'
+    required: true
+  policy:
+    description:
+      'The policy name configured in the Develocity Policy Evaluator service'
+    required: true
+  subject-digest:
+    description: 'The sha256 digest of the package that was published'
+    required: true
+  subject-repository-url:
+    description: 'The base repository URL of the package that was published'
+    required: true
+  username:
+    description:
+      'The username of the Develocity Policy Evaluator user (It is recommended
+      to use the GitHub Actions token instead of a username/password)'
+    required: false
+  password:
+    description:
+      'The password of the Develocity Policy Evaluator user (It is recommended
+      to use the GitHub Actions token instead of a username/password)'
+    required: false
+
+runs:
+  using: 'node20'
+  main: '../dist/policy-index.js'
