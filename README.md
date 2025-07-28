@@ -37,7 +37,8 @@ TODO
 To build, lint, test, and package the project:
 
 ```bash
-npm run all
+npm run build
+# Use npm run build-all, to update local dist folder (do not check those changes in)
 ```
 
 ### Testing the Report Generator
