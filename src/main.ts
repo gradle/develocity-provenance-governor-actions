@@ -66,8 +66,8 @@ export async function run(): Promise<void> {
       pkgVersion,
       subjectDigest,
       repositoryUrl,
-      buildScanIds,
-      buildScanQueries
+      buildScanIds ?? [],
+      buildScanQueries ?? []
     )
 
     const reporter = createReporter()
