@@ -96,7 +96,7 @@ describe('publisher-client.js', () => {
       'digest1',
       'repository1',
       ['build-scan-id1', 'build-scan-id2'],
-        ['query 1', 'query 2']
+      ['query 1', 'query 2']
     )
 
     const expected = {
@@ -155,7 +155,7 @@ describe('publisher-client.js', () => {
       'digest1',
       'repository1',
       ['build-scan-id1', 'build-scan-id2'],
-        ['query 1', 'query 2']
+      ['query 1', 'query 2']
     )
 
     const expected = {
