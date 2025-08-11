@@ -10,10 +10,15 @@ inputs:
       'The tenant ID configured in the Develocity Attestation Publisher service'
     required: true
   build-scan-ids:
-    description: 'The Develocity Build Scan IDs relevant to the published package. Either this or build-scan-queries must be provided.'
+    description:
+      'The Develocity Build Scan IDs relevant to the published package. Either
+      this or build-scan-queries must be provided.'
     required: false
   build-scan-queries:
-    description: 'The Develocity Build Scan Advanced search syntax queries to used to select build scans relevant to the published package. Either this or build-scan-ids must be provided.'
+    description:
+      'The Develocity Build Scan Advanced search syntax queries to used to
+      select build scans relevant to the published package. Either this or
+      build-scan-ids must be provided.'
     required: false
   subject-type:
     description: 'The type of package being published'

@@ -1,9 +1,7 @@
-import {jest} from '@jest/globals'
-
-/**
+import { jest } from '@jest/globals' /**
  * Unit tests for src/publisher-client.ts
  */
-import {AttestationPublisher, createClient} from '../publisher-client.js'
+import { AttestationPublisher, createClient } from '../publisher-client.js'
 
 describe('publisher-client.js', () => {
   afterEach(() => {

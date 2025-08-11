@@ -38,9 +38,11 @@ export async function run(): Promise<void> {
     const credentials: Credentials =
       username && password ? { username, password } : await core.getIDToken()
 
-    if(!buildScanIds && !buildScanQueries) {
-      core.error("No build scan IDs or queries provided. At least one is required.")
-      core.setFailed("Action failed due to missing build scan information.")
+    if (!buildScanIds && !buildScanQueries) {
+      core.error(
+        'No build scan IDs or queries provided. At least one is required.'
+      )
+      core.setFailed('Action failed due to missing build scan information.')
       return
     }
 
