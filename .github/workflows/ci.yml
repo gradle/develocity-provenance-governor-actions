@@ -31,7 +31,7 @@ jobs:
       - name: Setup Develocity NPM agent
         run: |
           npm install --global @gradle-tech/develocity-agent-loader
-          echo "NODE_OPTIONS=\"-r $(npm root -g)/@gradle-tech/develocity-agent-loader\"" >> "$GITHUB_ENV"npm
+          echo "NODE_OPTIONS=\"-r $(npm root -g)/@gradle-tech/develocity-agent-loader\"" >> "$GITHUB_ENV"
 
       - name: Install Dependencies
         id: npm-ci
