@@ -28,27 +28,32 @@ jobs:
           node-version-file: .node-version
           cache: npm
 
-      - name: Setup Develocity NPM agent
-        run: |
-          npm install --global @gradle-tech/develocity-agent-loader
-          echo "NODE_OPTIONS=\"-r $(npm root -g)/@gradle-tech/develocity-agent-loader\"" >> "$GITHUB_ENV"
-
       - name: Install Dependencies
         id: npm-ci
+        env:
+          NODE_OPTIONS: '-r @gradle-tech/develocity-agent/preload'
         run: npm ci
 
       - name: Check Format
         id: npm-format-check
+        env:
+          NODE_OPTIONS: '-r @gradle-tech/develocity-agent/preload'
         run: npm run format:check
 
       - name: Lint
         id: npm-lint
+        env:
+          NODE_OPTIONS: '-r @gradle-tech/develocity-agent/preload'
         run: npm run lint
 
       - name: Test
         id: npm-test
+        env:
+          NODE_OPTIONS: '-r @gradle-tech/develocity-agent/preload'
         run: npm run test
 
       - name: Package
         id: npm-package
+        env:
+          NODE_OPTIONS: '-r @gradle-tech/develocity-agent/preload'
         run: npm run package
