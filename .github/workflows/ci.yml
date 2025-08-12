@@ -34,16 +34,24 @@ jobs:
 
       - name: Check Format
         id: npm-format-check
+        env:
+          NODE_OPTIONS: '-r @gradle-tech/develocity-agent/preload'
         run: npm run format:check
 
       - name: Lint
         id: npm-lint
+        env:
+          NODE_OPTIONS: '-r @gradle-tech/develocity-agent/preload'
         run: npm run lint
 
       - name: Test
         id: npm-test
+        env:
+          NODE_OPTIONS: '-r @gradle-tech/develocity-agent/preload'
         run: npm run test
 
       - name: Package
         id: npm-package
+        env:
+          NODE_OPTIONS: '-r @gradle-tech/develocity-agent/preload'
         run: npm run package
