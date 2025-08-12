@@ -11,9 +11,6 @@ on:
 permissions:
   contents: read
 
-env:
-  NODE_OPTIONS: '-r @gradle-tech/develocity-agent/preload'
-
 jobs:
   test:
     name: Build and run tests
