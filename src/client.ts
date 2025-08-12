@@ -5,6 +5,7 @@ import {
   PublishErrorResponse,
   PublishSuccessResponse
 } from './models.js'
+import { PackageURL } from 'packageurl-js'
 
 export abstract class ClientResult<Type> {
   status: number
@@ -72,7 +73,9 @@ export interface Client {
   ): Promise<PublisherResult>
 
   evaluatePolicy(
-    policy: string,
+    tenant: string,
+    policyScan: string,
+    purl: PackageURL,
     digest: string,
     repositoryUrl: string
   ): Promise<PolicyResult>
@@ -96,7 +99,7 @@ class ApiClient implements Client {
    * Publishes an attestation for the given subject.
    *
    * @param tenant Name of the tenant
-   * @param pkgType Type of subject as defined by PURL spec (oci, maven, npm, etc)
+   * @param pkgType Type of subject as defined by PURL spec (oci, maven, npm, etc.)
    * @param pkgNamespace Package namespace as defined by PURL spec (e.g. a Maven groupId)
    * @param pkgName Package name as defined by PURL spec (e.g. a Maven artifactId)
    * @param pkgVersion Version of the package as defined by PURL spec (this could also be a sha256 digest for an OCI image)
@@ -166,15 +169,20 @@ class ApiClient implements Client {
    * Evaluates the policy for the given subject.
    *
    * @param tenant Name of the tenant
+   * @param policyScan Name of the policy scan to evaluate
+   * @param purl The pURL of the subject
    * @param digest The digest of the image, usually containing the digest type prefix (e.g. sha256:<digest-string-here>)
    * @param repositoryUrl The repository the subject artifact was published to.
    */
   evaluatePolicy(
-    policy: string,
+    tenant: string,
+    policyScan: string,
+    purl: PackageURL,
     digest: string,
     repositoryUrl: string
   ): Promise<PolicyResult> {
-    const evalUrl = `${this.baseUrl}${policy}/packages/policy`
+    const namespacePath = purl.namespace ? `/${purl.namespace}` : ''
+    const evalUrl = `/${tenant}/packages/${purl.name}${namespacePath}/${purl.name}/${purl.version}/policy-scans/${policyScan}`
 
     const payload = JSON.stringify({
       repositoryUrl: repositoryUrl,

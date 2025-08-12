@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import { createClient, Credentials } from './client.js'
 import { createPolicyReporter } from './reporter-policy.js'
+import { PackageURL } from 'packageurl-js'
 
 export async function run(): Promise<void> {
   try {
@@ -8,11 +9,25 @@ export async function run(): Promise<void> {
     const policyEvaluatorUrl = core.getInput('policy-evaluator-url', {
       required: true
     })
-    const policyName = core.getInput('policy', { required: true })
+    const policyScanName = core.getInput('policy-scan', { required: true })
+
+    const tenant = core.getInput('tenant', { required: true })
+    const pkgType = core.getInput('subject-type', { required: true })
+    const pkgNamespace = core.getInput('subject-namespace', { required: false })
+    const pkgName = core.getInput('subject-name', { required: true })
+    const pkgVersion = core.getInput('subject-version', { required: true })
+
     const subjectDigest = core.getInput('subject-digest', { required: true })
     const repositoryUrl = core.getInput('subject-repository-url', {
       required: true
     })
+
+    const subjectPurl = new PackageURL(
+      pkgType,
+      pkgNamespace,
+      pkgName,
+      pkgVersion
+    )
 
     const username = core.getInput('username')
     const password = core.getInput('password')
@@ -25,13 +40,15 @@ export async function run(): Promise<void> {
       `Evaluating policy for subject: ${subjectDigest} from: ${repositoryUrl}`
     )
     core.info(
-      `Policy Evaluation URL: ${policyEvaluatorUrl} - for policy: ${policyName}`
+      `Policy Evaluation URL: ${policyEvaluatorUrl} - for policy: ${policyScanName}`
     )
     core.endGroup()
 
     const client = createClient(policyEvaluatorUrl, credentials)
     const result = await client.evaluatePolicy(
-      policyName,
+      tenant,
+      policyScanName,
+      subjectPurl,
       subjectDigest,
       repositoryUrl
     )
