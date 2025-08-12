@@ -11,6 +11,9 @@ on:
 permissions:
   contents: read
 
+env:
+  NODE_OPTIONS: '-r @gradle-tech/develocity-agent/preload'
+
 jobs:
   test:
     name: Build and run tests
@@ -27,6 +30,9 @@ jobs:
         with:
           node-version-file: .node-version
           cache: npm
+
+      - name: Setup Develocity NPM agent
+        run: npm install --global @gradle-tech/develocity-agent-loader
 
       - name: Install Dependencies
         id: npm-ci
