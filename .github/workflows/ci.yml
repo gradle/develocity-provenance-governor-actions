@@ -28,6 +28,14 @@ jobs:
           node-version-file: .node-version
           cache: npm
 
+      - name: Generate short-lived access token
+        id: generate-token
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
+        run: |
+          DV_TOKEN=$(curl -X POST https://develocity.grdev.net/api/auth/token?permissions=publishScan&projectIds=cavendish-github-actions&expiresInHours=1 -H "Authorization: Bearer $DEVELOCITY_ACCESS_KEY")
+          echo "DEVELOCITY_ACCESS_KEY=develocity.grdev.net=$DV_TOKEN" >> $GITHUB_ENV
+
       - name: Install Dependencies
         id: npm-ci
         run: npm ci
