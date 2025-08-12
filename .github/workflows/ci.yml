@@ -11,6 +11,9 @@ on:
 permissions:
   contents: read
 
+env:
+  NODE_OPTIONS: '-r @gradle-tech/develocity-agent/preload'
+
 jobs:
   test:
     name: Build and run tests
@@ -29,7 +32,9 @@ jobs:
           cache: npm
 
       - name: Setup Develocity NPM agent
-        run: npm install --global @gradle-tech/develocity-agent-loader
+        run: |
+          npm install --global @gradle-tech/develocity-agent-loader
+          echo "NODE_OPTIONS=\"-r $(npm root -g)/@gradle-tech/develocity-agent-loader\"" >> "$GITHUB_ENV"npm
 
       - name: Install Dependencies
         id: npm-ci
