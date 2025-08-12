@@ -26,7 +26,8 @@ export interface AttestationPublisher {
     pkgVersion: string,
     digest: string,
     repositoryUrl: string,
-    buildScanIds: string[]
+    buildScanIds: string[],
+    buildScanQueries: string[]
   ): Promise<PublisherResult>
 }
 
@@ -54,7 +55,8 @@ class ApiAttestationPublisher implements AttestationPublisher {
    * @param pkgVersion Version of the package as defined by PURL spec (this could also be a sha256 digest for an OCI image)
    * @param digest The digest of the image, usually containing the digest type prefix (e.g. sha256:<digest-string-here>)
    * @param repositoryUrl The repository the subject artifact was published to.
-   * @param buildScanIds The build scan ID that created the subject artifact.
+   * @param buildScanIds The build scan IDs to create attestations from.
+   * @param buildScanQueries The build scan queries to create attestations from.
    * @returns Promise that resolves when the attestation is published
    */
   async publishAttestation(
@@ -65,7 +67,8 @@ class ApiAttestationPublisher implements AttestationPublisher {
     pkgVersion: string,
     digest: string,
     repositoryUrl: string,
-    buildScanIds: string[]
+    buildScanIds: string[],
+    buildScanQueries: string[]
   ): Promise<PublisherResult> {
     const publisherUrl = pkgNamespace
       ? `${this.baseUrl}${tenant}/packages/${pkgType}/${pkgNamespace}/${pkgName}/${pkgVersion}/attestations`
@@ -80,7 +83,8 @@ class ApiAttestationPublisher implements AttestationPublisher {
       repositoryUrl: repositoryUrl,
       sha256: digest,
       buildScan: {
-        ids: buildScanIds
+        ids: buildScanIds,
+        queries: buildScanQueries
       }
     })
 
