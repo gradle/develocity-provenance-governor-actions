@@ -182,7 +182,7 @@ class ApiClient implements Client {
     repositoryUrl: string
   ): Promise<PolicyResult> {
     const namespacePath = purl.namespace ? `/${purl.namespace}` : ''
-    const evalUrl = `/${tenant}/packages/${purl.name}${namespacePath}/${purl.name}/${purl.version}/policy-scans/${policyScan}`
+    const evalUrl = `/${tenant}/packages/${purl.type}${namespacePath}/${purl.name}/${purl.version}/policy-scans/${policyScan}`
 
     const payload = JSON.stringify({
       repositoryUrl: repositoryUrl,

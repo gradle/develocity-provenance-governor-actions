@@ -3,7 +3,7 @@ import { jest } from '@jest/globals' /**
  */
 import { Client, createClient } from '../client.js'
 
-describe('publisher-client.js', () => {
+describe('client.js - publishing', () => {
   afterEach(() => {
     jest.restoreAllMocks()
   })
