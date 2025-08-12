@@ -11,7 +11,8 @@ inputs:
     required: true
   policy-scan:
     description:
-      'The policy scan to evaluate, using the name configured in the Develocity Policy Evaluator service'
+      'The policy scan to evaluate, using the name configured in the Develocity
+      Policy Evaluator service'
     required: true
   subject-type:
     description: 'The type of the package to evaluate policies against'
@@ -29,7 +30,8 @@ inputs:
     description: 'The sha256 digest of the package to evaluate policies against'
     required: true
   subject-repository-url:
-    description: 'The base repository URL of the package to evaluate policies against'
+    description:
+      'The base repository URL of the package to evaluate policies against'
     required: true
   username:
     description:
