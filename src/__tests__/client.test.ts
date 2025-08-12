@@ -1,6 +1,4 @@
-import { jest } from '@jest/globals'
-
-/**
+import { jest } from '@jest/globals' /**
  * Unit tests for src/client.ts
  */
 import { Client, createClient } from '../client.js'
@@ -36,7 +34,8 @@ describe('publisher-client.js', () => {
       'version1',
       'digest1',
       'repository1',
-      ['build-scan-id1', 'build-scan-id2']
+      ['build-scan-id1', 'build-scan-id2'],
+      ['query 1', 'query 2']
     )
 
     const expected = {
@@ -49,7 +48,8 @@ describe('publisher-client.js', () => {
         repositoryUrl: 'repository1',
         sha256: 'digest1',
         buildScan: {
-          ids: ['build-scan-id1', 'build-scan-id2']
+          ids: ['build-scan-id1', 'build-scan-id2'],
+          queries: ['query 1', 'query 2']
         }
       })
     }
@@ -93,7 +93,8 @@ describe('publisher-client.js', () => {
       'version1',
       'digest1',
       'repository1',
-      ['build-scan-id1', 'build-scan-id2']
+      ['build-scan-id1', 'build-scan-id2'],
+      ['query 1', 'query 2']
     )
 
     const expected = {
@@ -106,7 +107,8 @@ describe('publisher-client.js', () => {
         repositoryUrl: 'repository1',
         sha256: 'digest1',
         buildScan: {
-          ids: ['build-scan-id1', 'build-scan-id2']
+          ids: ['build-scan-id1', 'build-scan-id2'],
+          queries: ['query 1', 'query 2']
         }
       })
     }
@@ -150,7 +152,8 @@ describe('publisher-client.js', () => {
       'version1',
       'digest1',
       'repository1',
-      ['build-scan-id1', 'build-scan-id2']
+      ['build-scan-id1', 'build-scan-id2'],
+      ['query 1', 'query 2']
     )
 
     const expected = {
@@ -163,7 +166,8 @@ describe('publisher-client.js', () => {
         repositoryUrl: 'repository1',
         sha256: 'digest1',
         buildScan: {
-          ids: ['build-scan-id1', 'build-scan-id2']
+          ids: ['build-scan-id1', 'build-scan-id2'],
+          queries: ['query 1', 'query 2']
         }
       })
     }

@@ -76,6 +76,7 @@ describe('main.ts', () => {
     core.getMultilineInput
       .mockClear()
       .mockReturnValueOnce(['build-scan-id11', 'build-scan-id12']) // build-scan-ids
+      .mockReturnValueOnce(['query 1', 'query 2']) // build-scan-queries
 
     // when
     await run()
@@ -101,7 +102,8 @@ describe('main.ts', () => {
       'version11',
       'digest11',
       'https://repo.example.com/',
-      ['build-scan-id11', 'build-scan-id12']
+      ['build-scan-id11', 'build-scan-id12'],
+      ['query 1', 'query 2']
     )
     const subject = {
       name: 'pkg:type11/namespace11/name11@version11',
@@ -171,7 +173,8 @@ describe('main.ts', () => {
       'version22',
       'digest22',
       'https://repo.example.com/',
-      ['build-scan-id21', 'build-scan-id22']
+      ['build-scan-id21', 'build-scan-id22'],
+      []
     )
 
     const subject = {

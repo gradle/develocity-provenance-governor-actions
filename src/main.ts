@@ -11,7 +11,10 @@ export async function run(): Promise<void> {
     const pkgName = core.getInput('subject-name', { required: true })
     const pkgVersion = core.getInput('subject-version', { required: true })
     const buildScanIds = core.getMultilineInput('build-scan-ids', {
-      required: true
+      required: false
+    })
+    const buildScanQueries = core.getMultilineInput('build-scan-queries', {
+      required: false
     })
     const subjectPurl = new PackageURL(
       pkgType,
@@ -35,6 +38,14 @@ export async function run(): Promise<void> {
     const credentials: Credentials =
       username && password ? { username, password } : await core.getIDToken()
 
+    if (!buildScanIds && !buildScanQueries) {
+      core.error(
+        'No build scan IDs or queries provided. At least one is required.'
+      )
+      core.setFailed('Action failed due to missing build scan information.')
+      return
+    }
+
     // helpful logging
     core.startGroup(
       `Publishing attestation for subject: ${subjectPurl} - ${subjectDigest}`
@@ -55,7 +66,8 @@ export async function run(): Promise<void> {
       pkgVersion,
       subjectDigest,
       repositoryUrl,
-      buildScanIds
+      buildScanIds ?? [],
+      buildScanQueries ?? []
     )
 
     // if error set failure status
