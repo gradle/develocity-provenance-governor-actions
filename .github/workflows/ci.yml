@@ -30,8 +30,6 @@ jobs:
 
       - name: Install Dependencies
         id: npm-ci
-        env:
-          NODE_OPTIONS: '-r @gradle-tech/develocity-agent/preload'
         run: npm ci
 
       - name: Check Format
