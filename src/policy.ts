@@ -2,6 +2,7 @@ import * as core from '@actions/core'
 import { createClient, Credentials } from './client.js'
 import { createPolicyReporter } from './reporter-policy.js'
 import { PackageURL } from 'packageurl-js'
+import { PolicyRequestSubject } from './model-policy.js'
 
 export async function run(): Promise<void> {
   try {
@@ -63,9 +64,11 @@ export async function run(): Promise<void> {
 
     // create summary
     const reporter = createPolicyReporter()
-    const subject = {
-      digest: { sha256: subjectDigest }
-    }
+    const subject = new PolicyRequestSubject(
+      policyScanName,
+      subjectPurl.toString(),
+      { sha256: subjectDigest }
+    )
     reporter.report(result.status, subject, result)
   } catch (error) {
     if (error instanceof Error)

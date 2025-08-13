@@ -49,8 +49,7 @@ describe('client.js - policy evaluation', () => {
     expect(result).toEqual({
       status: 200,
       success: true,
-      successPayload: jsonResponse,
-      errorPayload: null
+      result: jsonResponse
     })
   })
 
@@ -96,8 +95,7 @@ describe('client.js - policy evaluation', () => {
     expect(result).toEqual({
       status: 200,
       success: true,
-      successPayload: jsonResponse,
-      errorPayload: null
+      result: jsonResponse
     })
   })
 
@@ -143,8 +141,7 @@ describe('client.js - policy evaluation', () => {
     expect(result).toEqual({
       status: 200,
       success: true,
-      successPayload: jsonResponse,
-      errorPayload: null
+      result: jsonResponse
     })
   })
 })

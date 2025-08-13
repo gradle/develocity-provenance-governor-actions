@@ -34,7 +34,9 @@ describe('main.ts', () => {
   beforeEach(() => {
     core.summary.emptyBuffer()
     jest.clearAllMocks()
-    createPublisherReporter.mockImplementation((): Reporter => mockReporter)
+    createPublisherReporter.mockImplementation(
+      (): Reporter<never, never, never> => mockReporter
+    )
     core.getIDToken.mockImplementation(
       (): Promise<string> => Promise.resolve('gha-token')
     )

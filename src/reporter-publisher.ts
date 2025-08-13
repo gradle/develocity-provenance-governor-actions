@@ -1,22 +1,33 @@
+import * as core from '@actions/core'
+import { SummaryTableRow } from '@actions/core/lib/summary.js'
+import { BaseReporter, Reporter, reportProblemDetails } from './reporter.js'
 import {
   PublishErrorResponse,
   PublishFailedItem,
+  PublishRequestSubject,
   PublishSuccessItem,
   PublishSuccessResponse,
-  ResourceDescriptor,
   Statement,
   StoreRequest
-} from './models.js'
-import * as core from '@actions/core'
-import { SummaryTableRow } from '@actions/core/lib/summary.js'
-import { BaseReporter, Reporter } from './reporter.js'
+} from './model-publisher.js'
 
-export function createPublisherReporter(): Reporter {
+export function createPublisherReporter(): Reporter<
+  PublishRequestSubject,
+  PublishSuccessResponse,
+  PublishErrorResponse
+> {
   return new PublisherSummaryReporter()
 }
 
-export class PublisherSummaryReporter extends BaseReporter {
-  reportSuccess(subject: ResourceDescriptor, result: PublishSuccessResponse) {
+export class PublisherSummaryReporter extends BaseReporter<
+  PublishRequestSubject,
+  PublishSuccessResponse,
+  PublishErrorResponse
+> {
+  reportSuccess(
+    subject: PublishRequestSubject,
+    result: PublishSuccessResponse
+  ) {
     core.info(
       `Attestation publishing for subject: ${subject.name} completed successfully!`
     )
@@ -35,18 +46,10 @@ export class PublisherSummaryReporter extends BaseReporter {
     core.summary.addTable(rows)
   }
 
-  reportError(subject: ResourceDescriptor, result?: PublishErrorResponse) {
+  reportError(subject: PublishRequestSubject, result: PublishErrorResponse) {
     header('Attestations Publishing Failed')
 
-    if (result?.title) {
-      core.summary.addRaw('**Error:** ').addRaw(result?.title).addEOL().addEOL()
-    }
-    if (result?.detail) {
-      core.summary.addRaw('> ').addRaw(result?.detail).addEOL().addEOL()
-    }
-    if (result?.type) {
-      core.summary.addRaw('**Type:** ').addRaw(result?.type).addEOL().addEOL()
-    }
+    reportProblemDetails(result)
 
     // print table if we have errors or successes
     if (result?.errors || result?.successes) {
@@ -70,7 +73,7 @@ export class PublisherSummaryReporter extends BaseReporter {
 }
 
 function subjectInfo(
-  subject: ResourceDescriptor,
+  subject: PublishRequestSubject,
   result?: PublishSuccessResponse | PublishErrorResponse
 ) {
   let uiArtifactUri

@@ -1,16 +1,15 @@
+import { BaseError } from './models.js'
+import { PackageURL } from 'packageurl-js'
 import {
-  BaseError,
-  PolicyErrorResponse,
-  PolicySuccessResponse,
   PublishErrorResponse,
   PublishSuccessResponse
-} from './models.js'
-import { PackageURL } from 'packageurl-js'
+} from './model-publisher.js'
+import { PolicyErrorResponse, PolicySuccessResponse } from './model-policy.js'
 
 export abstract class ClientResult<Type> {
   status: number
   success: boolean
-  result?: Type
+  result: Type
 
   constructor(status: number, success: boolean, result: Type) {
     this.status = status
@@ -119,7 +118,7 @@ class ApiClient implements Client {
     repositoryUrl: string,
     buildScanIds: string[],
     buildScanQueries: string[]
-  ): Promise<ClientResult<PublishSuccessResponse | PublishErrorResponse>> {
+  ): Promise<PublisherResult> {
     const publisherUrl = pkgNamespace
       ? `${this.baseUrl}${tenant}/packages/${pkgType}/${pkgNamespace}/${pkgName}/${pkgVersion}/attestations`
       : `${this.baseUrl}${tenant}/packages/${pkgType}/${pkgName}/${pkgVersion}/attestations`
@@ -148,13 +147,12 @@ class ApiClient implements Client {
 
       return response.then(async (response) => {
         const data = await response.json()
-        return {
-          status: response.status,
-          success: response.ok,
-          successPayload: response.ok ? data : null,
-          errorPayload: !response.ok ? data : null
-        }
-      }) as Promise<PublisherResult>
+        return new PublisherResult(
+          response.status,
+          response.ok,
+          data as PublishSuccessResponse | PublishErrorResponse
+        )
+      })
     } catch (error) {
       return Promise.resolve(
         new PublisherResult(0, false, {
@@ -205,12 +203,11 @@ class ApiClient implements Client {
 
       return response.then(async (response) => {
         const data = await response.json()
-        return {
-          status: response.status,
-          success: response.ok,
-          successPayload: response.ok ? data : null,
-          errorPayload: !response.ok ? data : null
-        }
+        return new PolicyResult(
+          response.status,
+          response.ok,
+          data as PolicySuccessResponse | PolicyErrorResponse
+        )
       }) as Promise<PolicyResult>
     } catch (error) {
       return Promise.resolve(

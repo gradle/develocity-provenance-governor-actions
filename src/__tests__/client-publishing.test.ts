@@ -62,8 +62,7 @@ describe('client.js - publishing', () => {
     expect(result).toEqual({
       status: 200,
       success: true,
-      errorPayload: null,
-      successPayload: jsonResponse
+      result: jsonResponse
     })
   })
 
@@ -121,8 +120,7 @@ describe('client.js - publishing', () => {
     expect(result).toEqual({
       status: 200,
       success: true,
-      errorPayload: null,
-      successPayload: jsonResponse
+      result: jsonResponse
     })
   })
 
@@ -180,8 +178,7 @@ describe('client.js - publishing', () => {
     expect(result).toEqual({
       status: 200,
       success: true,
-      errorPayload: null,
-      successPayload: jsonResponse
+      result: jsonResponse
     })
   })
 })
