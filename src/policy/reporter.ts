@@ -1,11 +1,11 @@
-import { BaseReporter, Reporter, reportProblemDetails } from './reporter.js'
+import { BaseReporter, Reporter, reportProblemDetails } from '../reporter.js'
 
 import * as core from '@actions/core'
 import {
   PolicyErrorResponse,
   PolicyRequestSubject,
   PolicySuccessResponse
-} from './model-policy.js'
+} from './model.js'
 
 export function createPolicyReporter(): Reporter<
   PolicyRequestSubject,

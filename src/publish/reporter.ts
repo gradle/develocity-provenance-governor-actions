@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import { SummaryTableRow } from '@actions/core/lib/summary.js'
-import { BaseReporter, Reporter, reportProblemDetails } from './reporter.js'
+import { BaseReporter, Reporter, reportProblemDetails } from '../reporter.js'
 import {
   PublishErrorResponse,
   PublishFailedItem,
@@ -9,7 +9,7 @@ import {
   PublishSuccessResponse,
   Statement,
   StoreRequest
-} from './model-publisher.js'
+} from './model.js'
 
 export function createPublisherReporter(): Reporter<
   PublishRequestSubject,

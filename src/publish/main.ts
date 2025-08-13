@@ -1,8 +1,8 @@
 import * as core from '@actions/core'
-import { createClient, Credentials } from './client.js'
+import { createClient, Credentials } from '../client.js'
 import { PackageURL } from 'packageurl-js'
-import { createPublisherReporter } from './reporter-publisher.js'
-import { PublishRequestSubject } from './model-publisher.js'
+import { createPublisherReporter } from './reporter.js'
+import { PublishRequestSubject } from './model.js'
 
 export async function run(): Promise<void> {
   try {

@@ -1,4 +1,4 @@
-import { BaseError, Package, Tenant } from './models.js'
+import { BaseError, Package, Tenant } from '../models.js'
 
 /**
  * Interface defining the structure of an error response from the Attestation Publisher.

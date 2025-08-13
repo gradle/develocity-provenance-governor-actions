@@ -16,7 +16,7 @@ const config = [
     plugins: [typescript(), nodeResolve({ preferBuiltins: true }), commonjs()]
   },
   {
-    input: 'src/policy-index.ts',
+    input: 'src/index.ts',
     output: {
       esModule: true,
       file: 'dist/policy-index.js',

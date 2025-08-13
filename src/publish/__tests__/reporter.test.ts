@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 import * as core from '@actions/core'
-import { PublisherSummaryReporter } from '../reporter-publisher.js'
+import { PublisherSummaryReporter } from '../reporter.js'
 import fs from 'node:fs'
 
 /**

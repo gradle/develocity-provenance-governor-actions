@@ -1,8 +1,8 @@
 import * as core from '@actions/core'
-import { createClient, Credentials } from './client.js'
-import { createPolicyReporter } from './reporter-policy.js'
+import { createClient, Credentials } from '../client.js'
+import { createPolicyReporter } from './reporter.js'
 import { PackageURL } from 'packageurl-js'
-import { PolicyRequestSubject } from './model-policy.js'
+import { PolicyRequestSubject } from './model.js'
 
 export async function run(): Promise<void> {
   try {

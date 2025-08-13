@@ -1,4 +1,4 @@
-import { BaseError } from './models.js'
+import { BaseError } from '../models.js'
 
 export class PolicyRequestSubject {
   scanName: string

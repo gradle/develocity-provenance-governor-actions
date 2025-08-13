@@ -3,8 +3,8 @@ import { PackageURL } from 'packageurl-js'
 import {
   PublishErrorResponse,
   PublishSuccessResponse
-} from './model-publisher.js'
-import { PolicyErrorResponse, PolicySuccessResponse } from './model-policy.js'
+} from './publish/model.js'
+import { PolicyErrorResponse, PolicySuccessResponse } from './policy/model.js'
 
 export abstract class ClientResult<Type> {
   status: number
