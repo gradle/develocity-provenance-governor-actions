@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 import * as core from '@actions/core'
-import { SummaryReporter } from '../reporter.js'
+import { PublisherSummaryReporter } from '../reporter-publisher.js'
 import fs from 'node:fs'
 
 /**
@@ -44,7 +44,7 @@ function renderAndCompare(
     'utf8'
   )
 
-  new SummaryReporter().report(
+  new PublisherSummaryReporter().report(
     status,
     { name: subjectName, digest: { sha256: digest } },
     payload

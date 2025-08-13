@@ -7,31 +7,34 @@
  */
 import { jest } from '@jest/globals'
 import * as core from '../__fixtures__/core.js'
-import { createClient } from '../__fixtures__/publisher-client.js'
-import { createReporter } from '../__fixtures__/reporter.js'
-import { AttestationPublisher } from '../publisher-client.js'
+import { createClient } from '../__fixtures__/client.js'
+import { createPublisherReporter } from '../__fixtures__/reporter.js'
+import { Client, PolicyResult, PublisherResult } from '../client.js'
 import { Reporter } from '../reporter.js'
 import * as fs from 'node:fs'
 
 // Mocks should be declared before the module being tested is imported.
 jest.unstable_mockModule('@actions/core', () => core)
-jest.unstable_mockModule('../publisher-client.js', () => ({ createClient }))
-jest.unstable_mockModule('../reporter.js', () => ({ createReporter }))
+jest.unstable_mockModule('../client.js', () => ({ createClient }))
+jest.unstable_mockModule('../reporter-publisher.js', () => ({
+  createPublisherReporter
+}))
+
+const mockReporter = {
+  report: jest.fn(),
+  reportError: jest.fn(),
+  reportSuccess: jest.fn()
+}
 
 // The module being tested should be imported dynamically. This ensures that the
 // mocks are used in place of any actual dependencies.
 const { run } = await import('../main.js')
 
-const mockReporter = {
-  reportSuccess: jest.fn(),
-  reportError: jest.fn()
-}
-
 describe('main.ts', () => {
   beforeEach(() => {
     core.summary.emptyBuffer()
     jest.clearAllMocks()
-    createReporter.mockImplementation((): Reporter => mockReporter)
+    createPublisherReporter.mockImplementation((): Reporter => mockReporter)
     core.getIDToken.mockImplementation(
       (): Promise<string> => Promise.resolve('gha-token')
     )
@@ -42,21 +45,21 @@ describe('main.ts', () => {
   })
 
   it('Creates attestation', async () => {
+    // given
     const payload = JSON.parse(
       fs.readFileSync('src/__fixtures__/success.json', 'utf8')
     )
 
-    const publisher: AttestationPublisher = {
+    const client: Client = {
       publishAttestation: jest.fn(() =>
-        Promise.resolve({
-          status: 200,
-          success: true,
-          successPayload: payload
-        })
-      )
+        Promise.resolve(new PublisherResult(200, true, payload))
+      ),
+      evaluatePolicy(): Promise<PolicyResult> {
+        throw new Error('Not implemented')
+      }
     }
 
-    createClient.mockImplementation((): AttestationPublisher => publisher)
+    createClient.mockImplementation((): Client => client)
 
     core.getInput
       .mockClear()
@@ -74,8 +77,11 @@ describe('main.ts', () => {
       .mockClear()
       .mockReturnValueOnce(['build-scan-id11', 'build-scan-id12']) // build-scan-ids
       .mockReturnValueOnce(['query 1', 'query 2']) // build-scan-queries
+
+    // when
     await run()
 
+    // then
     // check error first, if something went wrong, fail fast
     expect(core.setFailed).not.toHaveBeenCalled()
 
@@ -86,8 +92,8 @@ describe('main.ts', () => {
       'gha-token'
     )
 
-    expect(createReporter).toHaveBeenCalledTimes(1)
-    expect(publisher.publishAttestation).toHaveBeenNthCalledWith(
+    expect(createPublisherReporter).toHaveBeenCalledTimes(1)
+    expect(client.publishAttestation).toHaveBeenNthCalledWith(
       1,
       'tenant11',
       'type11',
@@ -103,8 +109,9 @@ describe('main.ts', () => {
       name: 'pkg:type11/namespace11/name11@version11',
       digest: { sha256: 'digest11' }
     }
-    expect(mockReporter.reportSuccess).toHaveBeenNthCalledWith(
+    expect(mockReporter.report).toHaveBeenNthCalledWith(
       1,
+      200,
       subject,
       payload
     )
@@ -117,16 +124,15 @@ describe('main.ts', () => {
       fs.readFileSync('src/__fixtures__/partial-error.json', 'utf8')
     )
 
-    const publisher: AttestationPublisher = {
+    const client: Client = {
       publishAttestation: jest.fn(() =>
-        Promise.resolve({
-          status: 200,
-          success: false,
-          errorPayload: payload
-        })
-      )
+        Promise.resolve(new PublisherResult(500, false, payload))
+      ),
+      evaluatePolicy(): Promise<PolicyResult> {
+        throw new Error('Not implemented')
+      }
     }
-    createClient.mockImplementation((): AttestationPublisher => publisher)
+    createClient.mockImplementation((): Client => client)
 
     core.getInput
       .mockClear()
@@ -137,7 +143,7 @@ describe('main.ts', () => {
       .mockReturnValueOnce('version22') // subject-version
       .mockReturnValueOnce('digest22') // subject-digest
       .mockReturnValueOnce('https://repo.example.com/') // subject-repository-url
-      .mockReturnValueOnce('https://attest.example.com/') // attestation-publisher-url
+      .mockReturnValueOnce('https://attest.example.com/') // attestation-client-url
       .mockReturnValueOnce('') // username
       .mockReturnValueOnce('') // password
     core.getMultilineInput
@@ -157,8 +163,8 @@ describe('main.ts', () => {
       'gha-token'
     )
 
-    expect(createReporter).toHaveBeenCalledTimes(1)
-    expect(publisher.publishAttestation).toHaveBeenNthCalledWith(
+    expect(createPublisherReporter).toHaveBeenCalledTimes(1)
+    expect(client.publishAttestation).toHaveBeenNthCalledWith(
       1,
       'tenant22',
       'type22',
@@ -175,8 +181,9 @@ describe('main.ts', () => {
       name: 'pkg:type22/namespace22/name22@version22',
       digest: { sha256: 'digest22' }
     }
-    expect(mockReporter.reportError).toHaveBeenNthCalledWith(
+    expect(mockReporter.report).toHaveBeenNthCalledWith(
       1,
+      500,
       subject,
       payload
     )
