@@ -2,7 +2,7 @@
 
 <img src="https://gist.githubusercontent.com/bdemers/18c7a0fc36b0b1c0c88260fd9e228ad1/raw/db71e3a9b8220a9ea5e855be28711990b1afdcbe/attestation-header.svg" alt="Policy Evaluation" width="100%" height="auto">
 
-# Policy Scan Evaluated
+# Policy Scan Evaluated - ✅ SATISFIED
 
 **Policy Scan:** security-scan
 
@@ -11,7 +11,7 @@
 **Digest:** `c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b`
 
 
-**Result:** SATISFIED
+**Result:** ✅ SATISFIED
 
 ## Full results
 
@@ -47,6 +47,6 @@
 ```
 </details>
 
-<table><tr><th>Policy</th><th>Status</th><th>Description</th></tr><tr><td>https://policies.example.com/repo-source-check</td><td>SATISFIED</td><td>Repository source verification passed</td></tr><tr><td>https://policies.example.com/build-scan-verification</td><td>SATISFIED</td><td>Build scan verification passed</td></tr></table>
+<table><tr><th>Policy</th><th>Status</th><th>Description</th></tr><tr><td>https://policies.example.com/repo-source-check</td><td>✅</td><td>Repository source verification passed</td></tr><tr><td>https://policies.example.com/build-scan-verification</td><td>✅</td><td>Build scan verification passed</td></tr></table>
 
 </details>

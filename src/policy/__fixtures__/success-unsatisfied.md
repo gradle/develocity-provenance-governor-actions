@@ -2,7 +2,7 @@
 
 <img src="https://gist.githubusercontent.com/bdemers/18c7a0fc36b0b1c0c88260fd9e228ad1/raw/db71e3a9b8220a9ea5e855be28711990b1afdcbe/attestation-header.svg" alt="Policy Evaluation" width="100%" height="auto">
 
-# Policy Scan Evaluated
+# Policy Scan Evaluated - ❌ UNSATISFIED
 
 **Policy Scan:** security-scan
 
@@ -11,23 +11,13 @@
 **Digest:** `c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b`
 
 
-**Result:** UNSATISFIED
+**Result:** ❌ UNSATISFIED
 
 
 
-## Failed Attestation https://develocitytia.jfrog.io/attestation/1
+## Unsatisfactory Attestation https://develocitytia.jfrog.io/attestation/1
 
 **Predicate Type:** https://gradle.com/attestations/repository/v1
-
-### Unsatisfied policy https://policies.example.com/repo-source-check
-
-**Description:** Repository source verification failed
-
-**Remediation:** Ensure the repository is from a trusted source
-
-**Labels:** 
- * `category` = `security`
- * `severity` = `high`
 
 <details><summary>Attestation Envelope</summary>
 
@@ -52,6 +42,16 @@
 }
 ```
 </details>
+
+### Unsatisfied policy https://policies.example.com/repo-source-check
+
+**Description:** Repository source verification failed
+
+**Remediation:** Ensure the repository is from a trusted source
+
+**Labels:** 
+ * `category` = `security`
+ * `severity` = `high`
 
 
 ## Full results
@@ -88,6 +88,6 @@
 ```
 </details>
 
-<table><tr><th>Policy</th><th>Status</th><th>Description</th></tr><tr><td>https://policies.example.com/repo-source-check</td><td>UNSATISFIED</td><td>Repository source verification failed</td></tr><tr><td>https://policies.example.com/build-scan-verification</td><td>SATISFIED</td><td>Build scan verification passed</td></tr></table>
+<table><tr><th>Policy</th><th>Status</th><th>Description</th></tr><tr><td>https://policies.example.com/repo-source-check</td><td>❌</td><td>Repository source verification failed</td></tr><tr><td>https://policies.example.com/build-scan-verification</td><td>✅</td><td>Build scan verification passed</td></tr></table>
 
 </details>

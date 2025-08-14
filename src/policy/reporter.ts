@@ -41,24 +41,23 @@ export class PolicySummaryReporter extends BaseReporter<
     subject: PolicyRequestSubject,
     result: PolicySuccessResponse
   ): void {
-    header('Policy Scan Evaluated')
+    const hasFailures = hasUnsatisfiedEvaluation(result.results)
+    const resultText = hasFailures
+      ? statusIcon(PolicyResultStatus.UNSATISFIED) + ' UNSATISFIED'
+      : statusIcon(PolicyResultStatus.SATISFIED) + ' SATISFIED'
+
+    header(`Policy Scan Evaluated - ${resultText}`)
 
     reportSubjectInfo(subject)
 
-    const hasFailures = hasUnsatisfiedEvaluation(result.results)
-
-    core.summary.addRaw('**Result:** ')
+    core.summary.addRaw('**Result:** ').addRaw(resultText).addEOL().addEOL()
 
     if (hasFailures) {
-      core.summary.addRaw('UNSATISFIED').addEOL().addEOL()
-
       core.setFailed(
         `Policy scan ${subject.scanName} evaluated to UNSATISFIED for ${subject.subjectName}`
       )
 
       reportFailures(result.results)
-    } else {
-      core.summary.addRaw('SATISFIED').addEOL().addEOL()
     }
 
     reportAllResults(result.results)
@@ -114,7 +113,7 @@ function reportFailures(results: PolicyAttestationEvaluation[]) {
       core.summary
         .addEOL()
         .addEOL()
-        .addRaw('## Failed Attestation ')
+        .addRaw('## Unsatisfactory Attestation ')
         .addRaw(attestation.storeUri)
         .addEOL()
         .addEOL()
@@ -126,20 +125,22 @@ function reportFailures(results: PolicyAttestationEvaluation[]) {
       .addEOL()
       .addEOL()
 
+    core.summary
+      .addDetails(
+        'Attestation Envelope',
+        '\n\n```json\n' +
+          JSON.stringify(attestation.envelope, null, 2) +
+          '\n```\n'
+      )
+      .addEOL()
+
     evaluations.forEach((evaluation) => {
       if (evaluation.status == PolicyResultStatus.UNSATISFIED) {
         reportFailure(attestation, evaluation)
       }
     })
 
-    core.summary.addDetails(
-      'Attestation Envelope',
-      '\n\n```json\n' +
-        JSON.stringify(attestation.envelope, null, 2) +
-        '\n```\n'
-    )
-
-    core.summary.addEOL().addEOL()
+    core.summary.addEOL()
   })
 }
 
@@ -226,7 +227,7 @@ function reportAllResults(results: PolicyAttestationEvaluation[]) {
     result.evaluations.forEach((evaluation) => {
       tableRoes.push([
         { data: evaluation.policyUri },
-        { data: evaluation.status },
+        { data: statusIcon(evaluation.status) },
         {
           data: evaluation.description
             ? evaluation.description
@@ -239,4 +240,17 @@ function reportAllResults(results: PolicyAttestationEvaluation[]) {
   })
 
   core.summary.addRaw('</details>').addEOL()
+}
+
+function statusIcon(status: PolicyResultStatus): string {
+  switch (status) {
+    case PolicyResultStatus.SATISFIED:
+      return '✅'
+    case PolicyResultStatus.UNSATISFIED:
+      return '❌'
+    case PolicyResultStatus.UNSUPPORTED_PREDICATE_TYPE:
+      return 'N/A'
+    default:
+      return '❓'
+  }
 }
