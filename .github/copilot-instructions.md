@@ -3,7 +3,8 @@
 ## General
 
 Whenever you change code, always make sure tests, linting, and formatting pass,
-unless explicitly instructed otherwise.
+unless explicitly instructed otherwise. Double check this once you're done with
+all of your changes.
 
 ## Project overview
 

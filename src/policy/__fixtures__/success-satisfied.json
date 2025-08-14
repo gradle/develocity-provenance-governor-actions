@@ -1,0 +1,70 @@
+{
+  "request": {
+    "uri": "http://localhost:8080/local-tenant/policy/scans/security-scan/evaluations",
+    "tenant": {
+      "name": "default",
+      "develocityInstances": ["sdlc-demo"],
+      "artifactoryInstances": ["develocity-tia"]
+    },
+    "pkg": {
+      "type": "oci",
+      "name": "java-payment-calculator",
+      "version": "1.0.0-SNAPSHOT-16152750186-3"
+    },
+    "criteria": {
+      "sha256": "c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b",
+      "repositoryUrl": "develocitytia.jfrog.io/docker-trial",
+      "policyScanName": "security-scan"
+    }
+  },
+  "results": [
+    {
+      "attestation": {
+        "envelope": {
+          "payload": {
+            "_type": "https://in-toto.io/Statement/v1",
+            "predicateType": "https://gradle.com/attestations/repository/v1",
+            "subject": [
+              {
+                "name": "pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3",
+                "digest": {
+                  "sha256": "c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b"
+                }
+              }
+            ],
+            "predicate": {
+              "buildScanUri": "https://develocity.grdev.net/s/u4cqaqnytbwga",
+              "uri": "https://repo.maven.apache.org/maven2/"
+            }
+          }
+        },
+        "storeType": "artifactory",
+        "storeUri": "https://develocitytia.jfrog.io/attestation/1",
+        "storeRequest": {
+          "uri": "https://develocitytia.jfrog.io/evidence/api/v1/subject/docker-trial/java-payment-calculator/1.0.0-SNAPSHOT-16152750186-3/repository.json"
+        },
+        "storeResponse": {}
+      },
+      "evaluations": [
+        {
+          "policyUri": "https://policies.example.com/repo-source-check",
+          "status": "SATISFIED",
+          "description": "Repository source verification passed",
+          "labels": {
+            "category": "security",
+            "severity": "high"
+          }
+        },
+        {
+          "policyUri": "https://policies.example.com/build-scan-verification",
+          "status": "SATISFIED",
+          "description": "Build scan verification passed",
+          "labels": {
+            "category": "verification",
+            "severity": "medium"
+          }
+        }
+      ]
+    }
+  ]
+}
