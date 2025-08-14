@@ -39,7 +39,8 @@ export class PolicySummaryReporter extends BaseReporter<
 
   reportSuccess(
     subject: PolicyRequestSubject,
-    result: PolicySuccessResponse
+    result: PolicySuccessResponse,
+    setFailure: boolean
   ): void {
     const hasFailures = hasUnsatisfiedEvaluation(result.results)
     const resultText = hasFailures
@@ -53,9 +54,11 @@ export class PolicySummaryReporter extends BaseReporter<
     core.summary.addRaw('**Result:** ').addRaw(resultText).addEOL().addEOL()
 
     if (hasFailures) {
-      core.setFailed(
-        `Policy scan ${subject.scanName} evaluated to UNSATISFIED for ${subject.subjectName}`
-      )
+      if (setFailure) {
+        core.setFailed(
+          `Policy scan ${subject.scanName} evaluated to UNSATISFIED for ${subject.subjectName}`
+        )
+      }
 
       reportFailures(result.results)
     }

@@ -7,9 +7,16 @@ import {
 } from './models.js'
 
 export interface Reporter<Subject, Success, Error> {
+  report(
+    status: number,
+    subject: Subject,
+    payload: Success | Error,
+    setFailure: boolean
+  ): void
   report(status: number, subject: Subject, payload: Success | Error): void
-  reportSuccess(subject: Subject, payload: Success): void
-  reportError(subject: Subject, payload: Error): void
+
+  reportSuccess(subject: Subject, payload: Success, setFailure: boolean): void
+  reportError(subject: Subject, payload: Error, setFailure: boolean): void
 }
 
 export abstract class BaseReporter<
@@ -18,17 +25,30 @@ export abstract class BaseReporter<
   Error extends BaseErrorResponse<unknown>
 > implements Reporter<Subject, Success, Error>
 {
-  report(status: number, subject: Subject, payload: Success | Error) {
+  report(
+    status: number,
+    subject: Subject,
+    payload: Success | Error,
+    setFailure: boolean = true
+  ) {
     if (status === 200 && payload) {
-      this.reportSuccess(subject, payload as Success)
+      this.reportSuccess(subject, payload as Success, setFailure)
     } else {
-      this.reportError(subject, payload as Error)
+      this.reportError(subject, payload as Error, setFailure)
     }
   }
 
-  abstract reportSuccess(subject: Subject, payload: Success): void
+  abstract reportSuccess(
+    subject: Subject,
+    payload: Success,
+    setFailure: boolean
+  ): void
 
-  abstract reportError(subject: Subject, payload: Error): void
+  abstract reportError(
+    subject: Subject,
+    payload: Error,
+    setFailure: boolean
+  ): void
 }
 
 export function reportProblemDetails(result: BaseErrorResponse<unknown>) {

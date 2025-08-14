@@ -48,7 +48,8 @@ function renderAndCompare(
   new PolicySummaryReporter().report(
     status,
     { scanName, subjectName, digest: { sha256: digest } },
-    payload
+    payload,
+    false
   )
 
   // verify the summary text looks good
