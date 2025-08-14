@@ -49,7 +49,7 @@ describe('main.ts', () => {
   it('Creates attestation', async () => {
     // given
     const payload = JSON.parse(
-      fs.readFileSync('src/__fixtures__/success.json', 'utf8')
+      fs.readFileSync('src/publish/__fixtures__/success.json', 'utf8')
     )
 
     const client: Client = {
@@ -123,7 +123,7 @@ describe('main.ts', () => {
 
   it('Attestation creation partial error', async () => {
     const payload = JSON.parse(
-      fs.readFileSync('src/__fixtures__/partial-error.json', 'utf8')
+      fs.readFileSync('src/publish/__fixtures__/partial-error.json', 'utf8')
     )
 
     const client: Client = {

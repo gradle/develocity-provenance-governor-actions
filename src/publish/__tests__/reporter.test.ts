@@ -37,10 +37,10 @@ function renderAndCompare(
   digest: string = 'c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b'
 ) {
   const payload = JSON.parse(
-    fs.readFileSync(`src/__fixtures__/${fixtureName}.json`, 'utf8')
+    fs.readFileSync(`src/publish/__fixtures__/${fixtureName}.json`, 'utf8')
   )
   const expectedReport = fs.readFileSync(
-    `src/__fixtures__/${fixtureName}.md`,
+    `src/publish/__fixtures__/${fixtureName}.md`,
     'utf8'
   )
 
