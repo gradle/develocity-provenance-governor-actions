@@ -2,7 +2,8 @@ import {
   BaseCriteria,
   BaseErrorResponse,
   BaseRequest,
-  BaseSuccessResponse
+  BaseSuccessResponse,
+  Envelope
 } from '../models.js'
 
 export class PolicyRequestSubject {
@@ -35,10 +36,54 @@ export class PolicySuccessResponse
   implements BaseSuccessResponse<PolicyRequest>
 {
   request: PolicyRequest
-  results: unknown[]
+  results: PolicyAttestationEvaluation[]
 
-  constructor(data: { request: PolicyRequest; results: unknown[] }) {
+  constructor(data: {
+    request: PolicyRequest
+    results: PolicyAttestationEvaluation[]
+  }) {
     this.request = data.request
     this.results = data.results
   }
+}
+
+export interface PolicyAttestationEvaluation {
+  attestation: PolicyAttestation
+  evaluations: PolicyEvaluation[]
+}
+
+export function hasUnsatisfiedEvaluation(
+  evaluation: PolicyAttestationEvaluation[]
+) {
+  return evaluation.some((element) =>
+    element.evaluations.some((e) => e.status === PolicyResultStatus.UNSATISFIED)
+  )
+}
+
+export interface PolicyAttestation {
+  envelope: Envelope
+  storeType: string
+  storeUri: string
+  storeRequest: {
+    uri: string
+  }
+  storeResponse: object
+}
+
+export enum PolicyResultStatus {
+  SATISFIED = 'SATISFIED',
+  UNSATISFIED = 'UNSATISFIED',
+  UNSUPPORTED_PREDICATE_TYPE = 'UNSUPPORTED_PREDICATE_TYPE'
+}
+
+export interface PolicyEvaluation {
+  policyUri: string
+  status: PolicyResultStatus
+  description?: string
+  remediation?: string
+  labels: PolicyLabels
+}
+
+export interface PolicyLabels {
+  [key: string]: string
 }

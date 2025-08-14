@@ -2,10 +2,16 @@ import { BaseReporter, Reporter, reportProblemDetails } from '../reporter.js'
 
 import * as core from '@actions/core'
 import {
+  hasUnsatisfiedEvaluation,
+  PolicyAttestation,
+  PolicyAttestationEvaluation,
   PolicyErrorResponse,
+  PolicyEvaluation,
   PolicyRequestSubject,
+  PolicyResultStatus,
   PolicySuccessResponse
 } from './model.js'
+import { SummaryTableRow } from '@actions/core/lib/summary.js'
 
 export function createPolicyReporter(): Reporter<
   PolicyRequestSubject,
@@ -33,12 +39,28 @@ export class PolicySummaryReporter extends BaseReporter<
 
   reportSuccess(
     subject: PolicyRequestSubject,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     result: PolicySuccessResponse
   ): void {
     header('Policy Scan Evaluated')
 
     reportSubjectInfo(subject)
+
+    const hasFailures = hasUnsatisfiedEvaluation(result.results)
+
+    core.summary.addRaw('**Result:** ')
+
+    if (hasFailures) {
+      core.summary.addRaw('UNSATISFIED').addEOL().addEOL()
+
+      core.setFailed('Policy scan evaluated to UNSATISFIED')
+
+      core.summary.addRaw('### Failures')
+      reportFailures(result.results)
+    } else {
+      core.summary.addRaw('SATISFIED').addEOL().addEOL()
+    }
+
+    reportAllResults(result.results)
   }
 }
 
@@ -70,4 +92,127 @@ function reportSubjectInfo(subject: PolicyRequestSubject) {
     .addRaw('`')
     .addEOL()
   core.summary.addEOL()
+}
+
+function reportFailures(results: PolicyAttestationEvaluation[]) {
+  results.forEach(({ attestation, evaluations }) => {
+    const hasFailure = evaluations.some(
+      (e) => e.status == PolicyResultStatus.UNSATISFIED
+    )
+
+    if (hasFailure) {
+      core.summary
+        .addRaw('#### Attestation ')
+        .addRaw(attestation.storeUri)
+        .addEOL()
+    }
+
+    core.summary
+      .addRaw('**Predicate Type:** ')
+      .addRaw(attestation.envelope.payload.predicateType)
+      .addEOL()
+
+    evaluations.forEach((evaluation) => {
+      if (evaluation.status == PolicyResultStatus.UNSATISFIED) {
+        reportFailure(attestation, evaluation)
+      }
+    })
+
+    core.summary.addDetails(
+      'Attestation Envelope',
+      '```json\n' + JSON.stringify(attestation.envelope, null, 2) + '\n```'
+    )
+
+    core.summary.addEOL().addEOL()
+  })
+}
+
+function reportFailure(
+  attestation: PolicyAttestation,
+  evaluation: PolicyEvaluation
+) {
+  core.error(
+    `Attestation ${attestation.storeUri} failed policy ${evaluation.policyUri}`
+  )
+  core.summary
+    .addRaw('##### Unsatisfied policy')
+    .addRaw(evaluation.policyUri)
+    .addEOL()
+
+  if (evaluation.description) {
+    core.summary
+      .addRaw('**Description:** ')
+      .addRaw(evaluation.description)
+      .addEOL()
+  }
+
+  if (evaluation.remediation) {
+    core.summary
+      .addRaw('**Remediation:** ')
+      .addRaw(evaluation.remediation)
+      .addEOL()
+  }
+
+  core.summary.addRaw('**Labels:** ').addEOL()
+  for (const label in evaluation.labels) {
+    core.summary
+      .addRaw(' * ')
+      .addRaw('`' + label + '`')
+      .addRaw(' = ')
+      .addRaw('`' + evaluation.labels[label] + '`')
+      .addEOL()
+  }
+}
+
+function reportAllResults(results: PolicyAttestationEvaluation[]) {
+  core.summary.addRaw('### Result details').addEOL().addEOL()
+
+  core.summary.addRaw('<details>').addEOL()
+
+  core.summary.addRaw('<summary>Expand to see all results</summary>').addEOL()
+
+  results.forEach((result) => {
+    core.summary
+      .addRaw('#### Attestation ')
+      .addRaw(result.attestation.storeUri)
+      .addEOL()
+
+    core.summary
+      .addRaw('**Predicate Type:** ')
+      .addRaw(result.attestation.envelope.payload.predicateType)
+      .addEOL()
+
+    core.summary
+      .addDetails(
+        'Envelope',
+        '```json\n' +
+          JSON.stringify(result.attestation.envelope, null, 2) +
+          '\n```'
+      )
+      .addEOL()
+
+    const tableRoes: SummaryTableRow[] = [
+      [
+        { data: 'Policy', header: true },
+        { data: 'Status', header: true },
+        { data: 'Description', header: true }
+      ]
+    ]
+
+    result.evaluations.forEach((evaluation) => {
+      tableRoes.push([
+        { data: evaluation.policyUri },
+        { data: evaluation.status },
+        {
+          data: evaluation.description
+            ? evaluation.description
+            : 'No description provided'
+        }
+      ])
+    })
+
+    core.summary.addTable(tableRoes).addEOL()
+  })
+
+  core.summary.addRaw('</details>').addEOL()
 }

@@ -25,12 +25,6 @@ export interface PublishRequestCriteria extends BaseCriteria {
 
 export type PublishRequest = BaseRequest<PublishRequestCriteria>
 
-export interface Envelope {
-  payload: string
-  payloadType: string
-  signatures: object[] // Signature[]
-}
-
 export interface StoreResponse {
   repository: string
   path: string
