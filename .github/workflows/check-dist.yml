@@ -4,8 +4,6 @@ name: Check Transpiled JavaScript
 on:
   workflow_dispatch:
   pull_request:
-    paths:
-      - 'dist/**'
 
 permissions:
   contents: read
