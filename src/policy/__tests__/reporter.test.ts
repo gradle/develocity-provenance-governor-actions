@@ -25,7 +25,7 @@ describe('policy reporter.js', () => {
     renderAndCompare('success-unsatisfied', 200)
   })
 
-  it('Render a failure report', async () => {
+  it('Render a error report', async () => {
     renderAndCompare('error', 404)
   })
 })

@@ -17,10 +17,8 @@
       "policyScanName": "security-scan"
     }
   },
-  "error": {
-    "title": "Policy Scan Not Found",
-    "detail": "The requested policy scan 'security-scan' was not found in the system",
-    "status": 404,
-    "type": "about:blank"
-  }
+  "title": "Policy Scan Not Found",
+  "detail": "The requested policy scan 'security-scan' was not found in the system",
+  "status": 404,
+  "type": "about:blank"
 }
