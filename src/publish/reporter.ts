@@ -148,7 +148,7 @@ function header(heading: string) {
       height: 'auto'
     })
     .addEOL()
-    .addRaw(`## ${heading}`)
+    .addRaw(`# ${heading}`)
     .addEOL()
     .addEOL()
 }

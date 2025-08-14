@@ -56,7 +56,6 @@ export class PolicySummaryReporter extends BaseReporter<
         `Policy scan ${subject.scanName} evaluated to UNSATISFIED for ${subject.subjectName}`
       )
 
-      core.summary.addRaw('### Failures').addEOL().addEOL()
       reportFailures(result.results)
     } else {
       core.summary.addRaw('SATISFIED').addEOL().addEOL()
@@ -78,7 +77,7 @@ function header(heading: string) {
       height: 'auto'
     })
     .addEOL()
-    .addRaw(`## ${heading}`)
+    .addRaw(`# ${heading}`)
     .addEOL()
     .addEOL()
 }
@@ -115,7 +114,7 @@ function reportFailures(results: PolicyAttestationEvaluation[]) {
       core.summary
         .addEOL()
         .addEOL()
-        .addRaw('#### Attestation ')
+        .addRaw('## Failed Attestation ')
         .addRaw(attestation.storeUri)
         .addEOL()
         .addEOL()
@@ -152,7 +151,7 @@ function reportFailure(
     `Attestation ${attestation.storeUri} failed policy ${evaluation.policyUri}`
   )
   core.summary
-    .addRaw('##### Unsatisfied policy')
+    .addRaw('### Unsatisfied policy ')
     .addRaw(evaluation.policyUri)
     .addEOL()
     .addEOL()
@@ -186,7 +185,7 @@ function reportFailure(
 }
 
 function reportAllResults(results: PolicyAttestationEvaluation[]) {
-  core.summary.addRaw('### Result details').addEOL().addEOL()
+  core.summary.addRaw('## Full results').addEOL().addEOL()
 
   core.summary.addRaw('<details>').addEOL()
 
@@ -196,7 +195,7 @@ function reportAllResults(results: PolicyAttestationEvaluation[]) {
     core.summary
       .addEOL()
       .addEOL()
-      .addRaw('#### Attestation ')
+      .addRaw('### Attestation ')
       .addRaw(result.attestation.storeUri)
       .addEOL()
       .addEOL()

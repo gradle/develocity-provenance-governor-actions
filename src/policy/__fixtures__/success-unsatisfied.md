@@ -2,7 +2,7 @@
 
 <img src="https://gist.githubusercontent.com/bdemers/18c7a0fc36b0b1c0c88260fd9e228ad1/raw/db71e3a9b8220a9ea5e855be28711990b1afdcbe/attestation-header.svg" alt="Policy Evaluation" width="100%" height="auto">
 
-## Policy Scan Evaluated
+# Policy Scan Evaluated
 
 **Policy Scan:** security-scan
 
@@ -13,15 +13,13 @@
 
 **Result:** UNSATISFIED
 
-### Failures
 
 
-
-#### Attestation https://develocitytia.jfrog.io/attestation/1
+## Failed Attestation https://develocitytia.jfrog.io/attestation/1
 
 **Predicate Type:** https://gradle.com/attestations/repository/v1
 
-##### Unsatisfied policyhttps://policies.example.com/repo-source-check
+### Unsatisfied policy https://policies.example.com/repo-source-check
 
 **Description:** Repository source verification failed
 
@@ -56,13 +54,13 @@
 </details>
 
 
-### Result details
+## Full results
 
 <details>
 <summary>Expand to see all results</summary>
 
 
-#### Attestation https://develocitytia.jfrog.io/attestation/1
+### Attestation https://develocitytia.jfrog.io/attestation/1
 
 **Predicate Type:** https://gradle.com/attestations/repository/v1
 
