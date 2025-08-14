@@ -1,10 +1,15 @@
-import { BaseError, Package, Tenant } from '../models.js'
+import {
+  BaseCriteria,
+  BaseErrorResponse,
+  BaseRequest,
+  BaseSuccessResponse
+} from '../models.js'
 
 /**
  * Interface defining the structure of an error response from the Attestation Publisher.
  */
-export interface PublishErrorResponse extends BaseError {
-  request?: PublishRequest
+export interface PublishErrorResponse
+  extends BaseErrorResponse<PublishRequest> {
   successes?: Array<PublishSuccessItem>
   errors?: Array<PublishFailedItem>
 }
@@ -14,18 +19,11 @@ export interface BuildScanCriteria {
   queries: string[]
 }
 
-export interface RequestCriteria {
-  sha256: string
-  repositoryUrl: string
+export interface PublishRequestCriteria extends BaseCriteria {
   buildScan: BuildScanCriteria
 }
 
-export interface PublishRequest {
-  uri: string
-  tenant: Tenant
-  pkg: Package
-  criteria: RequestCriteria
-}
+export type PublishRequest = BaseRequest<PublishRequestCriteria>
 
 export interface Envelope {
   payload: string
@@ -117,9 +115,11 @@ export class PublishRequestSubject {
   }
 }
 
-export class PublishSuccessResponse {
-  request: PublishRequest
+export class PublishSuccessResponse
+  implements BaseSuccessResponse<PublishRequest>
+{
   successes: PublishSuccessItem[]
+  request: PublishRequest
 
   constructor(data: {
     request: PublishRequest

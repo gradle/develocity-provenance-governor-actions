@@ -69,7 +69,7 @@ export async function run(): Promise<void> {
       subjectPurl.toString(),
       { sha256: subjectDigest }
     )
-    reporter.report(result.status, subject, result)
+    reporter.report(result.status, subject, result.result)
   } catch (error) {
     if (error instanceof Error)
       core.setFailed(`Action failed with error: ${error.message}`)

@@ -1,8 +1,9 @@
-export interface BaseError {
+export interface BaseErrorResponse<Request> {
   type?: string
   title?: string
   detail?: string
   instance?: string
+  request?: Request
 }
 export interface DevelocityInstance {
   uri: string
@@ -30,6 +31,24 @@ export interface Package {
   name: string
   namespace?: string
   version: string
+}
+
+export interface BaseCriteria {
+  sha256: string
+  repositoryUrl: string
+}
+
+export interface BaseRequest<Criteria extends BaseCriteria> {
+  uri: string
+  tenant: Tenant
+  pkg: Package
+  criteria: Criteria
+}
+
+export interface BaseSuccessResponse<
+  Request extends BaseRequest<BaseCriteria>
+> {
+  request: Request
 }
 
 // export interface Signature {

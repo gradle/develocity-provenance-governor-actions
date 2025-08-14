@@ -1,4 +1,9 @@
-import { BaseError } from '../models.js'
+import {
+  BaseCriteria,
+  BaseErrorResponse,
+  BaseRequest,
+  BaseSuccessResponse
+} from '../models.js'
 
 export class PolicyRequestSubject {
   scanName: string
@@ -18,7 +23,22 @@ export class PolicyRequestSubject {
   }
 }
 
-export type PolicyErrorResponse = BaseError
+export interface PolicyRequestCriteria extends BaseCriteria {
+  policyScanName: string
+}
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface PolicySuccessResponse {}
+export type PolicyRequest = BaseRequest<PolicyRequestCriteria>
+
+export type PolicyErrorResponse = BaseErrorResponse<PolicyRequest>
+
+export class PolicySuccessResponse
+  implements BaseSuccessResponse<PolicyRequest>
+{
+  request: PolicyRequest
+  results: unknown[]
+
+  constructor(data: { request: PolicyRequest; results: unknown[] }) {
+    this.request = data.request
+    this.results = data.results
+  }
+}

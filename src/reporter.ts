@@ -1,5 +1,10 @@
 import * as core from '@actions/core'
-import { BaseError } from './models.js'
+import {
+  BaseCriteria,
+  BaseErrorResponse,
+  BaseRequest,
+  BaseSuccessResponse
+} from './models.js'
 
 export interface Reporter<Subject, Success, Error> {
   report(status: number, subject: Subject, payload: Success | Error): void
@@ -7,8 +12,11 @@ export interface Reporter<Subject, Success, Error> {
   reportError(subject: Subject, payload: Error): void
 }
 
-export abstract class BaseReporter<Subject, Success, Error>
-  implements Reporter<Subject, Success, Error>
+export abstract class BaseReporter<
+  Subject,
+  Success extends BaseSuccessResponse<BaseRequest<BaseCriteria>>,
+  Error extends BaseErrorResponse<unknown>
+> implements Reporter<Subject, Success, Error>
 {
   report(status: number, subject: Subject, payload: Success | Error) {
     if (status === 200 && payload) {
@@ -23,7 +31,7 @@ export abstract class BaseReporter<Subject, Success, Error>
   abstract reportError(subject: Subject, payload: Error): void
 }
 
-export function reportProblemDetails(result: BaseError) {
+export function reportProblemDetails(result: BaseErrorResponse<unknown>) {
   if (result?.title) {
     core.summary.addRaw('**Error:** ').addRaw(result?.title).addEOL().addEOL()
   }

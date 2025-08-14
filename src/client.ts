@@ -1,4 +1,4 @@
-import { BaseError } from './models.js'
+import { BaseErrorResponse } from './models.js'
 import { PackageURL } from 'packageurl-js'
 import {
   PublishErrorResponse,
@@ -17,9 +17,9 @@ export abstract class ClientResult<Type> {
     this.result = result
   }
 
-  onError(handler: (error: BaseError) => void): void {
+  onError(handler: (error: BaseErrorResponse<unknown>) => void): void {
     if (!this.success) {
-      handler(this.result as BaseError)
+      handler(this.result as BaseErrorResponse<unknown>)
     }
   }
 }
