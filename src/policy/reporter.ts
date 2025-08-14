@@ -52,6 +52,10 @@ export class PolicySummaryReporter extends BaseReporter<
     if (hasFailures) {
       core.summary.addRaw('UNSATISFIED').addEOL().addEOL()
 
+      core.setFailed(
+        `Policy scan ${subject.scanName} evaluated to UNSATISFIED for ${subject.subjectName}`
+      )
+
       core.summary.addRaw('### Failures')
       reportFailures(result.results)
     } else {
@@ -129,6 +133,9 @@ function reportFailure(
   attestation: PolicyAttestation,
   evaluation: PolicyEvaluation
 ) {
+  core.error(
+    `Attestation ${attestation.storeUri} failed policy ${evaluation.policyUri}`
+  )
   core.summary
     .addRaw('##### Unsatisfied policy')
     .addRaw(evaluation.policyUri)
