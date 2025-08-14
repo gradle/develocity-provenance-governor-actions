@@ -5,8 +5,11 @@
 ## Policy Scan Evaluated
 
 **Policy Scan:** security-scan
+
 **Subject:** pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3
+
 **Digest:** `c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b`
+
 
 **Result:** SATISFIED
 
@@ -14,9 +17,15 @@
 
 <details>
 <summary>Expand to see all results</summary>
+
+
 #### Attestation https://develocitytia.jfrog.io/attestation/1
+
 **Predicate Type:** https://gradle.com/attestations/repository/v1
-<details><summary>Envelope</summary>```json
+
+<details><summary>Envelope</summary>
+
+```json
 {
   "payload": {
     "_type": "https://in-toto.io/Statement/v1",
@@ -35,7 +44,8 @@
     }
   }
 }
-```</details>
+```
+</details>
 
 <table><tr><th>Policy</th><th>Status</th><th>Description</th></tr><tr><td>https://policies.example.com/repo-source-check</td><td>SATISFIED</td><td>Repository source verification passed</td></tr><tr><td>https://policies.example.com/build-scan-verification</td><td>SATISFIED</td><td>Build scan verification passed</td></tr></table>
 

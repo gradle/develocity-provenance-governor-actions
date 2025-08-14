@@ -56,7 +56,7 @@ export class PolicySummaryReporter extends BaseReporter<
         `Policy scan ${subject.scanName} evaluated to UNSATISFIED for ${subject.subjectName}`
       )
 
-      core.summary.addRaw('### Failures')
+      core.summary.addRaw('### Failures').addEOL().addEOL()
       reportFailures(result.results)
     } else {
       core.summary.addRaw('SATISFIED').addEOL().addEOL()
@@ -84,14 +84,23 @@ function header(heading: string) {
 }
 
 function reportSubjectInfo(subject: PolicyRequestSubject) {
-  core.summary.addRaw('**Policy Scan:** ').addRaw(subject.scanName).addEOL()
+  core.summary
+    .addRaw('**Policy Scan:** ')
+    .addRaw(subject.scanName)
+    .addEOL()
+    .addEOL()
 
-  core.summary.addRaw('**Subject:** ').addRaw(subject.subjectName).addEOL()
+  core.summary
+    .addRaw('**Subject:** ')
+    .addRaw(subject.subjectName)
+    .addEOL()
+    .addEOL()
 
   core.summary
     .addRaw('**Digest:** `')
     .addRaw(subject.digest.sha256)
     .addRaw('`')
+    .addEOL()
     .addEOL()
   core.summary.addEOL()
 }
@@ -104,14 +113,18 @@ function reportFailures(results: PolicyAttestationEvaluation[]) {
 
     if (hasFailure) {
       core.summary
+        .addEOL()
+        .addEOL()
         .addRaw('#### Attestation ')
         .addRaw(attestation.storeUri)
+        .addEOL()
         .addEOL()
     }
 
     core.summary
       .addRaw('**Predicate Type:** ')
       .addRaw(attestation.envelope.payload.predicateType)
+      .addEOL()
       .addEOL()
 
     evaluations.forEach((evaluation) => {
@@ -122,7 +135,9 @@ function reportFailures(results: PolicyAttestationEvaluation[]) {
 
     core.summary.addDetails(
       'Attestation Envelope',
-      '```json\n' + JSON.stringify(attestation.envelope, null, 2) + '\n```'
+      '\n\n```json\n' +
+        JSON.stringify(attestation.envelope, null, 2) +
+        '\n```\n'
     )
 
     core.summary.addEOL().addEOL()
@@ -140,11 +155,13 @@ function reportFailure(
     .addRaw('##### Unsatisfied policy')
     .addRaw(evaluation.policyUri)
     .addEOL()
+    .addEOL()
 
   if (evaluation.description) {
     core.summary
       .addRaw('**Description:** ')
       .addRaw(evaluation.description)
+      .addEOL()
       .addEOL()
   }
 
@@ -152,6 +169,7 @@ function reportFailure(
     core.summary
       .addRaw('**Remediation:** ')
       .addRaw(evaluation.remediation)
+      .addEOL()
       .addEOL()
   }
 
@@ -164,6 +182,7 @@ function reportFailure(
       .addRaw('`' + evaluation.labels[label] + '`')
       .addEOL()
   }
+  core.summary.addEOL()
 }
 
 function reportAllResults(results: PolicyAttestationEvaluation[]) {
@@ -175,21 +194,25 @@ function reportAllResults(results: PolicyAttestationEvaluation[]) {
 
   results.forEach((result) => {
     core.summary
+      .addEOL()
+      .addEOL()
       .addRaw('#### Attestation ')
       .addRaw(result.attestation.storeUri)
+      .addEOL()
       .addEOL()
 
     core.summary
       .addRaw('**Predicate Type:** ')
       .addRaw(result.attestation.envelope.payload.predicateType)
       .addEOL()
+      .addEOL()
 
     core.summary
       .addDetails(
         'Envelope',
-        '```json\n' +
+        '\n\n```json\n' +
           JSON.stringify(result.attestation.envelope, null, 2) +
-          '\n```'
+          '\n```\n'
       )
       .addEOL()
 
