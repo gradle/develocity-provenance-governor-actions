@@ -21,7 +21,7 @@
 
 ### Attestation https://develocitytia.jfrog.io/attestation/1
 
-**Predicate Type:** https://gradle.com/attestations/repository/v1
+**Predicate Type:** `https://gradle.com/attestations/repository/v1`
 
 <details><summary>Envelope</summary>
 
