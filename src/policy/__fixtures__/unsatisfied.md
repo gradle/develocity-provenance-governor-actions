@@ -49,9 +49,20 @@
 
 **Remediation:** Ensure the repository is from a trusted source
 
-**Labels:** 
+**Labels:**
  * `category` = `security`
  * `severity` = `high`
+
+<details><summary>Policy Details</summary>
+
+```json
+{
+  "description": "Repository source verification failed",
+  "remediation": "Ensure the repository is from a trusted source"
+}
+```
+</details>
+
 
 
 ## Full results

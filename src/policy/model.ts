@@ -24,11 +24,9 @@ export class PolicyRequestSubject {
   }
 }
 
-export interface PolicyRequestCriteria extends BaseCriteria {
+export interface PolicyRequest extends BaseRequest<BaseCriteria> {
   policyScanName: string
 }
-
-export type PolicyRequest = BaseRequest<PolicyRequestCriteria>
 
 export type PolicyErrorResponse = BaseErrorResponse<PolicyRequest>
 
@@ -64,9 +62,7 @@ export interface PolicyAttestation {
   envelope: Envelope
   storeType: string
   storeUri: string
-  storeRequest: {
-    uri: string
-  }
+  storeRequest: object
   storeResponse: object
 }
 
@@ -86,8 +82,9 @@ export interface PolicyEvaluation {
 export interface PolicyEvaluationDetails {
   description?: string
   remediation?: string
+  [key: string]: string | undefined
 }
 
 export interface PolicyLabels {
-  [key: string]: string
+  [key: string]: string | undefined
 }

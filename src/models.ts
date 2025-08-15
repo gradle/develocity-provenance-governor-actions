@@ -46,19 +46,23 @@ export interface BaseRequest<Criteria extends BaseCriteria> {
 }
 
 export interface AttestationSubject {
-  name: string
+  name?: string
+  uri?: string
+  downloadLocation?: string
   digest: {
     [algorithm: string]: string
   }
 }
 
+export interface AttestationStatement {
+  predicateType: string
+  subject: AttestationSubject[]
+  _type: string
+  predicate: object
+}
+
 export interface Envelope {
-  payload: {
-    predicateType: string
-    subject: AttestationSubject[]
-    _type: string
-    predicate: object
-  }
+  payload: AttestationStatement
   payloadType: string
   signatures: object[] // Signature[]
 }

@@ -189,7 +189,7 @@ function reportFailure(
       .addEOL()
   }
 
-  core.summary.addRaw('**Labels:** ').addEOL()
+  core.summary.addRaw('**Labels:**').addEOL()
   for (const label in evaluation.labels) {
     core.summary
       .addRaw(' * ')
@@ -198,6 +198,16 @@ function reportFailure(
       .addRaw('`' + evaluation.labels[label] + '`')
       .addEOL()
   }
+
+  core.summary.addEOL()
+
+  core.summary
+    .addDetails(
+      'Policy Details',
+      '\n\n```json\n' + JSON.stringify(evaluation.details, null, 2) + '\n```\n'
+    )
+    .addEOL()
+
   core.summary.addEOL()
 }
 
