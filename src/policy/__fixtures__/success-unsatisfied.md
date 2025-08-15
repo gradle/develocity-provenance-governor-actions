@@ -4,9 +4,9 @@
 
 # Policy Scan Evaluated - ❌ UNSATISFIED
 
-**Policy Scan:** security-scan
+**Policy Scan:** `security-scan`
 
-**Subject:** pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3
+**Subject:** `pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3`
 
 **Digest:** `c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b`
 
@@ -15,9 +15,9 @@
 
 
 
-## Unsatisfactory Attestation https://develocitytia.jfrog.io/attestation/1
+## Unsatisfactory Attestation `https://develocitytia.jfrog.io/attestation/1`
 
-**Predicate Type:** https://gradle.com/attestations/repository/v1
+**Predicate Type:** `https://gradle.com/attestations/repository/v1`
 
 <details><summary>Attestation Envelope</summary>
 
@@ -43,7 +43,7 @@
 ```
 </details>
 
-### Unsatisfied policy https://policies.example.com/repo-source-check
+### Unsatisfied policy `https://policies.example.com/repo-source-check`
 
 **Description:** Repository source verification failed
 
@@ -60,9 +60,9 @@
 <summary>Expand to see all results</summary>
 
 
-### Attestation https://develocitytia.jfrog.io/attestation/1
+### Attestation `https://develocitytia.jfrog.io/attestation/1`
 
-**Predicate Type:** https://gradle.com/attestations/repository/v1
+**Predicate Type:** `https://gradle.com/attestations/repository/v1`
 
 <details><summary>Envelope</summary>
 
@@ -88,6 +88,12 @@
 ```
 </details>
 
-<table><tr><th>Policy</th><th>Status</th><th>Description</th></tr><tr><td>https://policies.example.com/repo-source-check</td><td>❌</td><td>Repository source verification failed</td></tr><tr><td>https://policies.example.com/build-scan-verification</td><td>✅</td><td>Build scan verification passed</td></tr></table>
+<table><tr><th>Policy</th><th>Status</th><th>Description</th></tr><tr><td>
+
+`https://policies.example.com/repo-source-check`
+</td><td>❌</td><td>Repository source verification failed</td></tr><tr><td>
+
+`https://policies.example.com/build-scan-verification`
+</td><td>✅</td><td>Build scan verification passed</td></tr></table>
 
 </details>

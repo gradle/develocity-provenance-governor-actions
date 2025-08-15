@@ -79,9 +79,13 @@ export enum PolicyResultStatus {
 export interface PolicyEvaluation {
   policyUri: string
   status: PolicyResultStatus
+  details: PolicyEvaluationDetails
+  labels: PolicyLabels
+}
+
+export interface PolicyEvaluationDetails {
   description?: string
   remediation?: string
-  labels: PolicyLabels
 }
 
 export interface PolicyLabels {

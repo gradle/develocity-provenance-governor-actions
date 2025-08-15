@@ -49,8 +49,10 @@
         {
           "policyUri": "https://policies.example.com/repo-source-check",
           "status": "UNSATISFIED",
-          "description": "Repository source verification failed",
-          "remediation": "Ensure the repository is from a trusted source",
+          "details": {
+            "description": "Repository source verification failed",
+            "remediation": "Ensure the repository is from a trusted source"
+          },
           "labels": {
             "category": "security",
             "severity": "high"
@@ -59,7 +61,9 @@
         {
           "policyUri": "https://policies.example.com/build-scan-verification",
           "status": "SATISFIED",
-          "description": "Build scan verification passed",
+          "details": {
+            "description": "Build scan verification passed"
+          },
           "labels": {
             "category": "verification",
             "severity": "medium"

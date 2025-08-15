@@ -163,7 +163,7 @@ function subjectSubHeader(
   if (subjectDownloadUrl) {
     core.summary.addLink(subjectPurl, subjectDownloadUrl)
   } else {
-    core.summary.addRaw(subjectPurl)
+    core.summary.addRaw('`').addRaw(subjectPurl).addRaw('`')
   }
   core.summary
     .addEOL()
