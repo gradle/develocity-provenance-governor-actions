@@ -17,12 +17,12 @@ describe('policy reporter.js', () => {
     core.summary.emptyBuffer()
   })
 
-  it('Render a success (satisfied) report', async () => {
-    renderAndCompare('success-satisfied', 200)
+  it('Render a satisfied report', async () => {
+    renderAndCompare('satisfied', 200)
   })
 
-  it('Render a partial success (unsatisfied) report', async () => {
-    renderAndCompare('success-unsatisfied', 200)
+  it('Render a unsatisfied report', async () => {
+    renderAndCompare('unsatisfied', 200)
   })
 
   it('Render a error report', async () => {
