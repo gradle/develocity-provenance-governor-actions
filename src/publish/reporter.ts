@@ -46,8 +46,18 @@ export class PublisherSummaryReporter extends BaseReporter<
     core.summary.addTable(rows)
   }
 
-  reportError(subject: PublishRequestSubject, result: PublishErrorResponse) {
+  reportError(
+    subject: PublishRequestSubject,
+    result: PublishErrorResponse,
+    setFailure: boolean
+  ) {
     header('Attestations Publishing Failed')
+
+    if (setFailure) {
+      core.setFailed(
+        `Attestation publishing for subject ${subject.name} errored`
+      )
+    }
 
     reportProblemDetails(result)
 

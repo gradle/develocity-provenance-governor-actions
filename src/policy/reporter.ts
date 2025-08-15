@@ -28,9 +28,16 @@ export class PolicySummaryReporter extends BaseReporter<
 > {
   reportError(
     subject: PolicyRequestSubject,
-    result: PolicyErrorResponse
+    result: PolicyErrorResponse,
+    setFailure: boolean
   ): void {
     header('Policy Scan Evaluation - ⛔ Error')
+
+    if (setFailure) {
+      core.setFailed(
+        `Policy scan ${subject.scanName} evaluation errored for ${subject.subjectName}`
+      )
+    }
 
     reportSubjectInfo(subject)
 
