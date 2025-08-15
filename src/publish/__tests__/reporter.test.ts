@@ -47,7 +47,8 @@ function renderAndCompare(
   new PublisherSummaryReporter().report(
     status,
     { name: subjectName, digest: { sha256: digest } },
-    payload
+    payload,
+    false
   )
 
   // verify the summary text looks good
