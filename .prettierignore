@@ -3,4 +3,4 @@
 dist/
 node_modules/
 coverage/
-src/__fixtures__/*.md
+src/**/__fixtures__/*.md

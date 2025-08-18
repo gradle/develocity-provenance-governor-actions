@@ -46,4 +46,4 @@ inputs:
 
 runs:
   using: 'node20'
-  main: '../dist/policy-index.js'
+  main: '../dist/policy/index.js'

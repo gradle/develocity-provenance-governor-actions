@@ -1,22 +1,33 @@
+import * as core from '@actions/core'
+import { SummaryTableRow } from '@actions/core/lib/summary.js'
+import { BaseReporter, Reporter, reportProblemDetails } from '../reporter.js'
 import {
   PublishErrorResponse,
   PublishFailedItem,
+  PublishRequestSubject,
   PublishSuccessItem,
   PublishSuccessResponse,
-  ResourceDescriptor,
   Statement,
   StoreRequest
-} from './models.js'
-import * as core from '@actions/core'
-import { SummaryTableRow } from '@actions/core/lib/summary.js'
-import { BaseReporter, Reporter } from './reporter.js'
+} from './model.js'
 
-export function createPublisherReporter(): Reporter {
+export function createPublisherReporter(): Reporter<
+  PublishRequestSubject,
+  PublishSuccessResponse,
+  PublishErrorResponse
+> {
   return new PublisherSummaryReporter()
 }
 
-export class PublisherSummaryReporter extends BaseReporter {
-  reportSuccess(subject: ResourceDescriptor, result: PublishSuccessResponse) {
+export class PublisherSummaryReporter extends BaseReporter<
+  PublishRequestSubject,
+  PublishSuccessResponse,
+  PublishErrorResponse
+> {
+  reportSuccess(
+    subject: PublishRequestSubject,
+    result: PublishSuccessResponse
+  ) {
     core.info(
       `Attestation publishing for subject: ${subject.name} completed successfully!`
     )
@@ -35,18 +46,20 @@ export class PublisherSummaryReporter extends BaseReporter {
     core.summary.addTable(rows)
   }
 
-  reportError(subject: ResourceDescriptor, result?: PublishErrorResponse) {
+  reportError(
+    subject: PublishRequestSubject,
+    result: PublishErrorResponse,
+    setFailure: boolean
+  ) {
     header('Attestations Publishing Failed')
 
-    if (result?.title) {
-      core.summary.addRaw('**Error:** ').addRaw(result?.title).addEOL().addEOL()
+    if (setFailure) {
+      core.setFailed(
+        `Attestation publishing for subject ${subject.name} errored`
+      )
     }
-    if (result?.detail) {
-      core.summary.addRaw('> ').addRaw(result?.detail).addEOL().addEOL()
-    }
-    if (result?.type) {
-      core.summary.addRaw('**Type:** ').addRaw(result?.type).addEOL().addEOL()
-    }
+
+    reportProblemDetails(result)
 
     // print table if we have errors or successes
     if (result?.errors || result?.successes) {
@@ -70,7 +83,7 @@ export class PublisherSummaryReporter extends BaseReporter {
 }
 
 function subjectInfo(
-  subject: ResourceDescriptor,
+  subject: PublishRequestSubject,
   result?: PublishSuccessResponse | PublishErrorResponse
 ) {
   let uiArtifactUri
@@ -134,6 +147,7 @@ function successRows(result: PublishSuccessResponse | PublishErrorResponse) {
 }
 
 function header(heading: string) {
+  //TODO make reference the repo's main branch.  Needs the repo to be public
   const headerImage =
     'https://gist.githubusercontent.com/bdemers/18c7a0fc36b0b1c0c88260fd9e228ad1/raw/db71e3a9b8220a9ea5e855be28711990b1afdcbe/attestation-header.svg'
 
@@ -145,7 +159,7 @@ function header(heading: string) {
       height: 'auto'
     })
     .addEOL()
-    .addRaw(`## ${heading}`)
+    .addRaw(`# ${heading}`)
     .addEOL()
     .addEOL()
 }
@@ -159,7 +173,7 @@ function subjectSubHeader(
   if (subjectDownloadUrl) {
     core.summary.addLink(subjectPurl, subjectDownloadUrl)
   } else {
-    core.summary.addRaw(subjectPurl)
+    core.summary.addRaw('`').addRaw(subjectPurl).addRaw('`')
   }
   core.summary
     .addEOL()

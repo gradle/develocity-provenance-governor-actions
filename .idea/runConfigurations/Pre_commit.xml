@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Pre-commit" type="CompoundRunConfigurationType">
+    <toRun name="format:check" type="js.build_tools.npm" />
+    <toRun name="lint" type="js.build_tools.npm" />
+    <toRun name="test" type="js.build_tools.npm" />
+    <method v="2" />
+  </configuration>
+</component>

@@ -6,17 +6,17 @@
  * so that the actual '@actions/core' module is not imported.
  */
 import { jest } from '@jest/globals'
-import * as core from '../__fixtures__/core.js'
-import { createClient } from '../__fixtures__/client.js'
-import { createPublisherReporter } from '../__fixtures__/reporter.js'
-import { Client, PolicyResult, PublisherResult } from '../client.js'
-import { Reporter } from '../reporter.js'
+import * as core from '../../__fixtures__/core.js'
+import { createClient } from '../../__fixtures__/client.js'
+import { createPublisherReporter } from '../../__fixtures__/reporter.js'
+import { Client, PolicyResult, PublisherResult } from '../../client.js'
+import { Reporter } from '../../reporter.js'
 import * as fs from 'node:fs'
 
 // Mocks should be declared before the module being tested is imported.
 jest.unstable_mockModule('@actions/core', () => core)
-jest.unstable_mockModule('../client.js', () => ({ createClient }))
-jest.unstable_mockModule('../reporter-publisher.js', () => ({
+jest.unstable_mockModule('../../client.js', () => ({ createClient }))
+jest.unstable_mockModule('../reporter.js', () => ({
   createPublisherReporter
 }))
 
@@ -34,7 +34,9 @@ describe('main.ts', () => {
   beforeEach(() => {
     core.summary.emptyBuffer()
     jest.clearAllMocks()
-    createPublisherReporter.mockImplementation((): Reporter => mockReporter)
+    createPublisherReporter.mockImplementation(
+      (): Reporter<never, never, never> => mockReporter
+    )
     core.getIDToken.mockImplementation(
       (): Promise<string> => Promise.resolve('gha-token')
     )
@@ -47,7 +49,7 @@ describe('main.ts', () => {
   it('Creates attestation', async () => {
     // given
     const payload = JSON.parse(
-      fs.readFileSync('src/__fixtures__/success.json', 'utf8')
+      fs.readFileSync('src/publish/__fixtures__/success.json', 'utf8')
     )
 
     const client: Client = {
@@ -121,7 +123,7 @@ describe('main.ts', () => {
 
   it('Attestation creation partial error', async () => {
     const payload = JSON.parse(
-      fs.readFileSync('src/__fixtures__/partial-error.json', 'utf8')
+      fs.readFileSync('src/publish/__fixtures__/partial-error.json', 'utf8')
     )
 
     const client: Client = {

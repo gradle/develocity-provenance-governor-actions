@@ -1,7 +1,8 @@
 import * as core from '@actions/core'
-import { createClient, Credentials } from './client.js'
+import { createClient, Credentials } from '../client.js'
 import { PackageURL } from 'packageurl-js'
-import { createPublisherReporter } from './reporter-publisher.js'
+import { createPublisherReporter } from './reporter.js'
+import { PublishRequestSubject } from './model.js'
 
 export async function run(): Promise<void> {
   try {
@@ -80,15 +81,14 @@ export async function run(): Promise<void> {
 
     // create summary
     const reporter = createPublisherReporter()
-    const subject = {
-      name: subjectPurl.toString(),
-      digest: { sha256: subjectDigest }
-    }
+    const subject = new PublishRequestSubject(subjectPurl.toString(), {
+      sha256: subjectDigest
+    })
     reporter.report(result.status, subject, result.result)
   } catch (error) {
     if (error instanceof Error)
       core.setFailed(`Action failed with error: ${error.message}`)
     else core.setFailed(`Action failed with error: ${error}`)
   }
-  core.summary.write()
+  await core.summary.write()
 }

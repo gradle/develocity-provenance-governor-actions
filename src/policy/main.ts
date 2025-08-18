@@ -1,7 +1,8 @@
 import * as core from '@actions/core'
-import { createClient, Credentials } from './client.js'
-import { createPolicyReporter } from './reporter-policy.js'
+import { createClient, Credentials } from '../client.js'
+import { createPolicyReporter } from './reporter.js'
 import { PackageURL } from 'packageurl-js'
+import { PolicyRequestSubject } from './model.js'
 
 export async function run(): Promise<void> {
   try {
@@ -56,21 +57,23 @@ export async function run(): Promise<void> {
     // if error set failure status
     result.onError((error) => {
       core.setFailed(
-        `Attestation publisher for subject: ${subjectDigest} failed: ${error?.title}`
+        `Policy evaluation for subject: ${subjectDigest} failed: ${error?.title}`
       )
       core.error(JSON.stringify(error, null, 2))
     })
 
     // create summary
     const reporter = createPolicyReporter()
-    const subject = {
-      digest: { sha256: subjectDigest }
-    }
-    reporter.report(result.status, subject, result)
+    const subject = new PolicyRequestSubject(
+      policyScanName,
+      subjectPurl.toString(),
+      { sha256: subjectDigest }
+    )
+    reporter.report(result.status, subject, result.result)
   } catch (error) {
     if (error instanceof Error)
       core.setFailed(`Action failed with error: ${error.message}`)
     else core.setFailed(`Action failed with error: ${error}`)
   }
-  core.summary.write()
+  await core.summary.write()
 }

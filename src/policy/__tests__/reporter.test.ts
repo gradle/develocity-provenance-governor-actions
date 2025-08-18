@@ -1,12 +1,12 @@
 import { jest } from '@jest/globals'
 import * as core from '@actions/core'
-import { PublisherSummaryReporter } from '../reporter-publisher.js'
+import { PolicySummaryReporter } from '../reporter.js'
 import fs from 'node:fs'
 
 /**
- * Unit tests for src/reporter.ts
+ * Unit tests for src/policy/reporter.ts
  */
-describe('reporter.js', () => {
+describe('policy reporter.js', () => {
   beforeEach(() => {
     core.summary.emptyBuffer()
     jest.clearAllMocks()
@@ -17,15 +17,15 @@ describe('reporter.js', () => {
     core.summary.emptyBuffer()
   })
 
-  it('Render a success report', async () => {
-    renderAndCompare('success', 200)
+  it('Render a satisfied report', async () => {
+    renderAndCompare('satisfied', 200)
   })
 
-  it('Render a partial success report', async () => {
-    renderAndCompare('partial-error', 400)
+  it('Render a unsatisfied report', async () => {
+    renderAndCompare('unsatisfied', 200)
   })
 
-  it('Render a failure report', async () => {
+  it('Render a error report', async () => {
     renderAndCompare('error', 404)
   })
 })
@@ -33,21 +33,23 @@ describe('reporter.js', () => {
 function renderAndCompare(
   fixtureName: string,
   status: number = 200,
+  scanName: string = 'security-scan',
   subjectName: string = 'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
   digest: string = 'c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b'
 ) {
   const payload = JSON.parse(
-    fs.readFileSync(`src/__fixtures__/${fixtureName}.json`, 'utf8')
+    fs.readFileSync(`src/policy/__fixtures__/${fixtureName}.json`, 'utf8')
   )
   const expectedReport = fs.readFileSync(
-    `src/__fixtures__/${fixtureName}.md`,
+    `src/policy/__fixtures__/${fixtureName}.md`,
     'utf8'
   )
 
-  new PublisherSummaryReporter().report(
+  new PolicySummaryReporter().report(
     status,
-    { name: subjectName, digest: { sha256: digest } },
-    payload
+    { scanName, subjectName, digest: { sha256: digest } },
+    payload,
+    false
   )
 
   // verify the summary text looks good

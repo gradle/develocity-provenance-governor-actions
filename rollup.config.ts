@@ -6,20 +6,20 @@ import typescript from '@rollup/plugin-typescript'
 
 const config = [
   {
-    input: 'src/index.ts',
+    input: 'src/publish/index.ts',
     output: {
       esModule: true,
-      file: 'dist/index.js',
+      file: 'dist/publish/index.js',
       format: 'es',
       sourcemap: true
     },
     plugins: [typescript(), nodeResolve({ preferBuiltins: true }), commonjs()]
   },
   {
-    input: 'src/policy-index.ts',
+    input: 'src/policy/index.ts',
     output: {
       esModule: true,
-      file: 'dist/policy-index.js',
+      file: 'dist/policy/index.js',
       format: 'es',
       sourcemap: true
     },
