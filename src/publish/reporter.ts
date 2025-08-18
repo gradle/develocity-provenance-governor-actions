@@ -57,6 +57,7 @@ export class PublisherSummaryReporter extends BaseReporter<
       core.setFailed(
         `Attestation publishing for subject ${subject.name} errored`
       )
+      core.error('Error response: ' + JSON.stringify(result, null, 2))
     }
 
     reportProblemDetails(result)
