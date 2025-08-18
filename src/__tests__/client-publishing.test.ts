@@ -1,9 +1,9 @@
 import { jest } from '@jest/globals' /**
- * Unit tests for src/publisher-client.ts
+ * Unit tests for src/client.ts
  */
-import { AttestationPublisher, createClient } from '../publisher-client.js'
+import { Client, createClient } from '../client.js'
 
-describe('publisher-client.js', () => {
+describe('client.js - publishing', () => {
   afterEach(() => {
     jest.restoreAllMocks()
   })
@@ -24,7 +24,7 @@ describe('publisher-client.js', () => {
     const publisher = createClient(
       'https://attest.example.com/',
       'gha-token'
-    ) as AttestationPublisher
+    ) as Client
 
     const result = await publisher.publishAttestation(
       'tenant1',
@@ -62,8 +62,7 @@ describe('publisher-client.js', () => {
     expect(result).toEqual({
       status: 200,
       success: true,
-      errorPayload: null,
-      successPayload: jsonResponse
+      result: jsonResponse
     })
   })
 
@@ -83,7 +82,7 @@ describe('publisher-client.js', () => {
     const publisher = createClient(
       'https://attest.example.com/',
       'gha-token'
-    ) as AttestationPublisher
+    ) as Client
 
     const result = await publisher.publishAttestation(
       'tenant1',
@@ -121,8 +120,7 @@ describe('publisher-client.js', () => {
     expect(result).toEqual({
       status: 200,
       success: true,
-      errorPayload: null,
-      successPayload: jsonResponse
+      result: jsonResponse
     })
   })
 
@@ -142,7 +140,7 @@ describe('publisher-client.js', () => {
     const publisher = createClient('https://attest.example.com/', {
       username: 'foo',
       password: 'bar'
-    }) as AttestationPublisher
+    }) as Client
 
     const result = await publisher.publishAttestation(
       'tenant1',
@@ -180,8 +178,7 @@ describe('publisher-client.js', () => {
     expect(result).toEqual({
       status: 200,
       success: true,
-      errorPayload: null,
-      successPayload: jsonResponse
+      result: jsonResponse
     })
   })
 })

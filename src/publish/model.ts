@@ -1,70 +1,29 @@
+import {
+  BaseCriteria,
+  BaseErrorResponse,
+  BaseRequest,
+  BaseSuccessResponse
+} from '../models.js'
+
 /**
  * Interface defining the structure of an error response from the Attestation Publisher.
  */
-export interface ErrorResponse {
-  type?: string
-  title?: string
-  detail?: string
-  instance?: string
-  request?: PublishRequest
+export interface PublishErrorResponse
+  extends BaseErrorResponse<PublishRequest> {
   successes?: Array<PublishSuccessItem>
   errors?: Array<PublishFailedItem>
 }
 
-export interface DevelocityInstance {
-  uri: string
-}
-
-export interface ArtifactoryInstance {
-  uri: string
-  path: string
-  graphqlPath: string
-}
-
-export interface Tenant {
-  name: string
-  description: string
-  develocityInstances: {
-    [key: string]: DevelocityInstance
-  }
-  artifactoryInstances: {
-    [key: string]: ArtifactoryInstance
-  }
-}
-
-export interface Package {
-  type: string
-  name: string
-  namespace?: string
-  version: string
-}
-
 export interface BuildScanCriteria {
   ids: string[]
+  queries: string[]
 }
 
-export interface RequestCriteria {
-  sha256: string
-  repositoryUrl: string
+export interface PublishRequestCriteria extends BaseCriteria {
   buildScan: BuildScanCriteria
 }
 
-export interface PublishRequest {
-  uri: string
-  tenant: Tenant
-  pkg: Package
-  criteria: RequestCriteria
-}
-
-// export interface Signature {
-//   // Add specific signature properties if needed
-// }
-
-export interface Envelope {
-  payload: string
-  payloadType: string
-  signatures: object[] // Signature[]
-}
+export type PublishRequest = BaseRequest<PublishRequestCriteria>
 
 export interface StoreResponse {
   repository: string
@@ -129,10 +88,32 @@ export interface ResourceDescriptor {
     [key: string]: string
   }
 }
+export interface Statement {
+  _type: 'https://in-toto.io/Statement/v1'
+  subject: ResourceDescriptor[]
+  predicateType: string
+  predicate: object
+  createdAt: string
+  createdBy: string
+}
 
-export class SuccessResponse {
-  request: PublishRequest
+export class PublishRequestSubject {
+  name: string
+  digest: {
+    sha256: string
+  }
+
+  constructor(name: string, digest: { sha256: string }) {
+    this.name = name
+    this.digest = digest
+  }
+}
+
+export class PublishSuccessResponse
+  implements BaseSuccessResponse<PublishRequest>
+{
   successes: PublishSuccessItem[]
+  request: PublishRequest
 
   constructor(data: {
     request: PublishRequest
@@ -163,6 +144,6 @@ export class SuccessResponse {
   }
 }
 
-export function fromJSON(json: string): SuccessResponse {
-  return new SuccessResponse(JSON.parse(json))
+export function fromJSON(json: string): PublishSuccessResponse {
+  return new PublishSuccessResponse(JSON.parse(json))
 }
