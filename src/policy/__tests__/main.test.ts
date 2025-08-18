@@ -1,13 +1,17 @@
 /**
- * Unit tests for the policy evaluation action functionality, src/main.ts
+ * Unit tests for the action's main functionality, src/policy/main.ts
+ *
+ * To mock dependencies in ESM, you can create fixtures that export mock
+ * functions and objects. For example, the core module is mocked in this test,
+ * so that the actual '@actions/core' module is not imported.
  */
 import { jest } from '@jest/globals'
 import * as core from '../../__fixtures__/core.js'
 import { createClient } from '../../__fixtures__/client.js'
 import { createPolicyReporter } from '../../__fixtures__/reporter.js'
-// import { Client } from '../client.js'
+import { Client, PolicyResult, PublisherResult } from '../../client.js'
 import { Reporter } from '../../reporter.js'
-// import * as fs from 'node:fs'
+import * as fs from 'node:fs'
 
 // Mocks should be declared before the module being tested is imported.
 jest.unstable_mockModule('@actions/core', () => core)
@@ -16,15 +20,15 @@ jest.unstable_mockModule('../reporter.js', () => ({
   createPolicyReporter
 }))
 
+const mockReporter = {
+  report: jest.fn(),
+  reportError: jest.fn(),
+  reportSuccess: jest.fn()
+}
+
 // The module being tested should be imported dynamically. This ensures that the
 // mocks are used in place of any actual dependencies.
 const { run } = await import('../main.js')
-
-const mockReporter = {
-  report: jest.fn(),
-  reportSuccess: jest.fn(),
-  reportError: jest.fn()
-}
 
 describe('main.ts', () => {
   beforeEach(() => {
@@ -42,12 +46,391 @@ describe('main.ts', () => {
     jest.resetAllMocks()
   })
 
-  it('Evaluates Policy', async () => {
+  it('Evaluates policy with satisfied result', async () => {
     // given
+    const payload = JSON.parse(
+      fs.readFileSync('src/policy/__fixtures__/satisfied.json', 'utf8')
+    )
+
+    const client: Client = {
+      publishAttestation(): Promise<PublisherResult> {
+        throw new Error('Not implemented')
+      },
+      evaluatePolicy: jest.fn(() =>
+        Promise.resolve(new PolicyResult(200, true, payload))
+      )
+    }
+
+    createClient.mockImplementation((): Client => client)
+
+    core.getInput
+      .mockClear()
+      .mockReturnValueOnce('https://policy.example.com/') // policy-evaluator-url
+      .mockReturnValueOnce('security-scan') // policy-scan
+      .mockReturnValueOnce('tenant11') // tenant
+      .mockReturnValueOnce('oci') // subject-type
+      .mockReturnValueOnce('') // subject-namespace
+      .mockReturnValueOnce('java-payment-calculator') // subject-name
+      .mockReturnValueOnce('1.0.0-SNAPSHOT-16152750186-3') // subject-version
+      .mockReturnValueOnce(
+        'c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b'
+      ) // subject-digest
+      .mockReturnValueOnce('https://repo.example.com/') // subject-repository-url
+      .mockReturnValueOnce('') // username
+      .mockReturnValueOnce('') // password
 
     // when
     await run()
 
     // then
+    // check error first, if something went wrong, fail fast
+    expect(core.setFailed).not.toHaveBeenCalled()
+
+    // expect interactions
+    expect(createClient).toHaveBeenNthCalledWith(
+      1,
+      'https://policy.example.com/',
+      'gha-token'
+    )
+
+    expect(createPolicyReporter).toHaveBeenCalledTimes(1)
+    expect(client.evaluatePolicy).toHaveBeenNthCalledWith(
+      1,
+      'tenant11',
+      'security-scan',
+      expect.objectContaining({
+        type: 'oci',
+        name: 'java-payment-calculator',
+        version: '1.0.0-SNAPSHOT-16152750186-3'
+      }),
+      'c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b',
+      'https://repo.example.com/'
+    )
+
+    const expectedSubject = {
+      scanName: 'security-scan',
+      subjectName:
+        'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
+      digest: {
+        sha256:
+          'c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b'
+      }
+    }
+    expect(mockReporter.report).toHaveBeenNthCalledWith(
+      1,
+      200,
+      expectedSubject,
+      payload
+    )
+
+    expect(core.summary.write).toHaveBeenCalled()
+  })
+
+  it('Evaluates policy with unsatisfied result', async () => {
+    // given
+    const payload = JSON.parse(
+      fs.readFileSync('src/policy/__fixtures__/unsatisfied.json', 'utf8')
+    )
+
+    const client: Client = {
+      publishAttestation(): Promise<PublisherResult> {
+        throw new Error('Not implemented')
+      },
+      evaluatePolicy: jest.fn(() =>
+        Promise.resolve(new PolicyResult(200, true, payload))
+      )
+    }
+
+    createClient.mockImplementation((): Client => client)
+
+    core.getInput
+      .mockClear()
+      .mockReturnValueOnce('https://policy.example.com/') // policy-evaluator-url
+      .mockReturnValueOnce('security-scan') // policy-scan
+      .mockReturnValueOnce('tenant22') // tenant
+      .mockReturnValueOnce('oci') // subject-type
+      .mockReturnValueOnce('') // subject-namespace
+      .mockReturnValueOnce('java-payment-calculator') // subject-name
+      .mockReturnValueOnce('1.0.0-SNAPSHOT-16152750186-3') // subject-version
+      .mockReturnValueOnce(
+        'c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b'
+      ) // subject-digest
+      .mockReturnValueOnce('https://repo.example.com/') // subject-repository-url
+      .mockReturnValueOnce('') // username
+      .mockReturnValueOnce('') // password
+
+    // when
+    await run()
+
+    // then
+    // check error first, if something went wrong, fail fast
+    expect(core.setFailed).not.toHaveBeenCalled()
+
+    // expect interactions
+    expect(createClient).toHaveBeenNthCalledWith(
+      1,
+      'https://policy.example.com/',
+      'gha-token'
+    )
+
+    expect(createPolicyReporter).toHaveBeenCalledTimes(1)
+    expect(client.evaluatePolicy).toHaveBeenNthCalledWith(
+      1,
+      'tenant22',
+      'security-scan',
+      expect.objectContaining({
+        type: 'oci',
+        name: 'java-payment-calculator',
+        version: '1.0.0-SNAPSHOT-16152750186-3'
+      }),
+      'c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b',
+      'https://repo.example.com/'
+    )
+
+    const expectedSubject = {
+      scanName: 'security-scan',
+      subjectName:
+        'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
+      digest: {
+        sha256:
+          'c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b'
+      }
+    }
+    expect(mockReporter.report).toHaveBeenNthCalledWith(
+      1,
+      200,
+      expectedSubject,
+      payload
+    )
+
+    expect(core.summary.write).toHaveBeenCalled()
+  })
+
+  it('Handles policy evaluation error', async () => {
+    // given
+    const payload = JSON.parse(
+      fs.readFileSync('src/policy/__fixtures__/error.json', 'utf8')
+    )
+
+    const client: Client = {
+      publishAttestation(): Promise<PublisherResult> {
+        throw new Error('Not implemented')
+      },
+      evaluatePolicy: jest.fn(() =>
+        Promise.resolve(new PolicyResult(404, false, payload))
+      )
+    }
+
+    createClient.mockImplementation((): Client => client)
+
+    core.getInput
+      .mockClear()
+      .mockReturnValueOnce('https://policy.example.com/') // policy-evaluator-url
+      .mockReturnValueOnce('security-scan') // policy-scan
+      .mockReturnValueOnce('tenant33') // tenant
+      .mockReturnValueOnce('oci') // subject-type
+      .mockReturnValueOnce('') // subject-namespace
+      .mockReturnValueOnce('java-payment-calculator') // subject-name
+      .mockReturnValueOnce('1.0.0-SNAPSHOT-16152750186-3') // subject-version
+      .mockReturnValueOnce(
+        'c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b'
+      ) // subject-digest
+      .mockReturnValueOnce('https://repo.example.com/') // subject-repository-url
+      .mockReturnValueOnce('') // username
+      .mockReturnValueOnce('') // password
+
+    // when
+    await run()
+
+    // then
+    // expect interactions
+    expect(createClient).toHaveBeenNthCalledWith(
+      1,
+      'https://policy.example.com/',
+      'gha-token'
+    )
+
+    expect(createPolicyReporter).toHaveBeenCalledTimes(1)
+    expect(client.evaluatePolicy).toHaveBeenNthCalledWith(
+      1,
+      'tenant33',
+      'security-scan',
+      expect.objectContaining({
+        type: 'oci',
+        name: 'java-payment-calculator',
+        version: '1.0.0-SNAPSHOT-16152750186-3'
+      }),
+      'c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b',
+      'https://repo.example.com/'
+    )
+
+    const expectedSubject = {
+      scanName: 'security-scan',
+      subjectName:
+        'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
+      digest: {
+        sha256:
+          'c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b'
+      }
+    }
+    expect(mockReporter.report).toHaveBeenNthCalledWith(
+      1,
+      404,
+      expectedSubject,
+      payload
+    )
+
+    expect(core.summary.write).toHaveBeenCalled()
+  })
+
+  it('Handles policy evaluation with namespace', async () => {
+    // given
+    const payload = JSON.parse(
+      fs.readFileSync('src/policy/__fixtures__/satisfied.json', 'utf8')
+    )
+
+    const client: Client = {
+      publishAttestation(): Promise<PublisherResult> {
+        throw new Error('Not implemented')
+      },
+      evaluatePolicy: jest.fn(() =>
+        Promise.resolve(new PolicyResult(200, true, payload))
+      )
+    }
+
+    createClient.mockImplementation((): Client => client)
+
+    core.getInput
+      .mockClear()
+      .mockReturnValueOnce('https://policy.example.com/') // policy-evaluator-url
+      .mockReturnValueOnce('security-scan') // policy-scan
+      .mockReturnValueOnce('tenant44') // tenant
+      .mockReturnValueOnce('maven') // subject-type
+      .mockReturnValueOnce('com.example') // subject-namespace
+      .mockReturnValueOnce('my-library') // subject-name
+      .mockReturnValueOnce('2.1.0') // subject-version
+      .mockReturnValueOnce('abc123def456') // subject-digest
+      .mockReturnValueOnce('https://repo.maven.apache.org/maven2/') // subject-repository-url
+      .mockReturnValueOnce('') // username
+      .mockReturnValueOnce('') // password
+
+    // when
+    await run()
+
+    // then
+    // handled by the reporter
+    expect(core.setFailed).not.toHaveBeenCalled()
+
+    // expect interactions
+    expect(createClient).toHaveBeenNthCalledWith(
+      1,
+      'https://policy.example.com/',
+      'gha-token'
+    )
+
+    expect(createPolicyReporter).toHaveBeenCalledTimes(1)
+    expect(client.evaluatePolicy).toHaveBeenNthCalledWith(
+      1,
+      'tenant44',
+      'security-scan',
+      expect.objectContaining({
+        type: 'maven',
+        namespace: 'com.example',
+        name: 'my-library',
+        version: '2.1.0'
+      }),
+      'abc123def456',
+      'https://repo.maven.apache.org/maven2/'
+    )
+
+    const expectedSubject = {
+      scanName: 'security-scan',
+      subjectName: 'pkg:maven/com.example/my-library@2.1.0',
+      digest: { sha256: 'abc123def456' }
+    }
+    expect(mockReporter.report).toHaveBeenNthCalledWith(
+      1,
+      200,
+      expectedSubject,
+      payload
+    )
+
+    expect(core.summary.write).toHaveBeenCalled()
+  })
+
+  it('Handles policy evaluation with username/password credentials', async () => {
+    // given
+    const payload = JSON.parse(
+      fs.readFileSync('src/policy/__fixtures__/satisfied.json', 'utf8')
+    )
+
+    const client: Client = {
+      publishAttestation(): Promise<PublisherResult> {
+        throw new Error('Not implemented')
+      },
+      evaluatePolicy: jest.fn(() =>
+        Promise.resolve(new PolicyResult(200, true, payload))
+      )
+    }
+
+    createClient.mockImplementation((): Client => client)
+
+    core.getInput
+      .mockClear()
+      .mockReturnValueOnce('https://policy.example.com/') // policy-evaluator-url
+      .mockReturnValueOnce('compliance-scan') // policy-scan
+      .mockReturnValueOnce('tenant55') // tenant
+      .mockReturnValueOnce('npm') // subject-type
+      .mockReturnValueOnce('@company') // subject-namespace
+      .mockReturnValueOnce('my-package') // subject-name
+      .mockReturnValueOnce('1.2.3') // subject-version
+      .mockReturnValueOnce('xyz789abc123') // subject-digest
+      .mockReturnValueOnce('https://registry.npmjs.org/') // subject-repository-url
+      .mockReturnValueOnce('testuser') // username
+      .mockReturnValueOnce('testpass') // password
+
+    // when
+    await run()
+
+    // then
+    // handled by the reporter
+    expect(core.setFailed).not.toHaveBeenCalled()
+
+    // expect interactions
+    expect(createClient).toHaveBeenNthCalledWith(
+      1,
+      'https://policy.example.com/',
+      { username: 'testuser', password: 'testpass' }
+    )
+
+    expect(createPolicyReporter).toHaveBeenCalledTimes(1)
+    expect(client.evaluatePolicy).toHaveBeenNthCalledWith(
+      1,
+      'tenant55',
+      'compliance-scan',
+      expect.objectContaining({
+        type: 'npm',
+        namespace: '@company',
+        name: 'my-package',
+        version: '1.2.3'
+      }),
+      'xyz789abc123',
+      'https://registry.npmjs.org/'
+    )
+
+    const expectedSubject = {
+      scanName: 'compliance-scan',
+      subjectName: 'pkg:npm/%40company/my-package@1.2.3',
+      digest: { sha256: 'xyz789abc123' }
+    }
+    expect(mockReporter.report).toHaveBeenNthCalledWith(
+      1,
+      200,
+      expectedSubject,
+      payload
+    )
+
+    expect(core.summary.write).toHaveBeenCalled()
+    expect(core.getIDToken).not.toHaveBeenCalled()
   })
 })

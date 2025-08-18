@@ -84,7 +84,7 @@ describe('main.ts', () => {
     await run()
 
     // then
-    // check error first, if something went wrong, fail fast
+    // handled by the reporter
     expect(core.setFailed).not.toHaveBeenCalled()
 
     // expect interactions
@@ -152,6 +152,10 @@ describe('main.ts', () => {
       .mockClear()
       .mockReturnValueOnce(['build-scan-id21', 'build-scan-id22']) // build-scan-ids
     await run()
+
+    // then
+    // handled by the reporter
+    expect(core.setFailed).not.toHaveBeenCalled()
 
     // expect interactions
     expect(createClient).toHaveBeenNthCalledWith(
