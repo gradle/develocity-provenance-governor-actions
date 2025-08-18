@@ -28906,6 +28906,9 @@ function reportProblemDetails(result) {
     if (result?.type) {
         coreExports.summary.addRaw('**Type:** ').addRaw(result?.type).addEOL().addEOL();
     }
+    coreExports.summary
+        .addDetails('Raw Error Response', '\n\n```json\n' + JSON.stringify(result, null, 2) + '\n```\n')
+        .addEOL();
 }
 
 function createPublisherReporter() {
@@ -28928,6 +28931,7 @@ class PublisherSummaryReporter extends BaseReporter {
         header('Attestations Publishing Failed');
         if (setFailure) {
             coreExports.setFailed(`Attestation publishing for subject ${subject.name} errored`);
+            coreExports.error('Error response: ' + JSON.stringify(result, null, 2));
         }
         reportProblemDetails(result);
         // print table if we have errors or successes
@@ -29120,11 +29124,6 @@ async function run() {
         // publish the attestations
         const publisherClient = createClient(attestationPublisherUrl, credentials);
         const result = await publisherClient.publishAttestation(tenant, pkgType, pkgNamespace, pkgName, pkgVersion, subjectDigest, repositoryUrl, buildScanIds ?? [], buildScanQueries ?? []);
-        // if error set failure status
-        result.onError((error) => {
-            coreExports.setFailed(`Attestation publisher for subject: ${subjectPurl} failed: ${error?.title}`);
-            coreExports.error(JSON.stringify(error, null, 2));
-        });
         // create summary
         const reporter = createPublisherReporter();
         const subject = new PublishRequestSubject(subjectPurl.toString(), {

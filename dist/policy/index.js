@@ -27398,6 +27398,9 @@ function reportProblemDetails(result) {
     if (result?.type) {
         coreExports.summary.addRaw('**Type:** ').addRaw(result?.type).addEOL().addEOL();
     }
+    coreExports.summary
+        .addDetails('Raw Error Response', '\n\n```json\n' + JSON.stringify(result, null, 2) + '\n```\n')
+        .addEOL();
 }
 
 class PolicyRequestSubject {
@@ -27428,6 +27431,7 @@ class PolicySummaryReporter extends BaseReporter {
         header('Policy Scan Evaluation - ⛔ Error');
         if (setFailure) {
             coreExports.setFailed(`Policy scan ${subject.scanName} evaluation errored for ${subject.subjectName}`);
+            coreExports.error('Error response: ' + JSON.stringify(result, null, 2));
         }
         reportSubjectInfo(subject);
         reportProblemDetails(result);
@@ -29147,11 +29151,6 @@ async function run() {
         coreExports.endGroup();
         const client = createClient(policyEvaluatorUrl, credentials);
         const result = await client.evaluatePolicy(tenant, policyScanName, subjectPurl, subjectDigest, repositoryUrl);
-        // if error set failure status
-        result.onError((error) => {
-            coreExports.setFailed(`Policy evaluation for subject: ${subjectDigest} failed: ${error?.title}`);
-            coreExports.error(JSON.stringify(error, null, 2));
-        });
         // create summary
         const reporter = createPolicyReporter();
         const subject = new PolicyRequestSubject(policyScanName, subjectPurl.toString(), { sha256: subjectDigest });
