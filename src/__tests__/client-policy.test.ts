@@ -43,7 +43,7 @@ describe('client.js - policy evaluation', () => {
     }
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/tenant1/packages/npm/namespace1/name1/1.0.0/policy-scans/scan1',
+      'https://policy.example.com/tenant1/packages/npm/namespace1/name1/1.0.0/policy-scans/scan1',
       expected
     )
     expect(result).toEqual({
@@ -89,7 +89,7 @@ describe('client.js - policy evaluation', () => {
     }
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/tenant1/packages/npm/namespace1/name1/1.0.0/policy-scans/scan1',
+      'https://policy.example.com/tenant1/packages/npm/namespace1/name1/1.0.0/policy-scans/scan1',
       expected
     )
     expect(result).toEqual({
@@ -135,7 +135,7 @@ describe('client.js - policy evaluation', () => {
     }
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/tenant1/packages/oci/name1/1.0.0/policy-scans/scan1',
+      'https://policy.example.com/tenant1/packages/oci/name1/1.0.0/policy-scans/scan1',
       expected
     )
     expect(result).toEqual({
