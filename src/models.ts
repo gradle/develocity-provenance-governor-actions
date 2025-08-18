@@ -5,25 +5,12 @@ export interface BaseErrorResponse<Request> {
   instance?: string
   request?: Request
 }
-export interface DevelocityInstance {
-  uri: string
-}
-
-export interface ArtifactoryInstance {
-  uri: string
-  path: string
-  graphqlPath: string
-}
 
 export interface Tenant {
   name: string
   description: string
-  develocityInstances: {
-    [key: string]: DevelocityInstance
-  }
-  artifactoryInstances: {
-    [key: string]: ArtifactoryInstance
-  }
+  develocityInstances: string[]
+  artifactoryInstances: string[]
 }
 
 export interface Package {
