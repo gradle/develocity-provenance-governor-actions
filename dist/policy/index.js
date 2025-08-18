@@ -27343,7 +27343,7 @@ class ApiClient {
      */
     evaluatePolicy(tenant, policyScan, purl, digest, repositoryUrl) {
         const namespacePath = purl.namespace ? `/${purl.namespace}` : '';
-        const evalUrl = `/${tenant}/packages/${purl.type}${namespacePath}/${purl.name}/${purl.version}/policy-scans/${policyScan}`;
+        const evalUrl = `${this.baseUrl}${tenant}/packages/${purl.type}${namespacePath}/${purl.name}/${purl.version}/policy-scans/${policyScan}`;
         const payload = JSON.stringify({
             repositoryUrl: repositoryUrl,
             sha256: digest
