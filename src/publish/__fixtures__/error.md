@@ -10,3 +10,16 @@
 
 **Type:** about:blank
 
+<details><summary>Raw Error Response</summary>
+
+```json
+{
+  "type": "about:blank",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "Tenant with name [my-404-tenant] not found.",
+  "instance": "/my-404-tenant/packages/oci/java-payment-calculator/1.0.0-SNAPSHOT-16152750186-4/attestations"
+}
+```
+</details>
+

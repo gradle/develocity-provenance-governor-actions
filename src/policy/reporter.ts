@@ -37,6 +37,7 @@ export class PolicySummaryReporter extends BaseReporter<
       core.setFailed(
         `Policy scan ${subject.scanName} evaluation errored for ${subject.subjectName}`
       )
+      core.error('Error response: ' + JSON.stringify(result, null, 2))
     }
 
     reportSubjectInfo(subject)

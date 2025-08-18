@@ -84,7 +84,7 @@ describe('main.ts', () => {
     await run()
 
     // then
-    // check error first, if something went wrong, fail fast
+    // handled by the reporter
     expect(core.setFailed).not.toHaveBeenCalled()
 
     // expect interactions
@@ -153,10 +153,9 @@ describe('main.ts', () => {
       .mockReturnValueOnce(['build-scan-id21', 'build-scan-id22']) // build-scan-ids
     await run()
 
-    // check error first, if something went wrong, fail fast
-    expect(core.setFailed).toHaveBeenCalledWith(
-      'Attestation publisher for subject: pkg:type22/namespace22/name22@version22 failed: Internal Server Error'
-    )
+    // then
+    // handled by the reporter
+    expect(core.setFailed).not.toHaveBeenCalled()
 
     // expect interactions
     expect(createClient).toHaveBeenNthCalledWith(

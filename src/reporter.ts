@@ -61,4 +61,11 @@ export function reportProblemDetails(result: BaseErrorResponse<unknown>) {
   if (result?.type) {
     core.summary.addRaw('**Type:** ').addRaw(result?.type).addEOL().addEOL()
   }
+
+  core.summary
+    .addDetails(
+      'Raw Error Response',
+      '\n\n```json\n' + JSON.stringify(result, null, 2) + '\n```\n'
+    )
+    .addEOL()
 }

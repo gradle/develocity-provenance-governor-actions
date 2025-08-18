@@ -71,14 +71,6 @@ export async function run(): Promise<void> {
       buildScanQueries ?? []
     )
 
-    // if error set failure status
-    result.onError((error) => {
-      core.setFailed(
-        `Attestation publisher for subject: ${subjectPurl} failed: ${error?.title}`
-      )
-      core.error(JSON.stringify(error, null, 2))
-    })
-
     // create summary
     const reporter = createPublisherReporter()
     const subject = new PublishRequestSubject(subjectPurl.toString(), {

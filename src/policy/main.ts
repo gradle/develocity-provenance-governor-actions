@@ -54,14 +54,6 @@ export async function run(): Promise<void> {
       repositoryUrl
     )
 
-    // if error set failure status
-    result.onError((error) => {
-      core.setFailed(
-        `Policy evaluation for subject: ${subjectDigest} failed: ${error?.title}`
-      )
-      core.error(JSON.stringify(error, null, 2))
-    })
-
     // create summary
     const reporter = createPolicyReporter()
     const subject = new PolicyRequestSubject(
