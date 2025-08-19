@@ -62,8 +62,13 @@ export interface PolicyAttestation {
   envelope: Envelope
   storeType: string
   storeUri: string
-  storeRequest: object
+  storeRequest: PolicyStoreRequest
   storeResponse: object
+}
+
+export interface PolicyStoreRequest {
+  uri?: string
+  [key: string]: unknown
 }
 
 export enum PolicyResultStatus {
