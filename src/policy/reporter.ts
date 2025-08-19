@@ -78,12 +78,12 @@ export class PolicySummaryReporter extends BaseReporter<
 function header(heading: string) {
   //TODO make reference the policy image in repo's main branch.  Needs the repo to be public
   const headerImage =
-    'https://gist.githubusercontent.com/bdemers/18c7a0fc36b0b1c0c88260fd9e228ad1/raw/db71e3a9b8220a9ea5e855be28711990b1afdcbe/attestation-header.svg'
+    'https://raw.githubusercontent.com/gist/rnett/38fcc9ed1bafaa96934a788630148884/raw/52411f8f4910ba25dd44d7434644ec8dd9e79ad6/policy-header.svg'
 
   core.summary
     .addBreak()
     .addEOL()
-    .addImage(headerImage, 'Policy Evaluation', {
+    .addImage(headerImage, 'Policy Evaluator', {
       width: '100%',
       height: 'auto'
     })
@@ -123,16 +123,20 @@ function reportFailures(results: PolicyAttestationEvaluation[]) {
       (e) => e.status == PolicyResultStatus.UNSATISFIED
     )
 
-    if (hasFailure) {
-      core.summary
-        .addEOL()
-        .addEOL()
-        .addRaw('## Unsatisfactory Attestation `')
-        .addRaw(attestation.storeUri)
-        .addRaw('`')
-        .addEOL()
-        .addEOL()
+    if (!hasFailure) {
+      return
     }
+
+    core.summary.addEOL().addEOL().addRaw('## Unsatisfactory Attestation')
+
+    if (attestation.storeRequest.uri) {
+      const uri = attestation.storeRequest.uri
+      core.summary
+        .addRaw(' `')
+        .addRaw(uri.substring(uri.lastIndexOf('/') + 1))
+        .addRaw('`')
+    }
+    core.summary.addEOL().addEOL()
 
     core.summary
       .addRaw('**Predicate Type:** `')
@@ -140,6 +144,14 @@ function reportFailures(results: PolicyAttestationEvaluation[]) {
       .addRaw('`')
       .addEOL()
       .addEOL()
+
+    if (attestation.envelope.payload.predicate.buildScanUri) {
+      core.summary
+        .addRaw('**Build Scan:** ')
+        .addRaw(attestation.envelope.payload.predicate.buildScanUri)
+        .addEOL()
+        .addEOL()
+    }
 
     core.summary
       .addDetails(
@@ -220,14 +232,16 @@ function reportAllResults(results: PolicyAttestationEvaluation[]) {
   core.summary.addRaw('<summary>Expand to see all results</summary>').addEOL()
 
   results.forEach((result) => {
-    core.summary
-      .addEOL()
-      .addEOL()
-      .addRaw('### Attestation `')
-      .addRaw(result.attestation.storeUri)
-      .addRaw('`')
-      .addEOL()
-      .addEOL()
+    core.summary.addEOL().addEOL().addRaw('### Attestation')
+
+    if (result.attestation.storeRequest.uri) {
+      const uri = result.attestation.storeRequest.uri
+      core.summary
+        .addRaw(' `')
+        .addRaw(uri.substring(uri.lastIndexOf('/') + 1))
+        .addRaw('`')
+    }
+    core.summary.addEOL().addEOL()
 
     core.summary
       .addRaw('**Predicate Type:** `')
@@ -235,6 +249,14 @@ function reportAllResults(results: PolicyAttestationEvaluation[]) {
       .addRaw('`')
       .addEOL()
       .addEOL()
+
+    if (result.attestation.envelope.payload.predicate.buildScanUri) {
+      core.summary
+        .addRaw('**Build Scan:** ')
+        .addRaw(result.attestation.envelope.payload.predicate.buildScanUri)
+        .addEOL()
+        .addEOL()
+    }
 
     core.summary
       .addDetails(

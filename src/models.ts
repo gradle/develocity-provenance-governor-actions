@@ -45,7 +45,12 @@ export interface AttestationStatement {
   predicateType: string
   subject: AttestationSubject[]
   _type: string
-  predicate: object
+  predicate: AttestationPredicate
+}
+
+export interface AttestationPredicate {
+  buildScanUri?: string
+  [key: string]: unknown
 }
 
 export interface Envelope {

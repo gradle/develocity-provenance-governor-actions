@@ -1,5 +1,6 @@
 import { BaseErrorResponse } from './models.js'
 import { PackageURL } from 'packageurl-js'
+import * as core from '@actions/core'
 import {
   PublishErrorResponse,
   PublishSuccessResponse
@@ -147,6 +148,18 @@ class ApiClient implements Client {
 
       return response.then(async (response) => {
         const data = await response.json()
+
+        if (core.isDebug()) {
+          core.debug(
+            'Received attestation publisher response: ' +
+              response.status +
+              ' ' +
+              response.statusText +
+              ' : ' +
+              JSON.stringify(data, null, 2)
+          )
+        }
+
         return new PublisherResult(
           response.status,
           response.ok,
@@ -203,6 +216,18 @@ class ApiClient implements Client {
 
       return response.then(async (response) => {
         const data = await response.json()
+
+        if (core.isDebug()) {
+          core.debug(
+            'Received policy evaluation response: ' +
+              response.status +
+              ' ' +
+              response.statusText +
+              ' : ' +
+              JSON.stringify(data, null, 2)
+          )
+        }
+
         return new PolicyResult(
           response.status,
           response.ok,
