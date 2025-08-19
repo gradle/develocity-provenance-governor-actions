@@ -27511,33 +27511,7 @@ function reportFailures(results) {
         if (!hasFailure) {
             return;
         }
-        coreExports.summary.addEOL().addEOL().addRaw('## Unsatisfactory Attestation');
-        if (attestation.storeRequest.uri) {
-            const uri = attestation.storeRequest.uri;
-            coreExports.summary
-                .addRaw(' `')
-                .addRaw(uri.substring(uri.lastIndexOf('/') + 1))
-                .addRaw('`');
-        }
-        coreExports.summary.addEOL().addEOL();
-        coreExports.summary
-            .addRaw('**Predicate Type:** `')
-            .addRaw(attestation.envelope.payload.predicateType)
-            .addRaw('`')
-            .addEOL()
-            .addEOL();
-        if (attestation.envelope.payload.predicate.buildScanUri) {
-            coreExports.summary
-                .addRaw('**Build Scan:** ')
-                .addRaw(attestation.envelope.payload.predicate.buildScanUri)
-                .addEOL()
-                .addEOL();
-        }
-        coreExports.summary
-            .addDetails('Attestation Envelope', '\n\n```json\n' +
-            JSON.stringify(attestation.envelope, null, 2) +
-            '\n```\n')
-            .addEOL();
+        reportAttestation(attestation, '## Unsatisfactory Attestation');
         evaluations.forEach((evaluation) => {
             if (evaluation.status == PolicyResultStatus.UNSATISFIED) {
                 reportFailure(attestation, evaluation);
@@ -27588,33 +27562,7 @@ function reportAllResults(results) {
     coreExports.summary.addRaw('<details>').addEOL();
     coreExports.summary.addRaw('<summary>Expand to see all results</summary>').addEOL();
     results.forEach((result) => {
-        coreExports.summary.addEOL().addEOL().addRaw('### Attestation');
-        if (result.attestation.storeRequest.uri) {
-            const uri = result.attestation.storeRequest.uri;
-            coreExports.summary
-                .addRaw(' `')
-                .addRaw(uri.substring(uri.lastIndexOf('/') + 1))
-                .addRaw('`');
-        }
-        coreExports.summary.addEOL().addEOL();
-        coreExports.summary
-            .addRaw('**Predicate Type:** `')
-            .addRaw(result.attestation.envelope.payload.predicateType)
-            .addRaw('`')
-            .addEOL()
-            .addEOL();
-        if (result.attestation.envelope.payload.predicate.buildScanUri) {
-            coreExports.summary
-                .addRaw('**Build Scan:** ')
-                .addRaw(result.attestation.envelope.payload.predicate.buildScanUri)
-                .addEOL()
-                .addEOL();
-        }
-        coreExports.summary
-            .addDetails('Envelope', '\n\n```json\n' +
-            JSON.stringify(result.attestation.envelope, null, 2) +
-            '\n```\n')
-            .addEOL();
+        reportAttestation(result.attestation, '### Attestation');
         const tableRoes = [
             [
                 { data: 'Policy', header: true },
@@ -27636,6 +27584,61 @@ function reportAllResults(results) {
         coreExports.summary.addTable(tableRoes).addEOL();
     });
     coreExports.summary.addRaw('</details>').addEOL();
+}
+function reportAttestation(attestation, headerText) {
+    coreExports.summary.addEOL().addEOL().addRaw(headerText);
+    if (attestation.storeRequest.uri) {
+        const uri = attestation.storeRequest.uri;
+        coreExports.summary
+            .addRaw(' `')
+            .addRaw(uri.substring(uri.lastIndexOf('/') + 1))
+            .addRaw('`');
+    }
+    coreExports.summary.addEOL().addEOL();
+    coreExports.summary
+        .addRaw('**Predicate Type:** `')
+        .addRaw(attestation.envelope.payload.predicateType)
+        .addRaw('`')
+        .addEOL()
+        .addEOL();
+    if (attestation.envelope.payload.predicate.buildScanUri) {
+        coreExports.summary
+            .addRaw('**Build Scan:** ')
+            .addRaw(attestation.envelope.payload.predicate.buildScanUri)
+            .addEOL()
+            .addEOL();
+    }
+    coreExports.summary
+        .addRaw('**Attestation Store:** `')
+        .addRaw(attestation.storeUri)
+        .addRaw('`')
+        .addEOL()
+        .addEOL();
+    coreExports.summary.addRaw('<details>').addEOL();
+    coreExports.summary
+        .addRaw('<summary>Attestation Details</summary>')
+        .addEOL()
+        .addEOL();
+    if (attestation.storeRequest.uri) {
+        coreExports.summary
+            .addRaw('Attestation URI: `')
+            .addRaw(attestation.storeRequest.uri)
+            .addRaw('`')
+            .addEOL()
+            .addEOL();
+    }
+    coreExports.summary
+        .addRaw('Envelope:')
+        .addEOL()
+        .addEOL()
+        .addRaw('```json')
+        .addEOL()
+        .addRaw(JSON.stringify(attestation.envelope, null, 2))
+        .addEOL()
+        .addRaw('```')
+        .addEOL()
+        .addEOL();
+    coreExports.summary.addRaw('</details>').addEOL().addEOL();
 }
 function statusIcon(status) {
     switch (status) {
