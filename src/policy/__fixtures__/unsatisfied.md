@@ -125,6 +125,9 @@ Envelope:
 </td><td>❌</td><td>Repository source verification failed</td></tr><tr><td>
 
 `https://policies.example.com/build-scan-verification`
-</td><td>✅</td><td>Build scan verification passed</td></tr></table>
+</td><td>✅</td><td>Build scan verification passed</td></tr><tr><td>
+
+`https://policies.example.com/jvm-verification`
+</td><td>N/A</td><td></tr></table>
 
 </details>
