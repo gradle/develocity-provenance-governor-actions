@@ -143,9 +143,15 @@ function reportFailure(
   attestation: PolicyAttestation,
   evaluation: PolicyEvaluation
 ) {
-  core.error(
-    `Attestation ${attestation.storeUri} failed policy ${evaluation.policyUri}`
-  )
+  if (attestation.storeRequest.uri) {
+    const uri = attestation.storeRequest.uri
+    core.error(
+      `Attestation ${uri.substring(uri.lastIndexOf('/') + 1)} failed policy ${evaluation.policyUri}`
+    )
+  } else {
+    core.error(`Attestation failed policy ${evaluation.policyUri}`)
+  }
+
   core.summary
     .addRaw('### Unsatisfied policy `')
     .addRaw(evaluation.policyUri)
