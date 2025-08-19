@@ -27323,6 +27323,14 @@ class ApiClient {
             });
             return response.then(async (response) => {
                 const data = await response.json();
+                if (coreExports.isDebug()) {
+                    coreExports.debug('Received attestation publisher response: ' +
+                        response.status +
+                        ' ' +
+                        response.statusText +
+                        ' : ' +
+                        JSON.stringify(data, null, 2));
+                }
                 return new PublisherResult(response.status, response.ok, data);
             });
         }
@@ -27362,6 +27370,14 @@ class ApiClient {
             });
             return response.then(async (response) => {
                 const data = await response.json();
+                if (coreExports.isDebug()) {
+                    coreExports.debug('Received policy evaluation response: ' +
+                        response.status +
+                        ' ' +
+                        response.statusText +
+                        ' : ' +
+                        JSON.stringify(data, null, 2));
+                }
                 return new PolicyResult(response.status, response.ok, data);
             });
         }
@@ -27492,22 +27508,31 @@ function reportSubjectInfo(subject) {
 function reportFailures(results) {
     results.forEach(({ attestation, evaluations }) => {
         const hasFailure = evaluations.some((e) => e.status == PolicyResultStatus.UNSATISFIED);
-        if (hasFailure) {
-            coreExports.summary
-                .addEOL()
-                .addEOL()
-                .addRaw('## Unsatisfactory Attestation `')
-                .addRaw(attestation.storeUri)
-                .addRaw('`')
-                .addEOL()
-                .addEOL();
+        if (!hasFailure) {
+            return;
         }
+        coreExports.summary.addEOL().addEOL().addRaw('## Unsatisfactory Attestation');
+        if (attestation.storeRequest.uri) {
+            const uri = attestation.storeRequest.uri;
+            coreExports.summary
+                .addRaw(' `')
+                .addRaw(uri.substring(uri.lastIndexOf('/') + 1))
+                .addRaw('`');
+        }
+        coreExports.summary.addEOL().addEOL();
         coreExports.summary
             .addRaw('**Predicate Type:** `')
             .addRaw(attestation.envelope.payload.predicateType)
             .addRaw('`')
             .addEOL()
             .addEOL();
+        if (attestation.envelope.payload.predicate.buildScanUri) {
+            coreExports.summary
+                .addRaw('**Build Scan:** ')
+                .addRaw(attestation.envelope.payload.predicate.buildScanUri)
+                .addEOL()
+                .addEOL();
+        }
         coreExports.summary
             .addDetails('Attestation Envelope', '\n\n```json\n' +
             JSON.stringify(attestation.envelope, null, 2) +
@@ -27563,20 +27588,28 @@ function reportAllResults(results) {
     coreExports.summary.addRaw('<details>').addEOL();
     coreExports.summary.addRaw('<summary>Expand to see all results</summary>').addEOL();
     results.forEach((result) => {
-        coreExports.summary
-            .addEOL()
-            .addEOL()
-            .addRaw('### Attestation `')
-            .addRaw(result.attestation.storeUri)
-            .addRaw('`')
-            .addEOL()
-            .addEOL();
+        coreExports.summary.addEOL().addEOL().addRaw('### Attestation');
+        if (result.attestation.storeRequest.uri) {
+            const uri = result.attestation.storeRequest.uri;
+            coreExports.summary
+                .addRaw(' `')
+                .addRaw(uri.substring(uri.lastIndexOf('/') + 1))
+                .addRaw('`');
+        }
+        coreExports.summary.addEOL().addEOL();
         coreExports.summary
             .addRaw('**Predicate Type:** `')
             .addRaw(result.attestation.envelope.payload.predicateType)
             .addRaw('`')
             .addEOL()
             .addEOL();
+        if (result.attestation.envelope.payload.predicate.buildScanUri) {
+            coreExports.summary
+                .addRaw('**Build Scan:** ')
+                .addRaw(result.attestation.envelope.payload.predicate.buildScanUri)
+                .addEOL()
+                .addEOL();
+        }
         coreExports.summary
             .addDetails('Envelope', '\n\n```json\n' +
             JSON.stringify(result.attestation.envelope, null, 2) +

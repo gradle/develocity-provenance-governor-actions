@@ -27323,6 +27323,14 @@ class ApiClient {
             });
             return response.then(async (response) => {
                 const data = await response.json();
+                if (coreExports.isDebug()) {
+                    coreExports.debug('Received attestation publisher response: ' +
+                        response.status +
+                        ' ' +
+                        response.statusText +
+                        ' : ' +
+                        JSON.stringify(data, null, 2));
+                }
                 return new PublisherResult(response.status, response.ok, data);
             });
         }
@@ -27362,6 +27370,14 @@ class ApiClient {
             });
             return response.then(async (response) => {
                 const data = await response.json();
+                if (coreExports.isDebug()) {
+                    coreExports.debug('Received policy evaluation response: ' +
+                        response.status +
+                        ' ' +
+                        response.statusText +
+                        ' : ' +
+                        JSON.stringify(data, null, 2));
+                }
                 return new PolicyResult(response.status, response.ok, data);
             });
         }
