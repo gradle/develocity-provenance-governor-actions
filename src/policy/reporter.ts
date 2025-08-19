@@ -78,12 +78,12 @@ export class PolicySummaryReporter extends BaseReporter<
 function header(heading: string) {
   //TODO make reference the policy image in repo's main branch.  Needs the repo to be public
   const headerImage =
-    'https://gist.githubusercontent.com/bdemers/18c7a0fc36b0b1c0c88260fd9e228ad1/raw/db71e3a9b8220a9ea5e855be28711990b1afdcbe/attestation-header.svg'
+    'https://raw.githubusercontent.com/gist/rnett/38fcc9ed1bafaa96934a788630148884/raw/52411f8f4910ba25dd44d7434644ec8dd9e79ad6/policy-header.svg'
 
   core.summary
     .addBreak()
     .addEOL()
-    .addImage(headerImage, 'Policy Evaluation', {
+    .addImage(headerImage, 'Policy Evaluator', {
       width: '100%',
       height: 'auto'
     })
