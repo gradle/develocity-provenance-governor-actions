@@ -127,40 +127,7 @@ function reportFailures(results: PolicyAttestationEvaluation[]) {
       return
     }
 
-    core.summary.addEOL().addEOL().addRaw('## Unsatisfactory Attestation')
-
-    if (attestation.storeRequest.uri) {
-      const uri = attestation.storeRequest.uri
-      core.summary
-        .addRaw(' `')
-        .addRaw(uri.substring(uri.lastIndexOf('/') + 1))
-        .addRaw('`')
-    }
-    core.summary.addEOL().addEOL()
-
-    core.summary
-      .addRaw('**Predicate Type:** `')
-      .addRaw(attestation.envelope.payload.predicateType)
-      .addRaw('`')
-      .addEOL()
-      .addEOL()
-
-    if (attestation.envelope.payload.predicate.buildScanUri) {
-      core.summary
-        .addRaw('**Build Scan:** ')
-        .addRaw(attestation.envelope.payload.predicate.buildScanUri)
-        .addEOL()
-        .addEOL()
-    }
-
-    core.summary
-      .addDetails(
-        'Attestation Envelope',
-        '\n\n```json\n' +
-          JSON.stringify(attestation.envelope, null, 2) +
-          '\n```\n'
-      )
-      .addEOL()
+    reportAttestation(attestation, '## Unsatisfactory Attestation')
 
     evaluations.forEach((evaluation) => {
       if (evaluation.status == PolicyResultStatus.UNSATISFIED) {
@@ -232,40 +199,7 @@ function reportAllResults(results: PolicyAttestationEvaluation[]) {
   core.summary.addRaw('<summary>Expand to see all results</summary>').addEOL()
 
   results.forEach((result) => {
-    core.summary.addEOL().addEOL().addRaw('### Attestation')
-
-    if (result.attestation.storeRequest.uri) {
-      const uri = result.attestation.storeRequest.uri
-      core.summary
-        .addRaw(' `')
-        .addRaw(uri.substring(uri.lastIndexOf('/') + 1))
-        .addRaw('`')
-    }
-    core.summary.addEOL().addEOL()
-
-    core.summary
-      .addRaw('**Predicate Type:** `')
-      .addRaw(result.attestation.envelope.payload.predicateType)
-      .addRaw('`')
-      .addEOL()
-      .addEOL()
-
-    if (result.attestation.envelope.payload.predicate.buildScanUri) {
-      core.summary
-        .addRaw('**Build Scan:** ')
-        .addRaw(result.attestation.envelope.payload.predicate.buildScanUri)
-        .addEOL()
-        .addEOL()
-    }
-
-    core.summary
-      .addDetails(
-        'Envelope',
-        '\n\n```json\n' +
-          JSON.stringify(result.attestation.envelope, null, 2) +
-          '\n```\n'
-      )
-      .addEOL()
+    reportAttestation(result.attestation, '### Attestation')
 
     const tableRoes: SummaryTableRow[] = [
       [
@@ -291,6 +225,71 @@ function reportAllResults(results: PolicyAttestationEvaluation[]) {
   })
 
   core.summary.addRaw('</details>').addEOL()
+}
+
+function reportAttestation(attestation: PolicyAttestation, headerText: string) {
+  core.summary.addEOL().addEOL().addRaw(headerText)
+
+  if (attestation.storeRequest.uri) {
+    const uri = attestation.storeRequest.uri
+    core.summary
+      .addRaw(' `')
+      .addRaw(uri.substring(uri.lastIndexOf('/') + 1))
+      .addRaw('`')
+  }
+  core.summary.addEOL().addEOL()
+
+  core.summary
+    .addRaw('**Predicate Type:** `')
+    .addRaw(attestation.envelope.payload.predicateType)
+    .addRaw('`')
+    .addEOL()
+    .addEOL()
+
+  if (attestation.envelope.payload.predicate.buildScanUri) {
+    core.summary
+      .addRaw('**Build Scan:** ')
+      .addRaw(attestation.envelope.payload.predicate.buildScanUri)
+      .addEOL()
+      .addEOL()
+  }
+
+  core.summary
+    .addRaw('**Attestation Store:** `')
+    .addRaw(attestation.storeUri)
+    .addRaw('`')
+    .addEOL()
+    .addEOL()
+
+  core.summary.addRaw('<details>').addEOL()
+
+  core.summary
+    .addRaw('<summary>Attestation Details</summary>')
+    .addEOL()
+    .addEOL()
+
+  if (attestation.storeRequest.uri) {
+    core.summary
+      .addRaw('Attestation URI: `')
+      .addRaw(attestation.storeRequest.uri)
+      .addRaw('`')
+      .addEOL()
+      .addEOL()
+  }
+
+  core.summary
+    .addRaw('Envelope:')
+    .addEOL()
+    .addEOL()
+    .addRaw('```json')
+    .addEOL()
+    .addRaw(JSON.stringify(attestation.envelope, null, 2))
+    .addEOL()
+    .addRaw('```')
+    .addEOL()
+    .addEOL()
+
+  core.summary.addRaw('</details>').addEOL().addEOL()
 }
 
 function statusIcon(status: PolicyResultStatus): string {
