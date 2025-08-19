@@ -27521,7 +27521,13 @@ function reportFailures(results) {
     });
 }
 function reportFailure(attestation, evaluation) {
-    coreExports.error(`Attestation ${attestation.storeUri} failed policy ${evaluation.policyUri}`);
+    if (attestation.storeRequest.uri) {
+        const uri = attestation.storeRequest.uri;
+        coreExports.error(`Attestation ${uri.substring(uri.lastIndexOf('/') + 1)} failed policy ${evaluation.policyUri}`);
+    }
+    else {
+        coreExports.error(`Attestation failed policy ${evaluation.policyUri}`);
+    }
     coreExports.summary
         .addRaw('### Unsatisfied policy `')
         .addRaw(evaluation.policyUri)
