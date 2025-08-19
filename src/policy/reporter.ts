@@ -222,7 +222,7 @@ function reportAllResults(results: PolicyAttestationEvaluation[]) {
         {
           data: evaluation.details.description
             ? evaluation.details.description
-            : 'No description provided'
+            : ''
         }
       ])
     })
@@ -304,8 +304,8 @@ function statusIcon(status: PolicyResultStatus): string {
       return '✅'
     case PolicyResultStatus.UNSATISFIED:
       return '❌'
-    case PolicyResultStatus.UNSUPPORTED_PREDICATE_TYPE:
-      return 'N/A'
+    case PolicyResultStatus.NOT_APPLICABLE:
+      return 'N/A' //TODO why isn't this being used?
     default:
       return '❓'
   }

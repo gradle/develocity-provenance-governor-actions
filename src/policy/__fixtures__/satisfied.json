@@ -67,6 +67,15 @@
             "category": "verification",
             "severity": "medium"
           }
+        },
+        {
+          "policyUri": "https://policies.example.com/jvm-verification",
+          "status": "NOT_APPLICABLE",
+          "details": {},
+          "labels": {
+            "category": "verification",
+            "severity": "medium"
+          }
         }
       ]
     }

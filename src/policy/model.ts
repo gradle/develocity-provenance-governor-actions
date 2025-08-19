@@ -74,7 +74,7 @@ export interface PolicyStoreRequest {
 export enum PolicyResultStatus {
   SATISFIED = 'SATISFIED',
   UNSATISFIED = 'UNSATISFIED',
-  UNSUPPORTED_PREDICATE_TYPE = 'UNSUPPORTED_PREDICATE_TYPE'
+  NOT_APPLICABLE = 'NOT_APPLICABLE'
 }
 
 export interface PolicyEvaluation {
