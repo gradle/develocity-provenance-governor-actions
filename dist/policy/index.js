@@ -27436,7 +27436,7 @@ var PolicyResultStatus;
 (function (PolicyResultStatus) {
     PolicyResultStatus["SATISFIED"] = "SATISFIED";
     PolicyResultStatus["UNSATISFIED"] = "UNSATISFIED";
-    PolicyResultStatus["UNSUPPORTED_PREDICATE_TYPE"] = "UNSUPPORTED_PREDICATE_TYPE";
+    PolicyResultStatus["NOT_APPLICABLE"] = "NOT_APPLICABLE";
 })(PolicyResultStatus || (PolicyResultStatus = {}));
 
 function createPolicyReporter() {
@@ -27583,7 +27583,7 @@ function reportAllResults(results) {
                 {
                     data: evaluation.details.description
                         ? evaluation.details.description
-                        : 'No description provided'
+                        : ''
                 }
             ]);
         });
@@ -27652,8 +27652,8 @@ function statusIcon(status) {
             return '✅';
         case PolicyResultStatus.UNSATISFIED:
             return '❌';
-        case PolicyResultStatus.UNSUPPORTED_PREDICATE_TYPE:
-            return 'N/A';
+        case PolicyResultStatus.NOT_APPLICABLE:
+            return 'N/A'; //TODO why isn't this being used?
         default:
             return '❓';
     }
