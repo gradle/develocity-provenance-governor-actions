@@ -21,7 +21,14 @@
 
 **Build Scan:** https://develocity.grdev.net/s/u4cqaqnytbwga
 
-<details><summary>Attestation Envelope</summary>
+**Attestation Store:** `https://develocitytia.jfrog.io/attestation/`
+
+<details>
+<summary>Attestation Details</summary>
+
+Attestation URI: `https://develocitytia.jfrog.io/artifactory/docker-trial/.evidence/ed0870faabc4387c5fee46e3b26ab0262610764cc6a708d37dc84a54e90652f6/a30f98e704871a244ac3f28c2ada5c120afe756e981438f221e21fff3042a11b/gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
+
+Envelope:
 
 ```json
 {
@@ -43,6 +50,7 @@
   }
 }
 ```
+
 </details>
 
 ### Unsatisfied policy `https://policies.example.com/repo-source-check`
@@ -79,7 +87,14 @@
 
 **Build Scan:** https://develocity.grdev.net/s/u4cqaqnytbwga
 
-<details><summary>Envelope</summary>
+**Attestation Store:** `https://develocitytia.jfrog.io/attestation/`
+
+<details>
+<summary>Attestation Details</summary>
+
+Attestation URI: `https://develocitytia.jfrog.io/artifactory/docker-trial/.evidence/ed0870faabc4387c5fee46e3b26ab0262610764cc6a708d37dc84a54e90652f6/a30f98e704871a244ac3f28c2ada5c120afe756e981438f221e21fff3042a11b/gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
+
+Envelope:
 
 ```json
 {
@@ -101,6 +116,7 @@
   }
 }
 ```
+
 </details>
 
 <table><tr><th>Policy</th><th>Status</th><th>Description</th></tr><tr><td>
