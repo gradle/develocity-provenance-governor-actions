@@ -123,16 +123,20 @@ function reportFailures(results: PolicyAttestationEvaluation[]) {
       (e) => e.status == PolicyResultStatus.UNSATISFIED
     )
 
-    if (hasFailure) {
-      core.summary
-        .addEOL()
-        .addEOL()
-        .addRaw('## Unsatisfactory Attestation `')
-        .addRaw(attestation.storeUri)
-        .addRaw('`')
-        .addEOL()
-        .addEOL()
+    if (!hasFailure) {
+      return
     }
+
+    core.summary.addEOL().addEOL().addRaw('## Unsatisfactory Attestation')
+
+    if (attestation.storeRequest.uri) {
+      const uri = attestation.storeRequest.uri
+      core.summary
+        .addRaw(' `')
+        .addRaw(uri.substring(uri.lastIndexOf('/') + 1))
+        .addRaw('`')
+    }
+    core.summary.addEOL().addEOL()
 
     core.summary
       .addRaw('**Predicate Type:** `')
@@ -140,6 +144,14 @@ function reportFailures(results: PolicyAttestationEvaluation[]) {
       .addRaw('`')
       .addEOL()
       .addEOL()
+
+    if (attestation.envelope.payload.predicate.buildScanUri) {
+      core.summary
+        .addRaw('**Build Scan:** ')
+        .addRaw(attestation.envelope.payload.predicate.buildScanUri)
+        .addEOL()
+        .addEOL()
+    }
 
     core.summary
       .addDetails(
@@ -220,14 +232,16 @@ function reportAllResults(results: PolicyAttestationEvaluation[]) {
   core.summary.addRaw('<summary>Expand to see all results</summary>').addEOL()
 
   results.forEach((result) => {
-    core.summary
-      .addEOL()
-      .addEOL()
-      .addRaw('### Attestation `')
-      .addRaw(result.attestation.storeUri)
-      .addRaw('`')
-      .addEOL()
-      .addEOL()
+    core.summary.addEOL().addEOL().addRaw('### Attestation')
+
+    if (result.attestation.storeRequest.uri) {
+      const uri = result.attestation.storeRequest.uri
+      core.summary
+        .addRaw(' `')
+        .addRaw(uri.substring(uri.lastIndexOf('/') + 1))
+        .addRaw('`')
+    }
+    core.summary.addEOL().addEOL()
 
     core.summary
       .addRaw('**Predicate Type:** `')
@@ -235,6 +249,14 @@ function reportAllResults(results: PolicyAttestationEvaluation[]) {
       .addRaw('`')
       .addEOL()
       .addEOL()
+
+    if (result.attestation.envelope.payload.predicate.buildScanUri) {
+      core.summary
+        .addRaw('**Build Scan:** ')
+        .addRaw(result.attestation.envelope.payload.predicate.buildScanUri)
+        .addEOL()
+        .addEOL()
+    }
 
     core.summary
       .addDetails(

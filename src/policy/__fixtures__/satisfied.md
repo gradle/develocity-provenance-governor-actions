@@ -19,9 +19,11 @@
 <summary>Expand to see all results</summary>
 
 
-### Attestation `https://develocitytia.jfrog.io/attestation/1`
+### Attestation `gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
 
 **Predicate Type:** `https://gradle.com/attestations/repository/v1`
+
+**Build Scan:** https://develocity.grdev.net/s/u4cqaqnytbwga
 
 <details><summary>Envelope</summary>
 
