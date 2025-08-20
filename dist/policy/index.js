@@ -27535,9 +27535,9 @@ function reportTable(results) {
     const tableRows = [
         [
             { data: 'Attestation', header: true },
+            { data: 'Status', header: true },
             { data: 'Predicate Type', header: true },
             { data: 'Build Scan', header: true },
-            { data: 'Status', header: true },
             { data: 'Satisfied Policies', header: true },
             { data: 'Unsatisfied Policies', header: true },
             { data: 'Details', header: true }
@@ -27551,6 +27551,7 @@ function reportTable(results) {
             : PolicyResultStatus.SATISFIED;
         tableRows.push([
             { data: '\n\n`' + attestationName(result.attestation) + '`\n' },
+            { data: statusIcon(status) },
             {
                 data: '\n\n`' + result.attestation.envelope.payload.predicateType + '`\n'
             },
@@ -27559,7 +27560,6 @@ function reportTable(results) {
                     (result.attestation.envelope.payload.predicate.buildScanUri ?? '') +
                     '\n'
             },
-            { data: statusIcon(status) },
             { data: successCount.toString() },
             { data: failureCount.toString() },
             // the user-content- is something needed for GitHub for the summary link to work
