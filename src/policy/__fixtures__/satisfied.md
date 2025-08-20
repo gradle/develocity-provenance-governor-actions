@@ -27,11 +27,11 @@ https://develocity.grdev.net/s/u4cqaqnytbwga
 [Link](#user-content-attestation-detail-0)
 </td></tr></table>
 
-## Full results
+# Details
 
 
 
-### <a name="attestation-detail-0"></a> Attestation `gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
+## <a name="attestation-detail-0"></a> Attestation `gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
 
 **Predicate Type:** `https://gradle.com/attestations/repository/v1`
 
@@ -69,14 +69,44 @@ Envelope:
 
 </details>
 
-<table><tr><th>Policy</th><th>Status</th><th>Description</th></tr><tr><td>
+<table><tr><th>Policy</th><th>Status</th><th>Description</th><th>Remediation</th><th>Labels</th><th>Details</th></tr><tr><td>
 
 `https://policies.example.com/repo-source-check`
-</td><td>✅</td><td>Repository source verification passed</td></tr><tr><td>
+</td><td>✅</td><td>Repository source verification passed</td><td><td>
+
+```json
+{
+  "category": "security",
+  "severity": "high"
+}
+```
+</td><td>
+
+```json
+{
+  "description": "Repository source verification passed"
+}
+```
+</td></tr><tr><td>
 
 `https://policies.example.com/build-scan-verification`
-</td><td>✅</td><td>Build scan verification passed</td></tr><tr><td>
+</td><td>✅</td><td>Build scan verification passed</td><td><td>
+
+```json
+{
+  "category": "verification",
+  "severity": "medium"
+}
+```
+</td><td>
+
+```json
+{
+  "description": "Build scan verification passed"
+}
+```
+</td></tr><tr><td>
 
 `https://policies.example.com/jvm-verification`
-</td><td>N/A</td><td></tr></table>
+</td><td>N/A</td><td><td><td><td>Not applicable to this predicate type</td></tr></table>
 
