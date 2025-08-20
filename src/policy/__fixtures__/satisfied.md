@@ -24,7 +24,7 @@
 https://develocity.grdev.net/s/u4cqaqnytbwga
 </td><td>✅</td><td>2</td><td>0</td><td>
 
-[Link](#attestation-detail-0)
+[Link](#user-content-attestation-detail-0)
 </td></tr></table>
 
 ## Full results

@@ -170,7 +170,8 @@ function reportTable(results: PolicyAttestationEvaluation[]) {
       { data: statusIcon(status) },
       { data: successCount.toString() },
       { data: failureCount.toString() },
-      { data: `\n\n[Link](#attestation-detail-${index})\n` }
+      // the user-content- is something needed for GitHub for the summary link to work
+      { data: `\n\n[Link](#user-content-attestation-detail-${index})\n` }
     ])
   })
 
