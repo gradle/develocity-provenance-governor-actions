@@ -27524,8 +27524,7 @@ function reportTable(results) {
             { data: 'Status', header: true },
             { data: 'Satisfied Policies', header: true },
             { data: 'Unsatisfied Policies', header: true },
-            { data: 'Attestation Details', header: true },
-            { data: 'Policy Evaluation Details', header: true }
+            { data: 'Details', header: true }
         ]
     ];
     results.forEach((result, index) => {
@@ -27534,10 +27533,6 @@ function reportTable(results) {
         const status = failureCount > 0
             ? PolicyResultStatus.UNSATISFIED
             : PolicyResultStatus.SATISFIED;
-        let failureDetails = '';
-        if (failureCount > 0) {
-            failureDetails = `\n\n[Link](#attestation-failure-detail-${index})\n`;
-        }
         tableRows.push([
             { data: '\n\n`' + attestationName(result.attestation) + '`\n' },
             {
@@ -27551,71 +27546,38 @@ function reportTable(results) {
             { data: statusIcon(status) },
             { data: successCount.toString() },
             { data: failureCount.toString() },
-            { data: `\n\n[Link](#attestation-detail-${index})\n` },
-            { data: failureDetails }
+            { data: `\n\n[Link](#attestation-detail-${index})\n` }
         ]);
     });
     coreExports.summary.addTable(tableRows).addEOL();
 }
 function reportFailures(results) {
-    results.forEach(({ attestation, evaluations }, index) => {
+    results.forEach(({ attestation, evaluations }) => {
         const hasFailure = evaluations.some((e) => e.status == PolicyResultStatus.UNSATISFIED);
         if (!hasFailure) {
             return;
         }
-        reportAttestation(attestation, `##  <a name="attestation-failure-detail-${index}"></a> Unsatisfactory Attestation`);
+        // reportAttestation(
+        //   attestation,
+        //   `##  <a name="attestation-failure-detail-${index}"></a> Unsatisfactory Attestation`
+        // )
         evaluations.forEach((evaluation) => {
             if (evaluation.status == PolicyResultStatus.UNSATISFIED) {
-                reportFailure(attestation, evaluation);
+                coreExports.error(`Attestation ${attestationName(attestation)} failed policy ${evaluation.policyUri}`);
+                // reportFailure(attestation, evaluation)
             }
         });
-        coreExports.summary.addEOL();
+        // core.summary.addEOL()
     });
-}
-function reportFailure(attestation, evaluation) {
-    coreExports.error(`Attestation ${attestationName(attestation)} failed policy ${evaluation.policyUri}`);
-    coreExports.summary
-        .addRaw('### Unsatisfied policy `')
-        .addRaw(evaluation.policyUri)
-        .addRaw('`')
-        .addEOL()
-        .addEOL();
-    if (evaluation.details.description) {
-        coreExports.summary
-            .addRaw('**Description:** ')
-            .addRaw(evaluation.details.description)
-            .addEOL()
-            .addEOL();
-    }
-    if (evaluation.details.remediation) {
-        coreExports.summary
-            .addRaw('**Remediation:** ')
-            .addRaw(evaluation.details.remediation)
-            .addEOL()
-            .addEOL();
-    }
-    coreExports.summary.addRaw('**Labels:**').addEOL();
-    for (const label in evaluation.labels) {
-        coreExports.summary
-            .addRaw(' * ')
-            .addRaw('`' + label + '`')
-            .addRaw(' = ')
-            .addRaw('`' + evaluation.labels[label] + '`')
-            .addEOL();
-    }
-    coreExports.summary.addEOL();
-    coreExports.summary
-        .addDetails('Policy Details', '\n\n```json\n' + JSON.stringify(evaluation.details, null, 2) + '\n```\n')
-        .addEOL();
-    coreExports.summary.addEOL();
 }
 function reportAllResults(results) {
     coreExports.summary.addRaw('## Full results').addEOL().addEOL();
-    coreExports.summary.addRaw('<details>').addEOL();
-    coreExports.summary.addRaw('<summary>Expand to see all results</summary>').addEOL();
+    // core.summary.addRaw('<details>').addEOL()
+    //
+    // core.summary.addRaw('<summary>Expand to see all results</summary>').addEOL()
     results.forEach((result, index) => {
         reportAttestation(result.attestation, `### <a name="attestation-detail-${index}"></a> Attestation`);
-        const tableRoes = [
+        const tableRows = [
             [
                 { data: 'Policy', header: true },
                 { data: 'Status', header: true },
@@ -27623,7 +27585,7 @@ function reportAllResults(results) {
             ]
         ];
         result.evaluations.forEach((evaluation) => {
-            tableRoes.push([
+            tableRows.push([
                 { data: `\n\n\`${evaluation.policyUri}\`\n` },
                 { data: statusIcon(evaluation.status) },
                 {
@@ -27633,9 +27595,9 @@ function reportAllResults(results) {
                 }
             ]);
         });
-        coreExports.summary.addTable(tableRoes).addEOL();
+        coreExports.summary.addTable(tableRows).addEOL();
     });
-    coreExports.summary.addRaw('</details>').addEOL();
+    // core.summary.addRaw('</details>').addEOL()
 }
 function reportAttestation(attestation, headerPrefix, headerPostfix = null) {
     coreExports.summary.addEOL().addEOL().addRaw(headerPrefix);
