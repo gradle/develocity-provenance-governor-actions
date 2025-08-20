@@ -69,27 +69,11 @@ Envelope:
 
 </details>
 
+**Policy Results:**
+
 <table><tr><th>Policy</th><th>Status</th><th>Description</th><th>Remediation</th><th>Labels</th><th>Details</th></tr><tr><td>
 
-`https://policies.example.com/repo-source-check`
-</td><td>✅</td><td>Repository source verification passed</td><td><td>
-
-```json
-{
-  "category": "security",
-  "severity": "high"
-}
-```
-</td><td>
-
-```json
-{
-  "description": "Repository source verification passed"
-}
-```
-</td></tr><tr><td>
-
-`https://policies.example.com/build-scan-verification`
+`build-scan-verification`
 </td><td>✅</td><td>Build scan verification passed</td><td><td>
 
 ```json
@@ -107,6 +91,24 @@ Envelope:
 ```
 </td></tr><tr><td>
 
-`https://policies.example.com/jvm-verification`
+`repo-source-check`
+</td><td>✅</td><td>Repository source verification passed</td><td><td>
+
+```json
+{
+  "category": "security",
+  "severity": "high"
+}
+```
+</td><td>
+
+```json
+{
+  "description": "Repository source verification passed"
+}
+```
+</td></tr><tr><td>
+
+`jvm-verification`
 </td><td>N/A</td><td><td><td><td>Not applicable to this predicate type</td></tr></table>
 
