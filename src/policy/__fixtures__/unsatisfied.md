@@ -25,11 +25,14 @@ https://develocity.grdev.net/s/u4cqaqnytbwga
 </td><td>❌</td><td>1</td><td>1</td><td>
 
 [Link](#attestation-detail-0)
-</td><td></tr></table>
+</td><td>
+
+[Link](#attestation-failure-detail-0)
+</td></tr></table>
 
 
 
-## Unsatisfactory Attestation `gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
+##  <a name="attestation-failure-detail-0"></a> Unsatisfactory Attestation `gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
 
 **Predicate Type:** `https://gradle.com/attestations/repository/v1`
 

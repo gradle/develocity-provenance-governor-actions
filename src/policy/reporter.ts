@@ -156,6 +156,11 @@ function reportTable(results: PolicyAttestationEvaluation[]) {
         ? PolicyResultStatus.UNSATISFIED
         : PolicyResultStatus.SATISFIED
 
+    let failureDetails = ''
+    if (failureCount > 0) {
+      failureDetails = `\n\n[Link](#attestation-failure-detail-${index})\n`
+    }
+
     tableRows.push([
       { data: '\n\n`' + attestationName(result.attestation) + '`\n' },
       {
@@ -172,7 +177,7 @@ function reportTable(results: PolicyAttestationEvaluation[]) {
       { data: successCount.toString() },
       { data: failureCount.toString() },
       { data: `\n\n[Link](#attestation-detail-${index})\n` },
-      { data: '' }
+      { data: failureDetails }
     ])
   })
 
@@ -180,7 +185,7 @@ function reportTable(results: PolicyAttestationEvaluation[]) {
 }
 
 function reportFailures(results: PolicyAttestationEvaluation[]) {
-  results.forEach(({ attestation, evaluations }) => {
+  results.forEach(({ attestation, evaluations }, index) => {
     const hasFailure = evaluations.some(
       (e) => e.status == PolicyResultStatus.UNSATISFIED
     )
@@ -189,7 +194,10 @@ function reportFailures(results: PolicyAttestationEvaluation[]) {
       return
     }
 
-    reportAttestation(attestation, '## Unsatisfactory Attestation')
+    reportAttestation(
+      attestation,
+      `##  <a name="attestation-failure-detail-${index}"></a> Unsatisfactory Attestation`
+    )
 
     evaluations.forEach((evaluation) => {
       if (evaluation.status == PolicyResultStatus.UNSATISFIED) {
