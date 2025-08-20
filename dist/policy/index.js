@@ -27460,6 +27460,7 @@ class PolicySummaryReporter extends BaseReporter {
         header(`Policy Scan Evaluated - ${resultText}`);
         reportSubjectInfo(subject);
         coreExports.summary.addRaw('**Result:** ').addRaw(resultText).addEOL().addEOL();
+        reportTable(result.results);
         if (hasFailures) {
             if (setFailure) {
                 coreExports.setFailed(`Policy scan ${subject.scanName} evaluated to UNSATISFIED for ${subject.subjectName}`);
@@ -27505,13 +27506,64 @@ function reportSubjectInfo(subject) {
         .addEOL();
     coreExports.summary.addEOL();
 }
+function attestationName(attestation) {
+    if (attestation.storeRequest.uri) {
+        const uri = attestation.storeRequest.uri;
+        return uri.substring(uri.lastIndexOf('/') + 1);
+    }
+    else {
+        return 'N/A';
+    }
+}
+function reportTable(results) {
+    const tableRows = [
+        [
+            { data: 'Attestation', header: true },
+            { data: 'Predicate Type', header: true },
+            { data: 'Build Scan', header: true },
+            { data: 'Status', header: true },
+            { data: 'Satisfied Policies', header: true },
+            { data: 'Unsatisfied Policies', header: true },
+            { data: 'Attestation Details', header: true },
+            { data: 'Policy Evaluation Details', header: true }
+        ]
+    ];
+    results.forEach((result, index) => {
+        const failureCount = result.evaluations.filter((e) => e.status == PolicyResultStatus.UNSATISFIED).length;
+        const successCount = result.evaluations.filter((e) => e.status == PolicyResultStatus.SATISFIED).length;
+        const status = failureCount > 0
+            ? PolicyResultStatus.UNSATISFIED
+            : PolicyResultStatus.SATISFIED;
+        let failureDetails = '';
+        if (failureCount > 0) {
+            failureDetails = `\n\n[Link](#attestation-failure-detail-${index})\n`;
+        }
+        tableRows.push([
+            { data: '\n\n`' + attestationName(result.attestation) + '`\n' },
+            {
+                data: '\n\n`' + result.attestation.envelope.payload.predicateType + '`\n'
+            },
+            {
+                data: '\n\n' +
+                    (result.attestation.envelope.payload.predicate.buildScanUri ?? '') +
+                    '\n'
+            },
+            { data: statusIcon(status) },
+            { data: successCount.toString() },
+            { data: failureCount.toString() },
+            { data: `\n\n[Link](#attestation-detail-${index})\n` },
+            { data: failureDetails }
+        ]);
+    });
+    coreExports.summary.addTable(tableRows).addEOL();
+}
 function reportFailures(results) {
-    results.forEach(({ attestation, evaluations }) => {
+    results.forEach(({ attestation, evaluations }, index) => {
         const hasFailure = evaluations.some((e) => e.status == PolicyResultStatus.UNSATISFIED);
         if (!hasFailure) {
             return;
         }
-        reportAttestation(attestation, '## Unsatisfactory Attestation');
+        reportAttestation(attestation, `##  <a name="attestation-failure-detail-${index}"></a> Unsatisfactory Attestation`);
         evaluations.forEach((evaluation) => {
             if (evaluation.status == PolicyResultStatus.UNSATISFIED) {
                 reportFailure(attestation, evaluation);
@@ -27521,13 +27573,7 @@ function reportFailures(results) {
     });
 }
 function reportFailure(attestation, evaluation) {
-    if (attestation.storeRequest.uri) {
-        const uri = attestation.storeRequest.uri;
-        coreExports.error(`Attestation ${uri.substring(uri.lastIndexOf('/') + 1)} failed policy ${evaluation.policyUri}`);
-    }
-    else {
-        coreExports.error(`Attestation failed policy ${evaluation.policyUri}`);
-    }
+    coreExports.error(`Attestation ${attestationName(attestation)} failed policy ${evaluation.policyUri}`);
     coreExports.summary
         .addRaw('### Unsatisfied policy `')
         .addRaw(evaluation.policyUri)
@@ -27567,8 +27613,8 @@ function reportAllResults(results) {
     coreExports.summary.addRaw('## Full results').addEOL().addEOL();
     coreExports.summary.addRaw('<details>').addEOL();
     coreExports.summary.addRaw('<summary>Expand to see all results</summary>').addEOL();
-    results.forEach((result) => {
-        reportAttestation(result.attestation, '### Attestation');
+    results.forEach((result, index) => {
+        reportAttestation(result.attestation, `### <a name="attestation-detail-${index}"></a> Attestation`);
         const tableRoes = [
             [
                 { data: 'Policy', header: true },
@@ -27591,14 +27637,11 @@ function reportAllResults(results) {
     });
     coreExports.summary.addRaw('</details>').addEOL();
 }
-function reportAttestation(attestation, headerText) {
-    coreExports.summary.addEOL().addEOL().addRaw(headerText);
-    if (attestation.storeRequest.uri) {
-        const uri = attestation.storeRequest.uri;
-        coreExports.summary
-            .addRaw(' `')
-            .addRaw(uri.substring(uri.lastIndexOf('/') + 1))
-            .addRaw('`');
+function reportAttestation(attestation, headerPrefix, headerPostfix = null) {
+    coreExports.summary.addEOL().addEOL().addRaw(headerPrefix);
+    coreExports.summary.addRaw(' `').addRaw(attestationName(attestation)).addRaw('`');
+    if (headerPostfix) {
+        coreExports.summary.addRaw(' ').addRaw(headerPostfix);
     }
     coreExports.summary.addEOL().addEOL();
     coreExports.summary
