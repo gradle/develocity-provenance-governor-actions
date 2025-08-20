@@ -27460,15 +27460,31 @@ class PolicySummaryReporter extends BaseReporter {
         header(`Policy Scan Evaluated - ${resultText}`);
         reportSubjectInfo(subject);
         coreExports.summary.addRaw('**Result:** ').addRaw(resultText).addEOL().addEOL();
-        reportTable(result.results);
+        const processedResults = preprocessResults(result.results);
+        reportTable(processedResults);
         if (hasFailures) {
             if (setFailure) {
                 coreExports.setFailed(`Policy scan ${subject.scanName} evaluated to UNSATISFIED for ${subject.subjectName}`);
             }
-            reportFailures(result.results);
+            reportFailures(processedResults);
         }
-        reportAllResults(result.results);
+        reportAllResults(processedResults);
     }
+}
+function preprocessResults(results) {
+    return results.sort((a, b) => {
+        const aUnsatisfied = a.evaluations.some((e) => e.status == PolicyResultStatus.UNSATISFIED);
+        const bUnsatisfied = b.evaluations.some((e) => e.status == PolicyResultStatus.UNSATISFIED);
+        if (aUnsatisfied && !bUnsatisfied) {
+            return -1; // a first
+        }
+        else if (bUnsatisfied && !aUnsatisfied) {
+            return 1; // b first
+        }
+        else {
+            return a.attestation.envelope.payload.predicateType.localeCompare(b.attestation.envelope.payload.predicateType);
+        }
+    });
 }
 function header(heading) {
     //TODO make reference the policy image in repo's main branch.  Needs the repo to be public
@@ -27558,24 +27574,15 @@ function reportFailures(results) {
         if (!hasFailure) {
             return;
         }
-        // reportAttestation(
-        //   attestation,
-        //   `##  <a name="attestation-failure-detail-${index}"></a> Unsatisfactory Attestation`
-        // )
         evaluations.forEach((evaluation) => {
             if (evaluation.status == PolicyResultStatus.UNSATISFIED) {
                 coreExports.error(`Attestation ${attestationName(attestation)} failed policy ${evaluation.policyUri}`);
-                // reportFailure(attestation, evaluation)
             }
         });
-        // core.summary.addEOL()
     });
 }
 function reportAllResults(results) {
     coreExports.summary.addRaw('# Details').addEOL().addEOL();
-    // core.summary.addRaw('<details>').addEOL()
-    //
-    // core.summary.addRaw('<summary>Expand to see all results</summary>').addEOL()
     results.forEach((result, index) => {
         reportAttestation(result.attestation, `## <a name="attestation-detail-${index}"></a> Attestation`);
         const tableRows = [
@@ -27620,7 +27627,6 @@ function reportAllResults(results) {
         });
         coreExports.summary.addTable(tableRows).addEOL();
     });
-    // core.summary.addRaw('</details>').addEOL()
 }
 function reportAttestation(attestation, headerPrefix, headerPostfix = null) {
     coreExports.summary.addEOL().addEOL().addRaw(headerPrefix);
