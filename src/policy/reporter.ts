@@ -137,8 +137,7 @@ function reportTable(results: PolicyAttestationEvaluation[]) {
       { data: 'Status', header: true },
       { data: 'Satisfied Policies', header: true },
       { data: 'Unsatisfied Policies', header: true },
-      { data: 'Attestation Details', header: true },
-      { data: 'Policy Evaluation Details', header: true }
+      { data: 'Details', header: true }
     ]
   ]
 
@@ -156,11 +155,6 @@ function reportTable(results: PolicyAttestationEvaluation[]) {
         ? PolicyResultStatus.UNSATISFIED
         : PolicyResultStatus.SATISFIED
 
-    let failureDetails = ''
-    if (failureCount > 0) {
-      failureDetails = `\n\n[Link](#attestation-failure-detail-${index})\n`
-    }
-
     tableRows.push([
       { data: '\n\n`' + attestationName(result.attestation) + '`\n' },
       {
@@ -176,8 +170,7 @@ function reportTable(results: PolicyAttestationEvaluation[]) {
       { data: statusIcon(status) },
       { data: successCount.toString() },
       { data: failureCount.toString() },
-      { data: `\n\n[Link](#attestation-detail-${index})\n` },
-      { data: failureDetails }
+      { data: `\n\n[Link](#attestation-detail-${index})\n` }
     ])
   })
 
@@ -185,7 +178,7 @@ function reportTable(results: PolicyAttestationEvaluation[]) {
 }
 
 function reportFailures(results: PolicyAttestationEvaluation[]) {
-  results.forEach(({ attestation, evaluations }, index) => {
+  results.forEach(({ attestation, evaluations }) => {
     const hasFailure = evaluations.some(
       (e) => e.status == PolicyResultStatus.UNSATISFIED
     )
@@ -194,29 +187,30 @@ function reportFailures(results: PolicyAttestationEvaluation[]) {
       return
     }
 
-    reportAttestation(
-      attestation,
-      `##  <a name="attestation-failure-detail-${index}"></a> Unsatisfactory Attestation`
-    )
+    // reportAttestation(
+    //   attestation,
+    //   `##  <a name="attestation-failure-detail-${index}"></a> Unsatisfactory Attestation`
+    // )
 
     evaluations.forEach((evaluation) => {
       if (evaluation.status == PolicyResultStatus.UNSATISFIED) {
-        reportFailure(attestation, evaluation)
+        core.error(
+          `Attestation ${attestationName(attestation)} failed policy ${evaluation.policyUri}`
+        )
+        // reportFailure(attestation, evaluation)
       }
     })
 
-    core.summary.addEOL()
+    // core.summary.addEOL()
   })
 }
 
+// @ts-expect-error saving
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function reportFailure(
   attestation: PolicyAttestation,
   evaluation: PolicyEvaluation
 ) {
-  core.error(
-    `Attestation ${attestationName(attestation)} failed policy ${evaluation.policyUri}`
-  )
-
   core.summary
     .addRaw('### Unsatisfied policy `')
     .addRaw(evaluation.policyUri)
@@ -265,9 +259,9 @@ function reportFailure(
 function reportAllResults(results: PolicyAttestationEvaluation[]) {
   core.summary.addRaw('## Full results').addEOL().addEOL()
 
-  core.summary.addRaw('<details>').addEOL()
-
-  core.summary.addRaw('<summary>Expand to see all results</summary>').addEOL()
+  // core.summary.addRaw('<details>').addEOL()
+  //
+  // core.summary.addRaw('<summary>Expand to see all results</summary>').addEOL()
 
   results.forEach((result, index) => {
     reportAttestation(
@@ -275,7 +269,7 @@ function reportAllResults(results: PolicyAttestationEvaluation[]) {
       `### <a name="attestation-detail-${index}"></a> Attestation`
     )
 
-    const tableRoes: SummaryTableRow[] = [
+    const tableRows: SummaryTableRow[] = [
       [
         { data: 'Policy', header: true },
         { data: 'Status', header: true },
@@ -284,7 +278,7 @@ function reportAllResults(results: PolicyAttestationEvaluation[]) {
     ]
 
     result.evaluations.forEach((evaluation) => {
-      tableRoes.push([
+      tableRows.push([
         { data: `\n\n\`${evaluation.policyUri}\`\n` },
         { data: statusIcon(evaluation.status) },
         {
@@ -295,10 +289,10 @@ function reportAllResults(results: PolicyAttestationEvaluation[]) {
       ])
     })
 
-    core.summary.addTable(tableRoes).addEOL()
+    core.summary.addTable(tableRows).addEOL()
   })
 
-  core.summary.addRaw('</details>').addEOL()
+  // core.summary.addRaw('</details>').addEOL()
 }
 
 function reportAttestation(

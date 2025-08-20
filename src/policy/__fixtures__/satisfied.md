@@ -13,7 +13,7 @@
 
 **Result:** ✅ SATISFIED
 
-<table><tr><th>Attestation</th><th>Predicate Type</th><th>Build Scan</th><th>Status</th><th>Satisfied Policies</th><th>Unsatisfied Policies</th><th>Attestation Details</th><th>Policy Evaluation Details</th></tr><tr><td>
+<table><tr><th>Attestation</th><th>Predicate Type</th><th>Build Scan</th><th>Status</th><th>Satisfied Policies</th><th>Unsatisfied Policies</th><th>Details</th></tr><tr><td>
 
 `gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
 </td><td>
@@ -25,12 +25,10 @@ https://develocity.grdev.net/s/u4cqaqnytbwga
 </td><td>✅</td><td>2</td><td>0</td><td>
 
 [Link](#attestation-detail-0)
-</td><td></tr></table>
+</td></tr></table>
 
 ## Full results
 
-<details>
-<summary>Expand to see all results</summary>
 
 
 ### <a name="attestation-detail-0"></a> Attestation `gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
@@ -82,4 +80,3 @@ Envelope:
 `https://policies.example.com/jvm-verification`
 </td><td>N/A</td><td></tr></table>
 
-</details>

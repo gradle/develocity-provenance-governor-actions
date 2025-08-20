@@ -13,7 +13,7 @@
 
 **Result:** ❌ UNSATISFIED
 
-<table><tr><th>Attestation</th><th>Predicate Type</th><th>Build Scan</th><th>Status</th><th>Satisfied Policies</th><th>Unsatisfied Policies</th><th>Attestation Details</th><th>Policy Evaluation Details</th></tr><tr><td>
+<table><tr><th>Attestation</th><th>Predicate Type</th><th>Build Scan</th><th>Status</th><th>Satisfied Policies</th><th>Unsatisfied Policies</th><th>Details</th></tr><tr><td>
 
 `gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
 </td><td>
@@ -25,77 +25,10 @@ https://develocity.grdev.net/s/u4cqaqnytbwga
 </td><td>❌</td><td>1</td><td>1</td><td>
 
 [Link](#attestation-detail-0)
-</td><td>
-
-[Link](#attestation-failure-detail-0)
 </td></tr></table>
-
-
-
-##  <a name="attestation-failure-detail-0"></a> Unsatisfactory Attestation `gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
-
-**Predicate Type:** `https://gradle.com/attestations/repository/v1`
-
-**Build Scan:** https://develocity.grdev.net/s/u4cqaqnytbwga
-
-**Attestation Store:** `https://develocitytia.jfrog.io/attestation/`
-
-<details>
-<summary>Attestation Details</summary>
-
-Attestation URI: `https://develocitytia.jfrog.io/artifactory/docker-trial/.evidence/ed0870faabc4387c5fee46e3b26ab0262610764cc6a708d37dc84a54e90652f6/a30f98e704871a244ac3f28c2ada5c120afe756e981438f221e21fff3042a11b/gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
-
-Envelope:
-
-```json
-{
-  "payload": {
-    "_type": "https://in-toto.io/Statement/v1",
-    "predicateType": "https://gradle.com/attestations/repository/v1",
-    "subject": [
-      {
-        "name": "pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3",
-        "digest": {
-          "sha256": "c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b"
-        }
-      }
-    ],
-    "predicate": {
-      "buildScanUri": "https://develocity.grdev.net/s/u4cqaqnytbwga",
-      "uri": "https://repo.maven.apache.org/maven2/"
-    }
-  }
-}
-```
-
-</details>
-
-### Unsatisfied policy `https://policies.example.com/repo-source-check`
-
-**Description:** Repository source verification failed
-
-**Remediation:** Ensure the repository is from a trusted source
-
-**Labels:**
- * `category` = `security`
- * `severity` = `high`
-
-<details><summary>Policy Details</summary>
-
-```json
-{
-  "description": "Repository source verification failed",
-  "remediation": "Ensure the repository is from a trusted source"
-}
-```
-</details>
-
-
 
 ## Full results
 
-<details>
-<summary>Expand to see all results</summary>
 
 
 ### <a name="attestation-detail-0"></a> Attestation `gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
@@ -147,4 +80,3 @@ Envelope:
 `https://policies.example.com/jvm-verification`
 </td><td>N/A</td><td></tr></table>
 
-</details>
