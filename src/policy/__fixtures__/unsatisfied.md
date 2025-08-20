@@ -13,6 +13,20 @@
 
 **Result:** ❌ UNSATISFIED
 
+<table><tr><th>Attestation</th><th>Predicate Type</th><th>Build Scan</th><th>Status</th><th>Satisfied Policies</th><th>Unsatisfied Policies</th><th>Attestation Details</th><th>Policy Evaluation Details</th></tr><tr><td>
+
+`gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
+</td><td>
+
+`https://gradle.com/attestations/repository/v1`
+</td><td>
+
+https://develocity.grdev.net/s/u4cqaqnytbwga
+</td><td>❌</td><td>1</td><td>1</td><td>
+
+[Link](#attestation-detail-0)
+</td><td></tr></table>
+
 
 
 ## Unsatisfactory Attestation `gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
@@ -81,7 +95,7 @@ Envelope:
 <summary>Expand to see all results</summary>
 
 
-### Attestation `gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
+### <a name="attestation-detail-0"></a> Attestation `gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
 
 **Predicate Type:** `https://gradle.com/attestations/repository/v1`
 

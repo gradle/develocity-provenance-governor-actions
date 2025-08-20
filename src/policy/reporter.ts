@@ -61,6 +61,8 @@ export class PolicySummaryReporter extends BaseReporter<
 
     core.summary.addRaw('**Result:** ').addRaw(resultText).addEOL().addEOL()
 
+    reportTable(result.results)
+
     if (hasFailures) {
       if (setFailure) {
         core.setFailed(
@@ -117,6 +119,66 @@ function reportSubjectInfo(subject: PolicyRequestSubject) {
   core.summary.addEOL()
 }
 
+function attestationName(attestation: PolicyAttestation): string {
+  if (attestation.storeRequest.uri) {
+    const uri = attestation.storeRequest.uri
+    return uri.substring(uri.lastIndexOf('/') + 1)
+  } else {
+    return 'N/A'
+  }
+}
+
+function reportTable(results: PolicyAttestationEvaluation[]) {
+  const tableRows: SummaryTableRow[] = [
+    [
+      { data: 'Attestation', header: true },
+      { data: 'Predicate Type', header: true },
+      { data: 'Build Scan', header: true },
+      { data: 'Status', header: true },
+      { data: 'Satisfied Policies', header: true },
+      { data: 'Unsatisfied Policies', header: true },
+      { data: 'Attestation Details', header: true },
+      { data: 'Policy Evaluation Details', header: true }
+    ]
+  ]
+
+  results.forEach((result, index) => {
+    const failureCount = result.evaluations.filter(
+      (e) => e.status == PolicyResultStatus.UNSATISFIED
+    ).length
+
+    const successCount = result.evaluations.filter(
+      (e) => e.status == PolicyResultStatus.SATISFIED
+    ).length
+
+    const status =
+      failureCount > 0
+        ? PolicyResultStatus.UNSATISFIED
+        : PolicyResultStatus.SATISFIED
+
+    tableRows.push([
+      { data: '\n\n`' + attestationName(result.attestation) + '`\n' },
+      {
+        data:
+          '\n\n`' + result.attestation.envelope.payload.predicateType + '`\n'
+      },
+      {
+        data:
+          '\n\n' +
+          (result.attestation.envelope.payload.predicate.buildScanUri ?? '') +
+          '\n'
+      },
+      { data: statusIcon(status) },
+      { data: successCount.toString() },
+      { data: failureCount.toString() },
+      { data: `\n\n[Link](#attestation-detail-${index})\n` },
+      { data: '' }
+    ])
+  })
+
+  core.summary.addTable(tableRows).addEOL()
+}
+
 function reportFailures(results: PolicyAttestationEvaluation[]) {
   results.forEach(({ attestation, evaluations }) => {
     const hasFailure = evaluations.some(
@@ -143,14 +205,9 @@ function reportFailure(
   attestation: PolicyAttestation,
   evaluation: PolicyEvaluation
 ) {
-  if (attestation.storeRequest.uri) {
-    const uri = attestation.storeRequest.uri
-    core.error(
-      `Attestation ${uri.substring(uri.lastIndexOf('/') + 1)} failed policy ${evaluation.policyUri}`
-    )
-  } else {
-    core.error(`Attestation failed policy ${evaluation.policyUri}`)
-  }
+  core.error(
+    `Attestation ${attestationName(attestation)} failed policy ${evaluation.policyUri}`
+  )
 
   core.summary
     .addRaw('### Unsatisfied policy `')
@@ -204,8 +261,11 @@ function reportAllResults(results: PolicyAttestationEvaluation[]) {
 
   core.summary.addRaw('<summary>Expand to see all results</summary>').addEOL()
 
-  results.forEach((result) => {
-    reportAttestation(result.attestation, '### Attestation')
+  results.forEach((result, index) => {
+    reportAttestation(
+      result.attestation,
+      `### <a name="attestation-detail-${index}"></a> Attestation`
+    )
 
     const tableRoes: SummaryTableRow[] = [
       [
@@ -233,16 +293,19 @@ function reportAllResults(results: PolicyAttestationEvaluation[]) {
   core.summary.addRaw('</details>').addEOL()
 }
 
-function reportAttestation(attestation: PolicyAttestation, headerText: string) {
-  core.summary.addEOL().addEOL().addRaw(headerText)
+function reportAttestation(
+  attestation: PolicyAttestation,
+  headerPrefix: string,
+  headerPostfix: string | null = null
+) {
+  core.summary.addEOL().addEOL().addRaw(headerPrefix)
 
-  if (attestation.storeRequest.uri) {
-    const uri = attestation.storeRequest.uri
-    core.summary
-      .addRaw(' `')
-      .addRaw(uri.substring(uri.lastIndexOf('/') + 1))
-      .addRaw('`')
+  core.summary.addRaw(' `').addRaw(attestationName(attestation)).addRaw('`')
+
+  if (headerPostfix) {
+    core.summary.addRaw(' ').addRaw(headerPostfix)
   }
+
   core.summary.addEOL().addEOL()
 
   core.summary

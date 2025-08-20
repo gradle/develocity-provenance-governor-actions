@@ -63,11 +63,15 @@ export interface PolicyAttestation {
   storeType: string
   storeUri: string
   storeRequest: PolicyStoreRequest
-  storeResponse: object
+  storeResponse: PolicyStoreResponse
 }
 
 export interface PolicyStoreRequest {
   uri?: string
+  [key: string]: unknown
+}
+
+export interface PolicyStoreResponse {
   [key: string]: unknown
 }
 
