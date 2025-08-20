@@ -27595,11 +27595,26 @@ function reportAllResults(results) {
                 { data: 'Details', header: true }
             ]
         ];
-        result.evaluations.forEach((evaluation) => {
+        const statusOrder = [
+            PolicyResultStatus.UNSATISFIED,
+            PolicyResultStatus.SATISFIED,
+            PolicyResultStatus.NOT_APPLICABLE
+        ];
+        result.evaluations
+            .sort((a, b) => {
+            if (a.status == b.status) {
+                return a.policyUri.localeCompare(b.policyUri);
+            }
+            return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
+        })
+            .forEach((evaluation) => {
             const isFailure = evaluation.status == PolicyResultStatus.UNSATISFIED;
             const isNotApplicable = evaluation.status == PolicyResultStatus.NOT_APPLICABLE;
+            const policyUrl = evaluation.policyUri;
             tableRows.push([
-                { data: `\n\n\`${evaluation.policyUri}\`\n` },
+                {
+                    data: `\n\n\`${policyUrl.substring(policyUrl.lastIndexOf('/') + 1)}\`\n`
+                },
                 { data: statusIcon(evaluation.status) },
                 {
                     data: evaluation.details.description
@@ -27625,6 +27640,7 @@ function reportAllResults(results) {
                 }
             ]);
         });
+        coreExports.summary.addRaw('**Policy Results:**').addEOL().addEOL();
         coreExports.summary.addTable(tableRows).addEOL();
     });
 }
