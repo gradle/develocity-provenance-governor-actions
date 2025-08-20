@@ -6,7 +6,6 @@ import {
   PolicyAttestation,
   PolicyAttestationEvaluation,
   PolicyErrorResponse,
-  PolicyEvaluation,
   PolicyRequestSubject,
   PolicyResultStatus,
   PolicySuccessResponse
@@ -61,7 +60,9 @@ export class PolicySummaryReporter extends BaseReporter<
 
     core.summary.addRaw('**Result:** ').addRaw(resultText).addEOL().addEOL()
 
-    reportTable(result.results)
+    const processedResults = preprocessResults(result.results)
+
+    reportTable(processedResults)
 
     if (hasFailures) {
       if (setFailure) {
@@ -70,11 +71,34 @@ export class PolicySummaryReporter extends BaseReporter<
         )
       }
 
-      reportFailures(result.results)
+      reportFailures(processedResults)
     }
 
-    reportAllResults(result.results)
+    reportAllResults(processedResults)
   }
+}
+
+function preprocessResults(
+  results: PolicyAttestationEvaluation[]
+): PolicyAttestationEvaluation[] {
+  return results.sort((a, b) => {
+    const aUnsatisfied = a.evaluations.some(
+      (e) => e.status == PolicyResultStatus.UNSATISFIED
+    )
+    const bUnsatisfied = b.evaluations.some(
+      (e) => e.status == PolicyResultStatus.UNSATISFIED
+    )
+
+    if (aUnsatisfied && !bUnsatisfied) {
+      return -1 // a first
+    } else if (bUnsatisfied && !aUnsatisfied) {
+      return 1 // b first
+    } else {
+      return a.attestation.envelope.payload.predicateType.localeCompare(
+        b.attestation.envelope.payload.predicateType
+      )
+    }
+  })
 }
 
 function header(heading: string) {
@@ -188,81 +212,18 @@ function reportFailures(results: PolicyAttestationEvaluation[]) {
       return
     }
 
-    // reportAttestation(
-    //   attestation,
-    //   `##  <a name="attestation-failure-detail-${index}"></a> Unsatisfactory Attestation`
-    // )
-
     evaluations.forEach((evaluation) => {
       if (evaluation.status == PolicyResultStatus.UNSATISFIED) {
         core.error(
           `Attestation ${attestationName(attestation)} failed policy ${evaluation.policyUri}`
         )
-        // reportFailure(attestation, evaluation)
       }
     })
-
-    // core.summary.addEOL()
   })
-}
-
-// @ts-expect-error saving
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function reportFailure(
-  attestation: PolicyAttestation,
-  evaluation: PolicyEvaluation
-) {
-  core.summary
-    .addRaw('### Unsatisfied policy `')
-    .addRaw(evaluation.policyUri)
-    .addRaw('`')
-    .addEOL()
-    .addEOL()
-
-  if (evaluation.details.description) {
-    core.summary
-      .addRaw('**Description:** ')
-      .addRaw(evaluation.details.description)
-      .addEOL()
-      .addEOL()
-  }
-
-  if (evaluation.details.remediation) {
-    core.summary
-      .addRaw('**Remediation:** ')
-      .addRaw(evaluation.details.remediation)
-      .addEOL()
-      .addEOL()
-  }
-
-  core.summary.addRaw('**Labels:**').addEOL()
-  for (const label in evaluation.labels) {
-    core.summary
-      .addRaw(' * ')
-      .addRaw('`' + label + '`')
-      .addRaw(' = ')
-      .addRaw('`' + evaluation.labels[label] + '`')
-      .addEOL()
-  }
-
-  core.summary.addEOL()
-
-  core.summary
-    .addDetails(
-      'Policy Details',
-      '\n\n```json\n' + JSON.stringify(evaluation.details, null, 2) + '\n```\n'
-    )
-    .addEOL()
-
-  core.summary.addEOL()
 }
 
 function reportAllResults(results: PolicyAttestationEvaluation[]) {
   core.summary.addRaw('# Details').addEOL().addEOL()
-
-  // core.summary.addRaw('<details>').addEOL()
-  //
-  // core.summary.addRaw('<summary>Expand to see all results</summary>').addEOL()
 
   results.forEach((result, index) => {
     reportAttestation(
@@ -316,8 +277,6 @@ function reportAllResults(results: PolicyAttestationEvaluation[]) {
 
     core.summary.addTable(tableRows).addEOL()
   })
-
-  // core.summary.addRaw('</details>').addEOL()
 }
 
 function reportAttestation(
