@@ -27572,20 +27572,25 @@ function reportFailures(results) {
     });
 }
 function reportAllResults(results) {
-    coreExports.summary.addRaw('## Full results').addEOL().addEOL();
+    coreExports.summary.addRaw('# Details').addEOL().addEOL();
     // core.summary.addRaw('<details>').addEOL()
     //
     // core.summary.addRaw('<summary>Expand to see all results</summary>').addEOL()
     results.forEach((result, index) => {
-        reportAttestation(result.attestation, `### <a name="attestation-detail-${index}"></a> Attestation`);
+        reportAttestation(result.attestation, `## <a name="attestation-detail-${index}"></a> Attestation`);
         const tableRows = [
             [
                 { data: 'Policy', header: true },
                 { data: 'Status', header: true },
-                { data: 'Description', header: true }
+                { data: 'Description', header: true },
+                { data: 'Remediation', header: true },
+                { data: 'Labels', header: true },
+                { data: 'Details', header: true }
             ]
         ];
         result.evaluations.forEach((evaluation) => {
+            const isFailure = evaluation.status == PolicyResultStatus.UNSATISFIED;
+            const isNotApplicable = evaluation.status == PolicyResultStatus.NOT_APPLICABLE;
             tableRows.push([
                 { data: `\n\n\`${evaluation.policyUri}\`\n` },
                 { data: statusIcon(evaluation.status) },
@@ -27593,6 +27598,23 @@ function reportAllResults(results) {
                     data: evaluation.details.description
                         ? evaluation.details.description
                         : ''
+                },
+                {
+                    data: isFailure ? (evaluation.details.remediation ?? '') : ''
+                },
+                {
+                    data: isNotApplicable
+                        ? ''
+                        : '\n\n```json\n' +
+                            JSON.stringify(evaluation.labels, null, 2) +
+                            '\n```\n'
+                },
+                {
+                    data: isNotApplicable
+                        ? 'Not applicable to this predicate type'
+                        : '\n\n```json\n' +
+                            JSON.stringify(evaluation.details, null, 2) +
+                            '\n```\n'
                 }
             ]);
         });
