@@ -14,6 +14,14 @@ inputs:
       'The policy scan to evaluate, using the name configured in the Develocity
       Policy Evaluator service'
     required: true
+  ignore-policies-with-labels:
+    description:
+      'Label sets that mark policies to be ignored. Labels must use the format
+      {key}={value}. Labels may be seperated by commas or newlines. Groups of
+      labels seperated by a blank line are label sets. A policy matching one or
+      more label sets will not cause the action to fail even if they are
+      unsatisfied.'
+    required: false
   subject-type:
     description: 'The type of the package to evaluate policies against'
     required: true

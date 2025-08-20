@@ -11,7 +11,12 @@ import { createClient } from '../../__fixtures__/client.js'
 import { createPolicyReporter } from '../../__fixtures__/reporter.js'
 import { Client, PolicyResult, PublisherResult } from '../../client.js'
 import { Reporter } from '../../reporter.js'
-import * as fs from 'node:fs'
+import {
+  PolicyLabelMatcher,
+  PolicyLabelMatcherSet,
+  PolicyRequestSubject
+} from '../model.js'
+import * as fs from 'node:fs' // Mocks should be declared before the module being tested is imported.
 
 // Mocks should be declared before the module being tested is imported.
 jest.unstable_mockModule('@actions/core', () => core)
@@ -28,7 +33,7 @@ const mockReporter = {
 
 // The module being tested should be imported dynamically. This ensures that the
 // mocks are used in place of any actual dependencies.
-const { run } = await import('../main.js')
+const { run, parseIgnoreLabels } = await import('../main.js')
 
 describe('main.ts', () => {
   beforeEach(() => {
@@ -44,6 +49,205 @@ describe('main.ts', () => {
 
   afterEach(() => {
     jest.resetAllMocks()
+    // Ensure getMultilineInput returns empty array by default
+    core.getMultilineInput.mockReturnValue([])
+  })
+
+  describe('parseIgnoreLabels', () => {
+    it('should parse empty input correctly', () => {
+      const result = parseIgnoreLabels([])
+      expect(result).toEqual([])
+    })
+
+    it('should parse array with empty strings correctly', () => {
+      const result = parseIgnoreLabels(['', '  ', '\t'])
+      expect(result).toEqual([])
+    })
+
+    it('should parse single label matcher correctly', () => {
+      const result = parseIgnoreLabels(['severity=high'])
+      expect(result).toHaveLength(1)
+      expect(result[0].labels).toHaveLength(1)
+      expect(result[0].labels[0]).toEqual({
+        key: 'severity',
+        value: 'high'
+      })
+    })
+
+    it('should parse multiple label matchers in single line correctly', () => {
+      const result = parseIgnoreLabels(['severity=high,type=security'])
+      expect(result).toHaveLength(1)
+      expect(result[0].labels).toHaveLength(2)
+      expect(result[0].labels[0]).toEqual({
+        key: 'severity',
+        value: 'high'
+      })
+      expect(result[0].labels[1]).toEqual({
+        key: 'type',
+        value: 'security'
+      })
+    })
+
+    it('should parse multiple sets separated by empty lines correctly', () => {
+      const result = parseIgnoreLabels([
+        'severity=high',
+        '',
+        'type=security,category=vulnerability'
+      ])
+      expect(result).toHaveLength(2)
+
+      // First set
+      expect(result[0].labels).toHaveLength(1)
+      expect(result[0].labels[0]).toEqual({
+        key: 'severity',
+        value: 'high'
+      })
+
+      // Second set
+      expect(result[1].labels).toHaveLength(2)
+      expect(result[1].labels[0]).toEqual({
+        key: 'type',
+        value: 'security'
+      })
+      expect(result[1].labels[1]).toEqual({
+        key: 'category',
+        value: 'vulnerability'
+      })
+    })
+
+    it('should handle whitespace correctly', () => {
+      const result = parseIgnoreLabels([
+        '  severity = high  ',
+        ' type=security , category = vulnerability '
+      ])
+      expect(result).toHaveLength(1)
+      expect(result[0].labels).toHaveLength(3)
+      expect(result[0].labels[0]).toEqual({
+        key: 'severity',
+        value: 'high'
+      })
+      expect(result[0].labels[1]).toEqual({
+        key: 'type',
+        value: 'security'
+      })
+      expect(result[0].labels[2]).toEqual({
+        key: 'category',
+        value: 'vulnerability'
+      })
+    })
+
+    it('should handle empty lines between sets correctly', () => {
+      const result = parseIgnoreLabels([
+        'severity=critical',
+        '',
+        '  ',
+        '',
+        'type=license'
+      ])
+      expect(result).toHaveLength(2)
+      expect(result[0].labels[0]).toEqual({
+        key: 'severity',
+        value: 'critical'
+      })
+      expect(result[1].labels[0]).toEqual({
+        key: 'type',
+        value: 'license'
+      })
+    })
+
+    it('should handle values with special characters correctly', () => {
+      const result = parseIgnoreLabels([
+        'path=/usr/local/bin',
+        'environment=production'
+      ])
+      expect(result).toHaveLength(1)
+      expect(result[0].labels).toHaveLength(2)
+      expect(result[0].labels[0]).toEqual({
+        key: 'path',
+        value: '/usr/local/bin'
+      })
+      expect(result[0].labels[1]).toEqual({
+        key: 'environment',
+        value: 'production'
+      })
+    })
+
+    it('should throw error for invalid format - missing equals', () => {
+      expect(() => parseIgnoreLabels(['severity'])).toThrow(
+        "Invalid label matcher format. Expected '{key}={value}'."
+      )
+    })
+
+    it('should throw error for invalid format - multiple equals', () => {
+      expect(() => parseIgnoreLabels(['severity=high=critical'])).toThrow(
+        "Invalid label matcher format. Expected '{key}={value}'."
+      )
+    })
+
+    it('should throw error for values with equals signs like URLs', () => {
+      expect(() =>
+        parseIgnoreLabels(['url=https://example.com/path?param=value'])
+      ).toThrow("Invalid label matcher format. Expected '{key}={value}'.")
+    })
+
+    it('should throw error for invalid format - empty key', () => {
+      expect(() => parseIgnoreLabels(['=value'])).toThrow(
+        "Invalid label matcher format. Expected '{key}={value}'."
+      )
+    })
+
+    it('should throw error for invalid format - empty value', () => {
+      expect(() => parseIgnoreLabels(['key='])).toThrow(
+        "Invalid label matcher format. Expected '{key}={value}'."
+      )
+    })
+
+    it('should throw error for mixed valid and invalid formats', () => {
+      expect(() =>
+        parseIgnoreLabels(['severity=high', 'invalid_format', 'type=security'])
+      ).toThrow("Invalid label matcher format. Expected '{key}={value}'.")
+    })
+
+    it('should handle single character keys and values', () => {
+      const result = parseIgnoreLabels(['a=b,x=y'])
+      expect(result).toHaveLength(1)
+      expect(result[0].labels).toHaveLength(2)
+      expect(result[0].labels[0]).toEqual({
+        key: 'a',
+        value: 'b'
+      })
+      expect(result[0].labels[1]).toEqual({
+        key: 'x',
+        value: 'y'
+      })
+    })
+
+    it('should handle complex multi-set scenario', () => {
+      const result = parseIgnoreLabels([
+        'severity=high,type=security',
+        'category=license',
+        '',
+        'env=production',
+        '',
+        'team=backend,service=api'
+      ])
+      expect(result).toHaveLength(3)
+
+      // First set
+      expect(result[0].labels).toHaveLength(3)
+      expect(result[0].labels[0]).toEqual({ key: 'severity', value: 'high' })
+      expect(result[0].labels[1]).toEqual({ key: 'type', value: 'security' })
+      expect(result[0].labels[2]).toEqual({ key: 'category', value: 'license' })
+
+      // Second set
+      expect(result[1].labels).toHaveLength(1)
+      expect(result[1].labels[0]).toEqual({ key: 'env', value: 'production' })
+
+      // Third set
+      expect(result[2].labels).toHaveLength(2)
+      expect(result[2].labels[0]).toEqual({ key: 'team', value: 'backend' })
+      expect(result[2].labels[1]).toEqual({ key: 'service', value: 'api' })
+    })
   })
 
   it('Evaluates policy with satisfied result', async () => {
@@ -79,6 +283,13 @@ describe('main.ts', () => {
       .mockReturnValueOnce('') // username
       .mockReturnValueOnce('') // password
 
+    core.getMultilineInput.mockReturnValueOnce([
+      'key=value',
+      'key2=value2',
+      '',
+      'key3=value3'
+    ]) // ignore-policies-with-labels
+
     // when
     await run()
 
@@ -107,15 +318,21 @@ describe('main.ts', () => {
       'https://repo.example.com/'
     )
 
-    const expectedSubject = {
-      scanName: 'security-scan',
-      subjectName:
-        'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
-      digest: {
+    const expectedSubject = new PolicyRequestSubject(
+      'security-scan',
+      'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
+      {
         sha256:
           'c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b'
-      }
-    }
+      },
+      [
+        new PolicyLabelMatcherSet([
+          new PolicyLabelMatcher('key', 'value'),
+          new PolicyLabelMatcher('key2', 'value2')
+        ]),
+        new PolicyLabelMatcherSet([new PolicyLabelMatcher('key3', 'value3')])
+      ]
+    )
     expect(mockReporter.report).toHaveBeenNthCalledWith(
       1,
       200,
@@ -159,6 +376,13 @@ describe('main.ts', () => {
       .mockReturnValueOnce('') // username
       .mockReturnValueOnce('') // password
 
+    core.getMultilineInput.mockReturnValueOnce([
+      'key=value',
+      'key2=value2',
+      '',
+      'key3=value3'
+    ]) // ignore-policies-with-labels
+
     // when
     await run()
 
@@ -187,15 +411,21 @@ describe('main.ts', () => {
       'https://repo.example.com/'
     )
 
-    const expectedSubject = {
-      scanName: 'security-scan',
-      subjectName:
-        'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
-      digest: {
+    const expectedSubject = new PolicyRequestSubject(
+      'security-scan',
+      'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
+      {
         sha256:
           'c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b'
-      }
-    }
+      },
+      [
+        new PolicyLabelMatcherSet([
+          new PolicyLabelMatcher('key', 'value'),
+          new PolicyLabelMatcher('key2', 'value2')
+        ]),
+        new PolicyLabelMatcherSet([new PolicyLabelMatcher('key3', 'value3')])
+      ]
+    )
     expect(mockReporter.report).toHaveBeenNthCalledWith(
       1,
       200,
@@ -239,6 +469,13 @@ describe('main.ts', () => {
       .mockReturnValueOnce('') // username
       .mockReturnValueOnce('') // password
 
+    core.getMultilineInput.mockReturnValueOnce([
+      'key=value',
+      'key2=value2',
+      '',
+      'key3=value3'
+    ]) // ignore-policies-with-labels
+
     // when
     await run()
 
@@ -264,15 +501,21 @@ describe('main.ts', () => {
       'https://repo.example.com/'
     )
 
-    const expectedSubject = {
-      scanName: 'security-scan',
-      subjectName:
-        'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
-      digest: {
+    const expectedSubject = new PolicyRequestSubject(
+      'security-scan',
+      'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
+      {
         sha256:
           'c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b'
-      }
-    }
+      },
+      [
+        new PolicyLabelMatcherSet([
+          new PolicyLabelMatcher('key', 'value'),
+          new PolicyLabelMatcher('key2', 'value2')
+        ]),
+        new PolicyLabelMatcherSet([new PolicyLabelMatcher('key3', 'value3')])
+      ]
+    )
     expect(mockReporter.report).toHaveBeenNthCalledWith(
       1,
       404,
@@ -314,6 +557,9 @@ describe('main.ts', () => {
       .mockReturnValueOnce('') // username
       .mockReturnValueOnce('') // password
 
+    // @ts-expect-error it's an optional input
+    core.getMultilineInput.mockReturnValueOnce(null) // ignore-policies-with-labels
+
     // when
     await run()
 
@@ -343,11 +589,12 @@ describe('main.ts', () => {
       'https://repo.maven.apache.org/maven2/'
     )
 
-    const expectedSubject = {
-      scanName: 'security-scan',
-      subjectName: 'pkg:maven/com.example/my-library@2.1.0',
-      digest: { sha256: 'abc123def456' }
-    }
+    const expectedSubject = new PolicyRequestSubject(
+      'security-scan',
+      'pkg:maven/com.example/my-library@2.1.0',
+      { sha256: 'abc123def456' },
+      []
+    )
     expect(mockReporter.report).toHaveBeenNthCalledWith(
       1,
       200,
@@ -389,6 +636,13 @@ describe('main.ts', () => {
       .mockReturnValueOnce('testuser') // username
       .mockReturnValueOnce('testpass') // password
 
+    core.getMultilineInput.mockReturnValueOnce([
+      'key=value',
+      'key2=value2',
+      '',
+      'key3=value3'
+    ]) // ignore-policies-with-labels
+
     // when
     await run()
 
@@ -418,11 +672,18 @@ describe('main.ts', () => {
       'https://registry.npmjs.org/'
     )
 
-    const expectedSubject = {
-      scanName: 'compliance-scan',
-      subjectName: 'pkg:npm/%40company/my-package@1.2.3',
-      digest: { sha256: 'xyz789abc123' }
-    }
+    const expectedSubject = new PolicyRequestSubject(
+      'compliance-scan',
+      'pkg:npm/%40company/my-package@1.2.3',
+      { sha256: 'xyz789abc123' },
+      [
+        new PolicyLabelMatcherSet([
+          new PolicyLabelMatcher('key', 'value'),
+          new PolicyLabelMatcher('key2', 'value2')
+        ]),
+        new PolicyLabelMatcherSet([new PolicyLabelMatcher('key3', 'value3')])
+      ]
+    )
     expect(mockReporter.report).toHaveBeenNthCalledWith(
       1,
       200,

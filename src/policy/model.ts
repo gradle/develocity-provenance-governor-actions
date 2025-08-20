@@ -12,20 +12,51 @@ export class PolicyRequestSubject {
   digest: {
     sha256: string
   }
+  ignoreLabels: PolicyLabelMatcherSet[]
 
   constructor(
     scanName: string,
     subjectName: string,
-    digest: { sha256: string }
+    digest: { sha256: string },
+    ignoreLabels: PolicyLabelMatcherSet[]
   ) {
     this.scanName = scanName
     this.subjectName = subjectName
     this.digest = digest
+    this.ignoreLabels = ignoreLabels
+  }
+
+  ignoreLabelsMatches(labels: PolicyLabels): boolean {
+    return this.ignoreLabels.some((ignoreLabelSet) =>
+      ignoreLabelSet.matches(labels)
+    )
   }
 }
 
 export interface PolicyRequest extends BaseRequest<BaseCriteria> {
   policyScanName: string
+}
+
+export class PolicyLabelMatcherSet {
+  labels: PolicyLabelMatcher[]
+
+  constructor(labels: PolicyLabelMatcher[]) {
+    this.labels = labels
+  }
+
+  matches(labels: PolicyLabels): boolean {
+    return this.labels.every(({ key, value }) => labels[key] === value)
+  }
+}
+
+export class PolicyLabelMatcher {
+  key: string
+  value: string
+
+  constructor(key: string, value: string) {
+    this.key = key
+    this.value = value
+  }
 }
 
 export type PolicyErrorResponse = BaseErrorResponse<PolicyRequest>

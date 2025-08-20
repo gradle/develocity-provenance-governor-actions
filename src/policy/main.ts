@@ -2,7 +2,11 @@ import * as core from '@actions/core'
 import { createClient, Credentials } from '../client.js'
 import { createPolicyReporter } from './reporter.js'
 import { PackageURL } from 'packageurl-js'
-import { PolicyRequestSubject } from './model.js'
+import {
+  PolicyLabelMatcher,
+  PolicyLabelMatcherSet,
+  PolicyRequestSubject
+} from './model.js'
 
 export async function run(): Promise<void> {
   try {
@@ -22,6 +26,9 @@ export async function run(): Promise<void> {
     const repositoryUrl = core.getInput('subject-repository-url', {
       required: true
     })
+
+    const ignoreLabelsString =
+      core.getMultilineInput('ignore-policies-with-labels') ?? []
 
     const subjectPurl = new PackageURL(
       pkgType,
@@ -59,7 +66,8 @@ export async function run(): Promise<void> {
     const subject = new PolicyRequestSubject(
       policyScanName,
       subjectPurl.toString(),
-      { sha256: subjectDigest }
+      { sha256: subjectDigest },
+      parseIgnoreLabels(ignoreLabelsString)
     )
     reporter.report(result.status, subject, result.result)
   } catch (error) {
@@ -68,4 +76,41 @@ export async function run(): Promise<void> {
     else core.setFailed(`Action failed with error: ${error}`)
   }
   await core.summary.write()
+}
+
+// exported for testing
+export function parseIgnoreLabels(
+  ignoreLabelsString: string[]
+): PolicyLabelMatcherSet[] {
+  const sets: PolicyLabelMatcherSet[] = []
+  let matchers: PolicyLabelMatcher[] = []
+
+  ignoreLabelsString.forEach((line) => {
+    if (line.trim().length == 0) {
+      if (matchers.length > 0) {
+        sets.push(new PolicyLabelMatcherSet(matchers))
+      }
+      matchers = []
+    } else {
+      line.split(',').forEach((label) => {
+        const parts = label
+          .trim()
+          .split('=')
+          .map((part) => part.trim())
+          .filter((part) => part.length > 0)
+
+        if (parts.length != 2) {
+          throw new Error(
+            "Invalid label matcher format. Expected '{key}={value}'."
+          )
+        }
+        matchers.push(new PolicyLabelMatcher(parts[0].trim(), parts[1].trim()))
+      })
+    }
+  })
+
+  if (matchers.length > 0) {
+    sets.push(new PolicyLabelMatcherSet(matchers))
+  }
+  return sets
 }

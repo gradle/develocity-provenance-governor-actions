@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals'
 import * as core from '../../__fixtures__/core.js'
+import { PolicyRequestSubject } from '../model.js'
 import fs from 'node:fs'
 
 // Mock the core module before importing the reporter
@@ -38,15 +39,15 @@ describe('policy reporter.js', () => {
     const payload = JSON.parse(
       fs.readFileSync('src/policy/__fixtures__/error.json', 'utf8')
     )
-    const subject = {
-      scanName: 'security-scan',
-      subjectName:
-        'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
-      digest: {
+    const subject = new PolicyRequestSubject(
+      'security-scan',
+      'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
+      {
         sha256:
           'c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b'
-      }
-    }
+      },
+      []
+    )
 
     new PolicySummaryReporter().report(404, subject, payload, true)
 
@@ -62,15 +63,15 @@ describe('policy reporter.js', () => {
     const payload = JSON.parse(
       fs.readFileSync('src/policy/__fixtures__/unsatisfied.json', 'utf8')
     )
-    const subject = {
-      scanName: 'security-scan',
-      subjectName:
-        'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
-      digest: {
+    const subject = new PolicyRequestSubject(
+      'security-scan',
+      'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
+      {
         sha256:
           'c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b'
-      }
-    }
+      },
+      []
+    )
 
     new PolicySummaryReporter().report(200, subject, payload, true)
 
@@ -85,15 +86,15 @@ describe('policy reporter.js', () => {
     const payload = JSON.parse(
       fs.readFileSync('src/policy/__fixtures__/satisfied.json', 'utf8')
     )
-    const subject = {
-      scanName: 'security-scan',
-      subjectName:
-        'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
-      digest: {
+    const subject = new PolicyRequestSubject(
+      'security-scan',
+      'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
+      {
         sha256:
           'c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b'
-      }
-    }
+      },
+      []
+    )
 
     new PolicySummaryReporter().report(200, subject, payload, true)
 
@@ -117,12 +118,14 @@ function renderAndCompare(
     'utf8'
   )
 
-  new PolicySummaryReporter().report(
-    status,
-    { scanName, subjectName, digest: { sha256: digest } },
-    payload,
-    false
+  const subject = new PolicyRequestSubject(
+    scanName,
+    subjectName,
+    { sha256: digest },
+    []
   )
+
+  new PolicySummaryReporter().report(status, subject, payload, false)
 
   // verify the summary text looks good
   const summaryContent = core.summary.stringify()
