@@ -21,7 +21,7 @@
 `https://gradle.com/attestations/repository/v1`
 </td><td>
 
-https://develocity.grdev.net/s/u4cqaqnytbwga
+[Link](https://develocity.grdev.net/s/u4cqaqnytbwga)
 </td><td>1</td><td>1</td><td>
 
 [Link](#user-content-attestation-detail-0)
