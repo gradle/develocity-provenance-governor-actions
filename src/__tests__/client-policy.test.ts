@@ -25,6 +25,7 @@ describe('client.js - policy evaluation', () => {
     const result = await client.evaluatePolicy(
       'tenant1',
       'scan1',
+      'enforcement-point1',
       purl,
       'digest1',
       'repository1'
@@ -43,7 +44,7 @@ describe('client.js - policy evaluation', () => {
     }
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://policy.example.com/tenant1/packages/npm/namespace1/name1/1.0.0/policy-scans/scan1',
+      'https://policy.example.com/tenant1/packages/npm/namespace1/name1/1.0.0/policy-scans/scan1/enforcement-point/enforcement-point1',
       expected
     )
     expect(result).toEqual({
@@ -71,6 +72,7 @@ describe('client.js - policy evaluation', () => {
     const result = await client.evaluatePolicy(
       'tenant1',
       'scan1',
+      'enforcement-point1',
       purl,
       'digest1',
       'repository1'
@@ -89,7 +91,7 @@ describe('client.js - policy evaluation', () => {
     }
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://policy.example.com/tenant1/packages/npm/namespace1/name1/1.0.0/policy-scans/scan1',
+      'https://policy.example.com/tenant1/packages/npm/namespace1/name1/1.0.0/policy-scans/scan1/enforcement-point/enforcement-point1',
       expected
     )
     expect(result).toEqual({
@@ -117,6 +119,7 @@ describe('client.js - policy evaluation', () => {
     const result = await client.evaluatePolicy(
       'tenant1',
       'scan1',
+      'enforcement-point1',
       purl,
       'digest1',
       'repository1'
@@ -135,7 +138,7 @@ describe('client.js - policy evaluation', () => {
     }
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://policy.example.com/tenant1/packages/oci/name1/1.0.0/policy-scans/scan1',
+      'https://policy.example.com/tenant1/packages/oci/name1/1.0.0/policy-scans/scan1/enforcement-point/enforcement-point1',
       expected
     )
     expect(result).toEqual({

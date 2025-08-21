@@ -11,6 +11,9 @@ export async function run(): Promise<void> {
       required: true
     })
     const policyScanName = core.getInput('policy-scan', { required: true })
+    const enforcementPointName = core.getInput('enforcement-point', {
+      required: true
+    })
 
     const tenant = core.getInput('tenant', { required: true })
     const pkgType = core.getInput('subject-type', { required: true })
@@ -49,6 +52,7 @@ export async function run(): Promise<void> {
     const result = await client.evaluatePolicy(
       tenant,
       policyScanName,
+      enforcementPointName,
       subjectPurl,
       subjectDigest,
       repositoryUrl
@@ -58,6 +62,7 @@ export async function run(): Promise<void> {
     const reporter = createPolicyReporter()
     const subject = new PolicyRequestSubject(
       policyScanName,
+      enforcementPointName,
       subjectPurl.toString(),
       { sha256: subjectDigest }
     )

@@ -67,6 +67,7 @@ describe('main.ts', () => {
       .mockClear()
       .mockReturnValueOnce('https://policy.example.com/') // policy-evaluator-url
       .mockReturnValueOnce('security-scan') // policy-scan
+      .mockReturnValueOnce('test-enforcement-point') // enforcement-point
       .mockReturnValueOnce('tenant11') // tenant
       .mockReturnValueOnce('oci') // subject-type
       .mockReturnValueOnce('') // subject-namespace
@@ -98,6 +99,7 @@ describe('main.ts', () => {
       1,
       'tenant11',
       'security-scan',
+      'test-enforcement-point',
       expect.objectContaining({
         type: 'oci',
         name: 'java-payment-calculator',
@@ -109,6 +111,7 @@ describe('main.ts', () => {
 
     const expectedSubject = {
       scanName: 'security-scan',
+      enforcementPointName: 'test-enforcement-point',
       subjectName:
         'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
       digest: {
@@ -147,6 +150,7 @@ describe('main.ts', () => {
       .mockClear()
       .mockReturnValueOnce('https://policy.example.com/') // policy-evaluator-url
       .mockReturnValueOnce('security-scan') // policy-scan
+      .mockReturnValueOnce('test-enforcement-point') // enforcement-point
       .mockReturnValueOnce('tenant22') // tenant
       .mockReturnValueOnce('oci') // subject-type
       .mockReturnValueOnce('') // subject-namespace
@@ -178,6 +182,7 @@ describe('main.ts', () => {
       1,
       'tenant22',
       'security-scan',
+      'test-enforcement-point',
       expect.objectContaining({
         type: 'oci',
         name: 'java-payment-calculator',
@@ -189,6 +194,7 @@ describe('main.ts', () => {
 
     const expectedSubject = {
       scanName: 'security-scan',
+      enforcementPointName: 'test-enforcement-point',
       subjectName:
         'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
       digest: {
@@ -227,6 +233,7 @@ describe('main.ts', () => {
       .mockClear()
       .mockReturnValueOnce('https://policy.example.com/') // policy-evaluator-url
       .mockReturnValueOnce('security-scan') // policy-scan
+      .mockReturnValueOnce('test-enforcement-point') // enforcement-point
       .mockReturnValueOnce('tenant33') // tenant
       .mockReturnValueOnce('oci') // subject-type
       .mockReturnValueOnce('') // subject-namespace
@@ -255,6 +262,7 @@ describe('main.ts', () => {
       1,
       'tenant33',
       'security-scan',
+      'test-enforcement-point',
       expect.objectContaining({
         type: 'oci',
         name: 'java-payment-calculator',
@@ -266,6 +274,7 @@ describe('main.ts', () => {
 
     const expectedSubject = {
       scanName: 'security-scan',
+      enforcementPointName: 'test-enforcement-point',
       subjectName:
         'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
       digest: {
@@ -304,6 +313,7 @@ describe('main.ts', () => {
       .mockClear()
       .mockReturnValueOnce('https://policy.example.com/') // policy-evaluator-url
       .mockReturnValueOnce('security-scan') // policy-scan
+      .mockReturnValueOnce('test-enforcement-point') // enforcement-point
       .mockReturnValueOnce('tenant44') // tenant
       .mockReturnValueOnce('maven') // subject-type
       .mockReturnValueOnce('com.example') // subject-namespace
@@ -333,6 +343,7 @@ describe('main.ts', () => {
       1,
       'tenant44',
       'security-scan',
+      'test-enforcement-point',
       expect.objectContaining({
         type: 'maven',
         namespace: 'com.example',
@@ -345,6 +356,7 @@ describe('main.ts', () => {
 
     const expectedSubject = {
       scanName: 'security-scan',
+      enforcementPointName: 'test-enforcement-point',
       subjectName: 'pkg:maven/com.example/my-library@2.1.0',
       digest: { sha256: 'abc123def456' }
     }
@@ -379,6 +391,7 @@ describe('main.ts', () => {
       .mockClear()
       .mockReturnValueOnce('https://policy.example.com/') // policy-evaluator-url
       .mockReturnValueOnce('compliance-scan') // policy-scan
+      .mockReturnValueOnce('test-enforcement-point') // enforcement-point
       .mockReturnValueOnce('tenant55') // tenant
       .mockReturnValueOnce('npm') // subject-type
       .mockReturnValueOnce('@company') // subject-namespace
@@ -408,6 +421,7 @@ describe('main.ts', () => {
       1,
       'tenant55',
       'compliance-scan',
+      'test-enforcement-point',
       expect.objectContaining({
         type: 'npm',
         namespace: '@company',
@@ -420,6 +434,7 @@ describe('main.ts', () => {
 
     const expectedSubject = {
       scanName: 'compliance-scan',
+      enforcementPointName: 'test-enforcement-point',
       subjectName: 'pkg:npm/%40company/my-package@1.2.3',
       digest: { sha256: 'xyz789abc123' }
     }
