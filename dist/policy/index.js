@@ -27549,6 +27549,7 @@ function reportTable(results) {
         const status = failureCount > 0
             ? PolicyResultStatus.UNSATISFIED
             : PolicyResultStatus.SATISFIED;
+        const buildScanUri = result.attestation.envelope.payload.predicate.buildScanUri;
         tableRows.push([
             { data: '\n\n`' + attestationName(result.attestation) + '`\n' },
             { data: statusIcon(status) },
@@ -27556,9 +27557,7 @@ function reportTable(results) {
                 data: '\n\n`' + result.attestation.envelope.payload.predicateType + '`\n'
             },
             {
-                data: '\n\n' +
-                    (result.attestation.envelope.payload.predicate.buildScanUri ?? '') +
-                    '\n'
+                data: buildScanUri ? '\n\n[Link](' + buildScanUri + ')\n' : ''
             },
             { data: successCount.toString() },
             { data: failureCount.toString() },
