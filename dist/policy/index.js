@@ -27687,7 +27687,7 @@ class PolicyData {
         this.labels = labels;
     }
     name() {
-        return this.uri.substring(this.uri.indexOf('/') + 1);
+        return this.uri.substring(this.uri.lastIndexOf('/') + 1);
     }
 }
 class AttestationEvaluation {
