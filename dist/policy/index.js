@@ -27461,14 +27461,20 @@ class PolicySummaryReporter extends BaseReporter {
         reportSubjectInfo(subject);
         coreExports.summary.addRaw('**Result:** ').addRaw(resultText).addEOL().addEOL();
         const processedResults = preprocessResults(result.results);
-        reportTable(processedResults);
+        const policies = collectPolicyEvaluations(processedResults);
+        reportPolicyTable(policies);
+        // reportTable(processedResults)
+        //
         if (hasFailures) {
             if (setFailure) {
                 coreExports.setFailed(`Policy scan ${subject.scanName} evaluated to UNSATISFIED for ${subject.subjectName}`);
             }
-            reportFailures(processedResults);
+            reportFailedPolicyDetails(policies);
+            //
+            //   reportFailures(processedResults)
         }
-        reportAllResults(processedResults);
+        //
+        // reportAllResults(processedResults)
     }
 }
 function preprocessResults(results) {
@@ -27531,169 +27537,188 @@ function attestationName(attestation) {
         return 'N/A';
     }
 }
-function reportTable(results) {
+function reportPolicyTable(policies) {
     const tableRows = [
         [
-            { data: 'Attestation', header: true },
+            { data: 'Policy', header: true },
             { data: 'Status', header: true },
-            { data: 'Predicate Type', header: true },
-            { data: 'Build Scan', header: true },
-            { data: 'Satisfied Policies', header: true },
-            { data: 'Unsatisfied Policies', header: true },
-            { data: 'Details', header: true }
+            { data: 'Attestations Passed / Evaluated', header: true },
+            { data: 'Description', header: true },
+            { data: 'Remediation', header: true },
+            { data: 'Failure Details', header: true }
         ]
     ];
-    results.forEach((result, index) => {
-        const failureCount = result.evaluations.filter((e) => e.status == PolicyResultStatus.UNSATISFIED).length;
-        const successCount = result.evaluations.filter((e) => e.status == PolicyResultStatus.SATISFIED).length;
-        const status = failureCount > 0
-            ? PolicyResultStatus.UNSATISFIED
-            : PolicyResultStatus.SATISFIED;
-        const buildScanUri = result.attestation.envelope.payload.predicate.buildScanUri;
+    policies.forEach((evaluations, index) => {
         tableRows.push([
-            { data: '\n\n`' + attestationName(result.attestation) + '`\n' },
-            { data: statusIcon(status) },
             {
-                data: '\n\n`' + result.attestation.envelope.payload.predicateType + '`\n'
+                data: `\n\n\`${evaluations.policy.name()}\`\n`
+            },
+            { data: statusIcon(evaluations.status) },
+            {
+                data: evaluations.successes.length +
+                    ' / ' +
+                    evaluations.totalApplicableAttestations
+            },
+            { data: evaluations.policy.description ?? '' },
+            {
+                data: evaluations.status == PolicyResultStatus.UNSATISFIED
+                    ? (evaluations.policy.remediation ?? '')
+                    : ''
             },
             {
-                data: buildScanUri ? '\n\n[Link](' + buildScanUri + ')\n' : ''
-            },
-            { data: successCount.toString() },
-            { data: failureCount.toString() },
-            // the user-content- is something needed for GitHub for the summary link to work
-            { data: `\n\n[Link](#user-content-attestation-detail-${index})\n` }
+                data: evaluations.status == PolicyResultStatus.UNSATISFIED
+                    ? `\n\n[Link](#user-content-policy-detail-${index})\n`
+                    : ''
+            }
         ]);
     });
-    coreExports.summary.addTable(tableRows).addEOL();
+    coreExports.summary.addTable(tableRows).addEOL().addEOL();
 }
-function reportFailures(results) {
-    results.forEach(({ attestation, evaluations }) => {
-        const hasFailure = evaluations.some((e) => e.status == PolicyResultStatus.UNSATISFIED);
-        if (!hasFailure) {
-            return;
-        }
-        evaluations.forEach((evaluation) => {
-            if (evaluation.status == PolicyResultStatus.UNSATISFIED) {
-                coreExports.error(`Attestation ${attestationName(attestation)} failed policy ${evaluation.policyUri}`);
-            }
-        });
-    });
-}
-function reportAllResults(results) {
-    coreExports.summary.addRaw('# Details').addEOL().addEOL();
-    results.forEach((result, index) => {
-        reportAttestation(result.attestation, `## <a name="attestation-detail-${index}"></a> Attestation`);
-        const tableRows = [
-            [
-                { data: 'Policy', header: true },
-                { data: 'Status', header: true },
-                { data: 'Description', header: true },
-                { data: 'Remediation', header: true },
-                { data: 'Labels', header: true },
-                { data: 'Details', header: true }
-            ]
-        ];
-        const statusOrder = [
-            PolicyResultStatus.UNSATISFIED,
-            PolicyResultStatus.SATISFIED,
-            PolicyResultStatus.NOT_APPLICABLE
-        ];
-        result.evaluations
-            .sort((a, b) => {
-            if (a.status == b.status) {
-                return a.policyUri.localeCompare(b.policyUri);
-            }
-            return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
-        })
-            .forEach((evaluation) => {
-            const isFailure = evaluation.status == PolicyResultStatus.UNSATISFIED;
-            const isNotApplicable = evaluation.status == PolicyResultStatus.NOT_APPLICABLE;
-            const policyUrl = evaluation.policyUri;
-            tableRows.push([
-                {
-                    data: `\n\n\`${policyUrl.substring(policyUrl.lastIndexOf('/') + 1)}\`\n`
-                },
-                { data: statusIcon(evaluation.status) },
-                {
-                    data: evaluation.details.description
-                        ? evaluation.details.description
-                        : ''
-                },
-                {
-                    data: isFailure ? (evaluation.details.remediation ?? '') : ''
-                },
-                {
-                    data: isNotApplicable
-                        ? ''
-                        : '\n\n```json\n' +
-                            JSON.stringify(evaluation.labels, null, 2) +
-                            '\n```\n'
-                },
-                {
-                    data: isNotApplicable
-                        ? 'Not applicable to this predicate type'
-                        : '\n\n```json\n' +
-                            JSON.stringify(evaluation.details, null, 2) +
-                            '\n```\n'
+function reportFailedPolicyDetails(policies) {
+    coreExports.summary.addRaw('# Failed Policies').addEOL().addEOL();
+    policies.forEach((policyEval, index) => {
+        if (policyEval.status == PolicyResultStatus.UNSATISFIED) {
+            coreExports.summary
+                .addRaw('## <a name="policy-detail-' + index + '"></a> Policy: ')
+                .addRaw('`')
+                .addRaw(policyEval.policy.name())
+                .addRaw('`')
+                .addEOL()
+                .addEOL();
+            coreExports.summary
+                .addRaw('**Description:** ')
+                .addRaw(policyEval.policy.description ?? '')
+                .addEOL()
+                .addEOL();
+            coreExports.summary
+                .addRaw('**Remediation:** ')
+                .addRaw(policyEval.policy.remediation ?? '')
+                .addEOL()
+                .addEOL();
+            coreExports.summary.addRaw('**Labels:**').addEOL().addEOL();
+            coreExports.summary
+                .addRaw('```json')
+                .addEOL()
+                .addRaw(JSON.stringify(policyEval.policy.labels, null, 2))
+                .addEOL()
+                .addRaw('```')
+                .addEOL()
+                .addEOL();
+            const tableRows = [
+                [
+                    { data: 'Attestation', header: true },
+                    { data: 'Status', header: true },
+                    { data: 'Details', header: true },
+                    { data: 'Envelope', header: true }
+                ]
+            ];
+            policyEval.failures.concat(policyEval.successes).forEach((evaluation) => {
+                const attestation = evaluation.attestation;
+                const { 
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                description: unused, 
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                remediation: unused2, ...otherDetails } = evaluation.evaluation.details;
+                const otherDetailsJson = JSON.stringify(otherDetails, null, 2);
+                if (evaluation.evaluation.status == PolicyResultStatus.UNSATISFIED) {
+                    coreExports.error('Policy ' +
+                        policyEval.policy.name() +
+                        ' on attestation ' +
+                        attestationName(attestation) +
+                        ' evaluated to UNSATISFIED');
                 }
-            ]);
-        });
-        coreExports.summary.addRaw('**Policy Results:**').addEOL().addEOL();
-        coreExports.summary.addTable(tableRows).addEOL();
+                tableRows.push([
+                    {
+                        data: `\n\n\`${attestationName(attestation)}\`\n`
+                    },
+                    { data: statusIcon(evaluation.evaluation.status) },
+                    {
+                        data: otherDetailsJson != '{}'
+                            ? '\n\n```json\n' + otherDetailsJson + '\n```\n'
+                            : ''
+                    },
+                    {
+                        data: '\n\n<details>\n\n<summary>Envelope</summary>\n\n' +
+                            '\n\n```json\n' +
+                            JSON.stringify(attestation.envelope, null, 2) +
+                            '\n```\n' +
+                            '\n\n</details>\n'
+                    }
+                ]);
+            });
+            coreExports.summary.addTable(tableRows).addEOL().addEOL();
+        }
     });
 }
-function reportAttestation(attestation, headerPrefix, headerPostfix = null) {
-    coreExports.summary.addEOL().addEOL().addRaw(headerPrefix);
-    coreExports.summary.addRaw(' `').addRaw(attestationName(attestation)).addRaw('`');
-    if (headerPostfix) {
-        coreExports.summary.addRaw(' ').addRaw(headerPostfix);
+class PolicyEvaluations {
+    policy;
+    evaluations;
+    failures;
+    successes;
+    status;
+    totalApplicableAttestations;
+    constructor(policy, evaluations) {
+        this.policy = policy;
+        this.evaluations = evaluations;
+        this.failures = evaluations.filter((e) => e.evaluation.status == PolicyResultStatus.UNSATISFIED);
+        this.successes = evaluations.filter((e) => e.evaluation.status == PolicyResultStatus.SATISFIED);
+        if (this.failures.length > 0) {
+            this.status = PolicyResultStatus.UNSATISFIED;
+        }
+        else if (this.successes.length > 0) {
+            this.status = PolicyResultStatus.SATISFIED;
+        }
+        else {
+            this.status = PolicyResultStatus.NOT_APPLICABLE;
+        }
+        this.totalApplicableAttestations =
+            this.successes.length + this.failures.length;
     }
-    coreExports.summary.addEOL().addEOL();
-    coreExports.summary
-        .addRaw('**Predicate Type:** `')
-        .addRaw(attestation.envelope.payload.predicateType)
-        .addRaw('`')
-        .addEOL()
-        .addEOL();
-    if (attestation.envelope.payload.predicate.buildScanUri) {
-        coreExports.summary
-            .addRaw('**Build Scan:** ')
-            .addRaw(attestation.envelope.payload.predicate.buildScanUri)
-            .addEOL()
-            .addEOL();
+}
+class PolicyData {
+    uri;
+    description;
+    remediation;
+    labels;
+    constructor(uri, description, remediation, labels) {
+        this.uri = uri;
+        this.description = description;
+        this.remediation = remediation;
+        this.labels = labels;
     }
-    coreExports.summary
-        .addRaw('**Attestation Store:** `')
-        .addRaw(attestation.storeUri)
-        .addRaw('`')
-        .addEOL()
-        .addEOL();
-    coreExports.summary.addRaw('<details>').addEOL();
-    coreExports.summary
-        .addRaw('<summary>Attestation Details</summary>')
-        .addEOL()
-        .addEOL();
-    if (attestation.storeRequest.uri) {
-        coreExports.summary
-            .addRaw('Attestation URI: `')
-            .addRaw(attestation.storeRequest.uri)
-            .addRaw('`')
-            .addEOL()
-            .addEOL();
+    name() {
+        return this.uri.substring(this.uri.indexOf('/') + 1);
     }
-    coreExports.summary
-        .addRaw('Envelope:')
-        .addEOL()
-        .addEOL()
-        .addRaw('```json')
-        .addEOL()
-        .addRaw(JSON.stringify(attestation.envelope, null, 2))
-        .addEOL()
-        .addRaw('```')
-        .addEOL()
-        .addEOL();
-    coreExports.summary.addRaw('</details>').addEOL().addEOL();
+}
+class AttestationEvaluation {
+    attestation;
+    evaluation;
+    constructor(attestation, evaluation) {
+        this.attestation = attestation;
+        this.evaluation = evaluation;
+    }
+}
+function collectPolicyEvaluations(results) {
+    const policyMap = new Map();
+    results.forEach((a) => {
+        a.evaluations.forEach((evaluation) => {
+            const data = new PolicyData(evaluation.policyUri, evaluation.details.description, evaluation.details.remediation, evaluation.labels);
+            const ae = new AttestationEvaluation(a.attestation, evaluation);
+            const existing = policyMap.get(data);
+            if (existing) {
+                existing.push(ae);
+            }
+            else {
+                policyMap.set(data, [ae]);
+            }
+        });
+    });
+    const resultsList = [];
+    policyMap.forEach((evaluations, policy) => {
+        resultsList.push(new PolicyEvaluations(policy, evaluations));
+    });
+    resultsList.sort((a, b) => a.policy.uri.localeCompare(b.policy.uri));
+    return resultsList;
 }
 function statusIcon(status) {
     switch (status) {
