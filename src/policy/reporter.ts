@@ -343,7 +343,7 @@ class PolicyData {
   }
 
   name(): string {
-    return this.uri.substring(this.uri.indexOf('/') + 1)
+    return this.uri.substring(this.uri.lastIndexOf('/') + 1)
   }
 }
 

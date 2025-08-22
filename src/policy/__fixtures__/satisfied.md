@@ -15,13 +15,13 @@
 
 <table><tr><th>Policy</th><th>Status</th><th>Attestations Passed / Evaluated</th><th>Description</th><th>Remediation</th><th>Failure Details</th></tr><tr><td>
 
-`/policies.example.com/build-scan-verification`
+`build-scan-verification`
 </td><td>✅</td><td>1 / 1</td><td>Build scan verification</td><td><td></tr><tr><td>
 
-`/policies.example.com/jvm-verification`
+`jvm-verification`
 </td><td>N/A</td><td>0 / 0</td><td><td><td></tr><tr><td>
 
-`/policies.example.com/repo-source-check`
+`repo-source-check`
 </td><td>✅</td><td>1 / 1</td><td>Repository source verification</td><td><td></tr></table>
 
 
