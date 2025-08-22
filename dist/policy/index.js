@@ -27640,7 +27640,7 @@ function reportFailedPolicyDetails(policies) {
                             : ''
                     },
                     {
-                        data: buildScanUri ? `\n\n[Link](${buildScanUri})\n` : ''
+                        data: buildScanUri ? `\n\n[Build Scan](${buildScanUri})\n` : ''
                     },
                     {
                         data: '\n\n<details>\n\n<summary>Envelope</summary>\n\n' +
