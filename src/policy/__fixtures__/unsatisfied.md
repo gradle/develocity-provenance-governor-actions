@@ -15,22 +15,80 @@
 
 <table><tr><th>Policy</th><th>Status</th><th>Attestations Passed / Evaluated</th><th>Description</th><th>Remediation</th><th>Failure Details</th></tr><tr><td>
 
-`build-scan-verification`
-</td><td>✅</td><td>1 / 1</td><td>Build scan verification</td><td><td></tr><tr><td>
-
 `jvm-verification`
-</td><td>N/A</td><td>0 / 0</td><td><td><td></tr><tr><td>
+</td><td>❌</td><td>0 / 1</td><td><td><td>
+
+[Link](#user-content-policy-detail-0)
+</td></tr><tr><td>
 
 `repo-source-check`
 </td><td>❌</td><td>0 / 1</td><td>Repository source verification</td><td>Ensure the repository is from a trusted source</td><td>
 
-[Link](#user-content-policy-detail-2)
-</td></tr></table>
+[Link](#user-content-policy-detail-1)
+</td></tr><tr><td>
+
+`build-scan-verification`
+</td><td>✅</td><td>2 / 2</td><td>Build scan verification</td><td><td></tr></table>
 
 
 # Failed Policies
 
-## <a name="policy-detail-2"></a> Policy: `repo-source-check`
+## <a name="policy-detail-0"></a> Policy `jvm-verification`
+
+**Description:** 
+
+**Remediation:** 
+
+**Labels:**
+
+```json
+{
+  "category": "verification",
+  "severity": "medium"
+}
+```
+
+<table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th><th>Envelope</th></tr><tr><td>
+
+`gradle-attestations-resolved-dependencies-1432382830781-312dd5f5.json`
+</td><td>❌</td><td><td>
+
+[Link](https://develocity.grdev.net/s/u4cqaq2ytbwga)
+</td><td>
+
+<details>
+
+<summary>Envelope</summary>
+
+
+
+```json
+{
+  "payload": {
+    "_type": "https://in-toto.io/Statement/v1",
+    "predicateType": "https://gradle.com/attestations/jvm/v1",
+    "subject": [
+      {
+        "name": "pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3",
+        "digest": {
+          "sha256": "c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b"
+        }
+      }
+    ],
+    "predicate": {
+      "buildScanUri": "https://develocity.grdev.net/s/u4cqaq2ytbwga",
+      "uri": "https://repo.maven.apache.org/maven2/"
+    }
+  }
+}
+```
+
+
+</details>
+</td></tr></table>
+
+
+## <a name="policy-detail-1"></a> Policy `repo-source-check`
 
 **Description:** Repository source verification
 
@@ -45,10 +103,13 @@
 }
 ```
 
-<table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Envelope</th></tr><tr><td>
+<table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th><th>Envelope</th></tr><tr><td>
 
 `gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
 </td><td>❌</td><td><td>
+
+[Link](https://develocity.grdev.net/s/u4cqaqnytbwga)
+</td><td>
 
 <details>
 

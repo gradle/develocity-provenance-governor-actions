@@ -206,7 +206,7 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
   policies.forEach((policyEval, index) => {
     if (policyEval.status == PolicyResultStatus.UNSATISFIED) {
       core.summary
-        .addRaw('## <a name="policy-detail-' + index + '"></a> Policy: ')
+        .addRaw('## <a name="policy-detail-' + index + '"></a> Policy ')
         .addRaw('`')
         .addRaw(policyEval.policy.name())
         .addRaw('`')
@@ -240,6 +240,7 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
           { data: 'Attestation', header: true },
           { data: 'Status', header: true },
           { data: 'Details', header: true },
+          { data: 'Build Scan', header: true },
           { data: 'Envelope', header: true }
         ]
       ]
@@ -267,6 +268,8 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
           )
         }
 
+        const buildScanUri = attestation.envelope.payload.predicate.buildScanUri
+
         tableRows.push([
           {
             data: `\n\n\`${attestationName(attestation)}\`\n`
@@ -277,6 +280,9 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
               otherDetailsJson != '{}'
                 ? '\n\n```json\n' + otherDetailsJson + '\n```\n'
                 : ''
+          },
+          {
+            data: buildScanUri ? `\n\n[Link](${buildScanUri})\n` : ''
           },
           {
             data:
@@ -360,7 +366,10 @@ class AttestationEvaluation {
 function collectPolicyEvaluations(
   results: PolicyAttestationEvaluation[]
 ): PolicyEvaluations[] {
-  const policyMap = new Map<PolicyData, AttestationEvaluation[]>()
+  const policyMap = new Map<
+    string,
+    { policy: PolicyData; evaluations: AttestationEvaluation[] }
+  >()
 
   results.forEach((a: PolicyAttestationEvaluation) => {
     a.evaluations.forEach((evaluation) => {
@@ -373,20 +382,36 @@ function collectPolicyEvaluations(
 
       const ae = new AttestationEvaluation(a.attestation, evaluation)
 
-      const existing = policyMap.get(data)
+      const existing = policyMap.get(data.uri)
       if (existing) {
-        existing.push(ae)
+        existing.evaluations.push(ae)
       } else {
-        policyMap.set(data, [ae])
+        policyMap.set(data.uri, {
+          policy: data,
+          evaluations: [ae]
+        })
       }
     })
   })
 
   const resultsList: PolicyEvaluations[] = []
-  policyMap.forEach((evaluations, policy) => {
-    resultsList.push(new PolicyEvaluations(policy, evaluations))
+  policyMap.forEach((value) => {
+    resultsList.push(new PolicyEvaluations(value.policy, value.evaluations))
   })
-  resultsList.sort((a, b) => a.policy.uri.localeCompare(b.policy.uri))
+
+  const statusOrder = [
+    PolicyResultStatus.UNSATISFIED,
+    PolicyResultStatus.SATISFIED,
+    PolicyResultStatus.NOT_APPLICABLE
+  ]
+
+  resultsList.sort((a, b) => {
+    if (a.status == b.status) {
+      return a.policy.uri.localeCompare(b.policy.uri)
+    } else {
+      return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status)
+    }
+  })
   return resultsList
 }
 

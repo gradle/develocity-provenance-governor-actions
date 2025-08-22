@@ -80,6 +80,70 @@
           }
         }
       ]
+    },
+
+    {
+      "attestation": {
+        "envelope": {
+          "payload": {
+            "_type": "https://in-toto.io/Statement/v1",
+            "predicateType": "https://gradle.com/attestations/jvm/v1",
+            "subject": [
+              {
+                "name": "pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3",
+                "digest": {
+                  "sha256": "c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b"
+                }
+              }
+            ],
+            "predicate": {
+              "buildScanUri": "https://develocity.grdev.net/s/u4cqaq2ytbwga",
+              "uri": "https://repo.maven.apache.org/maven2/"
+            }
+          }
+        },
+        "storeType": "artifactory",
+        "storeUri": "https://develocitytia.jfrog.io/attestation/",
+        "storeRequest": {
+          "uri": "https://develocitytia.jfrog.io/artifactory/docker-trial/.evidence/ed0870faabc4387c5fee46e3b26ab0262610764cc6a708d37dc84a54e90652f6/a30f98e704871a244ac3f28c2ada5c120afe756e981438f221e21fff3042a11b/gradle-attestations-resolved-dependencies-1432382830781-312dd5f5.json"
+        },
+        "storeResponse": {}
+      },
+      "evaluations": [
+        {
+          "policyUri": "https://policies.example.com/repo-source-check",
+          "status": "NOT_APPLICABLE",
+          "details": {
+            "description": "Repository source verification",
+            "remediation": "Ensure the repository is from a trusted source"
+          },
+          "labels": {
+            "category": "security",
+            "severity": "high"
+          }
+        },
+        {
+          "policyUri": "https://policies.example.com/build-scan-verification",
+          "status": "SATISFIED",
+          "details": {
+            "description": "Build scan verification",
+            "remediation": "Ensure a build scan is published for the build"
+          },
+          "labels": {
+            "category": "verification",
+            "severity": "medium"
+          }
+        },
+        {
+          "policyUri": "https://policies.example.com/jvm-verification",
+          "status": "UNSATISFIED",
+          "details": {},
+          "labels": {
+            "category": "verification",
+            "severity": "medium"
+          }
+        }
+      ]
     }
   ]
 }

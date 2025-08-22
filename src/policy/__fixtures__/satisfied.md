@@ -18,10 +18,10 @@
 `build-scan-verification`
 </td><td>✅</td><td>1 / 1</td><td>Build scan verification</td><td><td></tr><tr><td>
 
-`jvm-verification`
-</td><td>N/A</td><td>0 / 0</td><td><td><td></tr><tr><td>
-
 `repo-source-check`
-</td><td>✅</td><td>1 / 1</td><td>Repository source verification</td><td><td></tr></table>
+</td><td>✅</td><td>1 / 1</td><td>Repository source verification</td><td><td></tr><tr><td>
+
+`jvm-verification`
+</td><td>N/A</td><td>0 / 0</td><td><td><td></tr></table>
 
 
