@@ -282,7 +282,7 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
                 : ''
           },
           {
-            data: buildScanUri ? `\n\n[Link](${buildScanUri})\n` : ''
+            data: buildScanUri ? `\n\n[Build Scan](${buildScanUri})\n` : ''
           },
           {
             data:

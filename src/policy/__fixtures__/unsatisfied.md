@@ -53,7 +53,7 @@
 `gradle-attestations-resolved-dependencies-1432382830781-312dd5f5.json`
 </td><td>❌</td><td><td>
 
-[Link](https://develocity.grdev.net/s/u4cqaq2ytbwga)
+[Build Scan](https://develocity.grdev.net/s/u4cqaq2ytbwga)
 </td><td>
 
 <details>
@@ -108,7 +108,7 @@
 `gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
 </td><td>❌</td><td><td>
 
-[Link](https://develocity.grdev.net/s/u4cqaqnytbwga)
+[Build Scan](https://develocity.grdev.net/s/u4cqaqnytbwga)
 </td><td>
 
 <details>
