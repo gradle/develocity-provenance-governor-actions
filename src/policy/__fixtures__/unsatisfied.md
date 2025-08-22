@@ -13,38 +13,48 @@
 
 **Result:** ❌ UNSATISFIED
 
-<table><tr><th>Attestation</th><th>Status</th><th>Predicate Type</th><th>Build Scan</th><th>Satisfied Policies</th><th>Unsatisfied Policies</th><th>Details</th></tr><tr><td>
+<table><tr><th>Policy</th><th>Status</th><th>Attestations Passed / Evaluated</th><th>Description</th><th>Remediation</th><th>Failure Details</th></tr><tr><td>
 
-`gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
-</td><td>❌</td><td>
+`/policies.example.com/build-scan-verification`
+</td><td>✅</td><td>1 / 1</td><td>Build scan verification</td><td><td></tr><tr><td>
 
-`https://gradle.com/attestations/repository/v1`
-</td><td>
+`/policies.example.com/jvm-verification`
+</td><td>N/A</td><td>0 / 0</td><td><td><td></tr><tr><td>
 
-[Link](https://develocity.grdev.net/s/u4cqaqnytbwga)
-</td><td>1</td><td>1</td><td>
+`/policies.example.com/repo-source-check`
+</td><td>❌</td><td>0 / 1</td><td>Repository source verification</td><td>Ensure the repository is from a trusted source</td><td>
 
-[Link](#user-content-attestation-detail-0)
+[Link](#user-content-policy-detail-2)
 </td></tr></table>
 
-# Details
 
+# Failed Policies
 
+## <a name="policy-detail-2"></a> Policy: `/policies.example.com/repo-source-check`
 
-## <a name="attestation-detail-0"></a> Attestation `gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
+**Description:** Repository source verification
 
-**Predicate Type:** `https://gradle.com/attestations/repository/v1`
+**Remediation:** Ensure the repository is from a trusted source
 
-**Build Scan:** https://develocity.grdev.net/s/u4cqaqnytbwga
+**Labels:**
 
-**Attestation Store:** `https://develocitytia.jfrog.io/attestation/`
+```json
+{
+  "category": "security",
+  "severity": "high"
+}
+```
+
+<table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Envelope</th></tr><tr><td>
+
+`gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
+</td><td>❌</td><td><td>
 
 <details>
-<summary>Attestation Details</summary>
 
-Attestation URI: `https://develocitytia.jfrog.io/artifactory/docker-trial/.evidence/ed0870faabc4387c5fee46e3b26ab0262610764cc6a708d37dc84a54e90652f6/a30f98e704871a244ac3f28c2ada5c120afe756e981438f221e21fff3042a11b/gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
+<summary>Envelope</summary>
 
-Envelope:
+
 
 ```json
 {
@@ -67,49 +77,8 @@ Envelope:
 }
 ```
 
+
 </details>
+</td></tr></table>
 
-**Policy Results:**
-
-<table><tr><th>Policy</th><th>Status</th><th>Description</th><th>Remediation</th><th>Labels</th><th>Details</th></tr><tr><td>
-
-`repo-source-check`
-</td><td>❌</td><td>Repository source verification failed</td><td>Ensure the repository is from a trusted source</td><td>
-
-```json
-{
-  "category": "security",
-  "severity": "high"
-}
-```
-</td><td>
-
-```json
-{
-  "description": "Repository source verification failed",
-  "remediation": "Ensure the repository is from a trusted source"
-}
-```
-</td></tr><tr><td>
-
-`build-scan-verification`
-</td><td>✅</td><td>Build scan verification passed</td><td><td>
-
-```json
-{
-  "category": "verification",
-  "severity": "medium"
-}
-```
-</td><td>
-
-```json
-{
-  "description": "Build scan verification passed"
-}
-```
-</td></tr><tr><td>
-
-`jvm-verification`
-</td><td>N/A</td><td><td><td><td>Not applicable to this predicate type</td></tr></table>
 

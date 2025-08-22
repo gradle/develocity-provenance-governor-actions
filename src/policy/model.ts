@@ -85,15 +85,11 @@ export interface PolicyEvaluation {
   policyUri: string
   status: PolicyResultStatus
   details: PolicyEvaluationDetails
-  labels: PolicyLabels
+  labels: Record<string, string>
 }
 
 export interface PolicyEvaluationDetails {
   description?: string
   remediation?: string
-  [key: string]: string | undefined
-}
-
-export interface PolicyLabels {
   [key: string]: string | undefined
 }

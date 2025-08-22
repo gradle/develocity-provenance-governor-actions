@@ -6,6 +6,7 @@ import {
   PolicyAttestation,
   PolicyAttestationEvaluation,
   PolicyErrorResponse,
+  PolicyEvaluation,
   PolicyRequestSubject,
   PolicyResultStatus,
   PolicySuccessResponse
@@ -62,19 +63,24 @@ export class PolicySummaryReporter extends BaseReporter<
 
     const processedResults = preprocessResults(result.results)
 
-    reportTable(processedResults)
+    const policies = collectPolicyEvaluations(processedResults)
 
+    reportPolicyTable(policies)
+
+    // reportTable(processedResults)
+    //
     if (hasFailures) {
       if (setFailure) {
         core.setFailed(
           `Policy scan ${subject.scanName} evaluated to UNSATISFIED for ${subject.subjectName}`
         )
       }
-
-      reportFailures(processedResults)
+      reportFailedPolicyDetails(policies)
+      //
+      //   reportFailures(processedResults)
     }
-
-    reportAllResults(processedResults)
+    //
+    // reportAllResults(processedResults)
   }
 }
 
@@ -152,218 +158,236 @@ function attestationName(attestation: PolicyAttestation): string {
   }
 }
 
-function reportTable(results: PolicyAttestationEvaluation[]) {
+function reportPolicyTable(policies: PolicyEvaluations[]) {
   const tableRows: SummaryTableRow[] = [
     [
-      { data: 'Attestation', header: true },
+      { data: 'Policy', header: true },
       { data: 'Status', header: true },
-      { data: 'Predicate Type', header: true },
-      { data: 'Build Scan', header: true },
-      { data: 'Satisfied Policies', header: true },
-      { data: 'Unsatisfied Policies', header: true },
-      { data: 'Details', header: true }
+      { data: 'Attestations Passed / Evaluated', header: true },
+      { data: 'Description', header: true },
+      { data: 'Remediation', header: true },
+      { data: 'Failure Details', header: true }
     ]
   ]
 
-  results.forEach((result, index) => {
-    const failureCount = result.evaluations.filter(
-      (e) => e.status == PolicyResultStatus.UNSATISFIED
-    ).length
-
-    const successCount = result.evaluations.filter(
-      (e) => e.status == PolicyResultStatus.SATISFIED
-    ).length
-
-    const status =
-      failureCount > 0
-        ? PolicyResultStatus.UNSATISFIED
-        : PolicyResultStatus.SATISFIED
-
-    const buildScanUri =
-      result.attestation.envelope.payload.predicate.buildScanUri
-
+  policies.forEach((evaluations, index) => {
     tableRows.push([
-      { data: '\n\n`' + attestationName(result.attestation) + '`\n' },
-      { data: statusIcon(status) },
+      {
+        data: `\n\n\`${evaluations.policy.name()}\`\n`
+      },
+      { data: statusIcon(evaluations.status) },
       {
         data:
-          '\n\n`' + result.attestation.envelope.payload.predicateType + '`\n'
+          evaluations.successes.length +
+          ' / ' +
+          evaluations.totalApplicableAttestations
+      },
+      { data: evaluations.policy.description ?? '' },
+      {
+        data:
+          evaluations.status == PolicyResultStatus.UNSATISFIED
+            ? (evaluations.policy.remediation ?? '')
+            : ''
       },
       {
-        data: buildScanUri ? '\n\n[Link](' + buildScanUri + ')\n' : ''
-      },
-      { data: successCount.toString() },
-      { data: failureCount.toString() },
-      // the user-content- is something needed for GitHub for the summary link to work
-      { data: `\n\n[Link](#user-content-attestation-detail-${index})\n` }
+        data:
+          evaluations.status == PolicyResultStatus.UNSATISFIED
+            ? `\n\n[Link](#user-content-policy-detail-${index})\n`
+            : ''
+      }
     ])
   })
-
-  core.summary.addTable(tableRows).addEOL()
+  core.summary.addTable(tableRows).addEOL().addEOL()
 }
 
-function reportFailures(results: PolicyAttestationEvaluation[]) {
-  results.forEach(({ attestation, evaluations }) => {
-    const hasFailure = evaluations.some(
-      (e) => e.status == PolicyResultStatus.UNSATISFIED
-    )
+function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
+  core.summary.addRaw('# Failed Policies').addEOL().addEOL()
 
-    if (!hasFailure) {
-      return
-    }
+  policies.forEach((policyEval, index) => {
+    if (policyEval.status == PolicyResultStatus.UNSATISFIED) {
+      core.summary
+        .addRaw('## <a name="policy-detail-' + index + '"></a> Policy: ')
+        .addRaw('`')
+        .addRaw(policyEval.policy.name())
+        .addRaw('`')
+        .addEOL()
+        .addEOL()
 
-    evaluations.forEach((evaluation) => {
-      if (evaluation.status == PolicyResultStatus.UNSATISFIED) {
-        core.error(
-          `Attestation ${attestationName(attestation)} failed policy ${evaluation.policyUri}`
-        )
-      }
-    })
-  })
-}
+      core.summary
+        .addRaw('**Description:** ')
+        .addRaw(policyEval.policy.description ?? '')
+        .addEOL()
+        .addEOL()
 
-function reportAllResults(results: PolicyAttestationEvaluation[]) {
-  core.summary.addRaw('# Details').addEOL().addEOL()
+      core.summary
+        .addRaw('**Remediation:** ')
+        .addRaw(policyEval.policy.remediation ?? '')
+        .addEOL()
+        .addEOL()
 
-  results.forEach((result, index) => {
-    reportAttestation(
-      result.attestation,
-      `## <a name="attestation-detail-${index}"></a> Attestation`
-    )
+      core.summary.addRaw('**Labels:**').addEOL().addEOL()
+      core.summary
+        .addRaw('```json')
+        .addEOL()
+        .addRaw(JSON.stringify(policyEval.policy.labels, null, 2))
+        .addEOL()
+        .addRaw('```')
+        .addEOL()
+        .addEOL()
 
-    const tableRows: SummaryTableRow[] = [
-      [
-        { data: 'Policy', header: true },
-        { data: 'Status', header: true },
-        { data: 'Description', header: true },
-        { data: 'Remediation', header: true },
-        { data: 'Labels', header: true },
-        { data: 'Details', header: true }
+      const tableRows: SummaryTableRow[] = [
+        [
+          { data: 'Attestation', header: true },
+          { data: 'Status', header: true },
+          { data: 'Details', header: true },
+          { data: 'Envelope', header: true }
+        ]
       ]
-    ]
 
-    const statusOrder = [
-      PolicyResultStatus.UNSATISFIED,
-      PolicyResultStatus.SATISFIED,
-      PolicyResultStatus.NOT_APPLICABLE
-    ]
+      policyEval.failures.concat(policyEval.successes).forEach((evaluation) => {
+        const attestation = evaluation.attestation
 
-    result.evaluations
-      .sort((a, b) => {
-        if (a.status == b.status) {
-          return a.policyUri.localeCompare(b.policyUri)
+        const {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          description: unused,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          remediation: unused2,
+          ...otherDetails
+        } = evaluation.evaluation.details
+
+        const otherDetailsJson = JSON.stringify(otherDetails, null, 2)
+
+        if (evaluation.evaluation.status == PolicyResultStatus.UNSATISFIED) {
+          core.error(
+            'Policy ' +
+              policyEval.policy.name() +
+              ' on attestation ' +
+              attestationName(attestation) +
+              ' evaluated to UNSATISFIED'
+          )
         }
-
-        return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status)
-      })
-      .forEach((evaluation) => {
-        const isFailure = evaluation.status == PolicyResultStatus.UNSATISFIED
-        const isNotApplicable =
-          evaluation.status == PolicyResultStatus.NOT_APPLICABLE
-
-        const policyUrl = evaluation.policyUri
 
         tableRows.push([
           {
-            data: `\n\n\`${policyUrl.substring(policyUrl.lastIndexOf('/') + 1)}\`\n`
+            data: `\n\n\`${attestationName(attestation)}\`\n`
           },
-          { data: statusIcon(evaluation.status) },
+          { data: statusIcon(evaluation.evaluation.status) },
           {
-            data: evaluation.details.description
-              ? evaluation.details.description
-              : ''
-          },
-          {
-            data: isFailure ? (evaluation.details.remediation ?? '') : ''
+            data:
+              otherDetailsJson != '{}'
+                ? '\n\n```json\n' + otherDetailsJson + '\n```\n'
+                : ''
           },
           {
-            data: isNotApplicable
-              ? ''
-              : '\n\n```json\n' +
-                JSON.stringify(evaluation.labels, null, 2) +
-                '\n```\n'
-          },
-          {
-            data: isNotApplicable
-              ? 'Not applicable to this predicate type'
-              : '\n\n```json\n' +
-                JSON.stringify(evaluation.details, null, 2) +
-                '\n```\n'
+            data:
+              '\n\n<details>\n\n<summary>Envelope</summary>\n\n' +
+              '\n\n```json\n' +
+              JSON.stringify(attestation.envelope, null, 2) +
+              '\n```\n' +
+              '\n\n</details>\n'
           }
         ])
       })
-
-    core.summary.addRaw('**Policy Results:**').addEOL().addEOL()
-    core.summary.addTable(tableRows).addEOL()
+      core.summary.addTable(tableRows).addEOL().addEOL()
+    }
   })
 }
 
-function reportAttestation(
-  attestation: PolicyAttestation,
-  headerPrefix: string,
-  headerPostfix: string | null = null
-) {
-  core.summary.addEOL().addEOL().addRaw(headerPrefix)
+class PolicyEvaluations {
+  policy: PolicyData
+  evaluations: AttestationEvaluation[]
 
-  core.summary.addRaw(' `').addRaw(attestationName(attestation)).addRaw('`')
+  failures: AttestationEvaluation[]
+  successes: AttestationEvaluation[]
+  status: PolicyResultStatus
 
-  if (headerPostfix) {
-    core.summary.addRaw(' ').addRaw(headerPostfix)
+  totalApplicableAttestations: number
+
+  constructor(policy: PolicyData, evaluations: AttestationEvaluation[]) {
+    this.policy = policy
+    this.evaluations = evaluations
+    this.failures = evaluations.filter(
+      (e) => e.evaluation.status == PolicyResultStatus.UNSATISFIED
+    )
+    this.successes = evaluations.filter(
+      (e) => e.evaluation.status == PolicyResultStatus.SATISFIED
+    )
+    if (this.failures.length > 0) {
+      this.status = PolicyResultStatus.UNSATISFIED
+    } else if (this.successes.length > 0) {
+      this.status = PolicyResultStatus.SATISFIED
+    } else {
+      this.status = PolicyResultStatus.NOT_APPLICABLE
+    }
+    this.totalApplicableAttestations =
+      this.successes.length + this.failures.length
+  }
+}
+
+class PolicyData {
+  uri: string
+  description?: string
+  remediation?: string
+  labels: Record<string, string>
+
+  constructor(
+    uri: string,
+    description: string | undefined,
+    remediation: string | undefined,
+    labels: Record<string, string>
+  ) {
+    this.uri = uri
+    this.description = description
+    this.remediation = remediation
+    this.labels = labels
   }
 
-  core.summary.addEOL().addEOL()
-
-  core.summary
-    .addRaw('**Predicate Type:** `')
-    .addRaw(attestation.envelope.payload.predicateType)
-    .addRaw('`')
-    .addEOL()
-    .addEOL()
-
-  if (attestation.envelope.payload.predicate.buildScanUri) {
-    core.summary
-      .addRaw('**Build Scan:** ')
-      .addRaw(attestation.envelope.payload.predicate.buildScanUri)
-      .addEOL()
-      .addEOL()
+  name(): string {
+    return this.uri.substring(this.uri.indexOf('/') + 1)
   }
+}
 
-  core.summary
-    .addRaw('**Attestation Store:** `')
-    .addRaw(attestation.storeUri)
-    .addRaw('`')
-    .addEOL()
-    .addEOL()
+class AttestationEvaluation {
+  attestation: PolicyAttestation
+  evaluation: PolicyEvaluation
 
-  core.summary.addRaw('<details>').addEOL()
-
-  core.summary
-    .addRaw('<summary>Attestation Details</summary>')
-    .addEOL()
-    .addEOL()
-
-  if (attestation.storeRequest.uri) {
-    core.summary
-      .addRaw('Attestation URI: `')
-      .addRaw(attestation.storeRequest.uri)
-      .addRaw('`')
-      .addEOL()
-      .addEOL()
+  constructor(attestation: PolicyAttestation, evaluation: PolicyEvaluation) {
+    this.attestation = attestation
+    this.evaluation = evaluation
   }
+}
 
-  core.summary
-    .addRaw('Envelope:')
-    .addEOL()
-    .addEOL()
-    .addRaw('```json')
-    .addEOL()
-    .addRaw(JSON.stringify(attestation.envelope, null, 2))
-    .addEOL()
-    .addRaw('```')
-    .addEOL()
-    .addEOL()
+function collectPolicyEvaluations(
+  results: PolicyAttestationEvaluation[]
+): PolicyEvaluations[] {
+  const policyMap = new Map<PolicyData, AttestationEvaluation[]>()
 
-  core.summary.addRaw('</details>').addEOL().addEOL()
+  results.forEach((a: PolicyAttestationEvaluation) => {
+    a.evaluations.forEach((evaluation) => {
+      const data = new PolicyData(
+        evaluation.policyUri,
+        evaluation.details.description,
+        evaluation.details.remediation,
+        evaluation.labels
+      )
+
+      const ae = new AttestationEvaluation(a.attestation, evaluation)
+
+      const existing = policyMap.get(data)
+      if (existing) {
+        existing.push(ae)
+      } else {
+        policyMap.set(data, [ae])
+      }
+    })
+  })
+
+  const resultsList: PolicyEvaluations[] = []
+  policyMap.forEach((evaluations, policy) => {
+    resultsList.push(new PolicyEvaluations(policy, evaluations))
+  })
+  resultsList.sort((a, b) => a.policy.uri.localeCompare(b.policy.uri))
+  return resultsList
 }
 
 function statusIcon(status: PolicyResultStatus): string {

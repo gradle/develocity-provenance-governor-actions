@@ -50,7 +50,7 @@
           "policyUri": "https://policies.example.com/repo-source-check",
           "status": "SATISFIED",
           "details": {
-            "description": "Repository source verification passed"
+            "description": "Repository source verification"
           },
           "labels": {
             "category": "security",
@@ -61,7 +61,7 @@
           "policyUri": "https://policies.example.com/build-scan-verification",
           "status": "SATISFIED",
           "details": {
-            "description": "Build scan verification passed"
+            "description": "Build scan verification"
           },
           "labels": {
             "category": "verification",
