@@ -226,14 +226,12 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
         .addEOL()
 
       core.summary.addRaw('**Labels:**').addEOL().addEOL()
-      core.summary
-        .addRaw('```json')
-        .addEOL()
-        .addRaw(JSON.stringify(policyEval.policy.labels, null, 2))
-        .addEOL()
-        .addRaw('```')
-        .addEOL()
-        .addEOL()
+
+      Object.entries(policyEval.policy.labels).forEach(([key, value]) => {
+        core.summary.addRaw(' - `' + key + '` = `' + value + '`').addEOL()
+      })
+
+      core.summary.addEOL().addEOL()
 
       const tableRows: SummaryTableRow[] = [
         [

@@ -41,12 +41,9 @@
 
 **Labels:**
 
-```json
-{
-  "category": "verification",
-  "severity": "medium"
-}
-```
+ - `category` = `verification`
+ - `severity` = `medium`
+
 
 <table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th><th>Envelope</th></tr><tr><td>
 
@@ -96,12 +93,9 @@
 
 **Labels:**
 
-```json
-{
-  "category": "security",
-  "severity": "high"
-}
-```
+ - `category` = `security`
+ - `severity` = `high`
+
 
 <table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th><th>Envelope</th></tr><tr><td>
 
