@@ -27596,14 +27596,10 @@ function reportFailedPolicyDetails(policies) {
                 .addEOL()
                 .addEOL();
             coreExports.summary.addRaw('**Labels:**').addEOL().addEOL();
-            coreExports.summary
-                .addRaw('```json')
-                .addEOL()
-                .addRaw(JSON.stringify(policyEval.policy.labels, null, 2))
-                .addEOL()
-                .addRaw('```')
-                .addEOL()
-                .addEOL();
+            Object.entries(policyEval.policy.labels).forEach(([key, value]) => {
+                coreExports.summary.addRaw(' - `' + key + '` = `' + value + '`').addEOL();
+            });
+            coreExports.summary.addEOL().addEOL();
             const tableRows = [
                 [
                     { data: 'Attestation', header: true },
