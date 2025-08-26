@@ -382,6 +382,18 @@ function collectPolicyEvaluations(
 
       const existing = policyMap.get(data.uri)
       if (existing) {
+        if (evaluation.status == PolicyResultStatus.UNSATISFIED) {
+          existing.policy.description = evaluation.details.description
+          existing.policy.remediation = evaluation.details.remediation
+        }
+
+        if (
+          evaluation.status == PolicyResultStatus.SATISFIED &&
+          !existing.policy.description
+        ) {
+          existing.policy.description = evaluation.details.description
+        }
+
         existing.evaluations.push(ae)
       } else {
         policyMap.set(data.uri, {

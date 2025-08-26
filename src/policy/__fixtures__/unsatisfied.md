@@ -99,10 +99,10 @@
 
 <table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th><th>Envelope</th></tr><tr><td>
 
-`gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json`
+`gradle-attestations-resolved-dependencies-1432382830781-312dd5f5.json`
 </td><td>❌</td><td><td>
 
-[Build Scan](https://develocity.grdev.net/s/u4cqaqnytbwga)
+[Build Scan](https://develocity.grdev.net/s/u4cqaq2ytbwga)
 </td><td>
 
 <details>
@@ -115,7 +115,7 @@
 {
   "payload": {
     "_type": "https://in-toto.io/Statement/v1",
-    "predicateType": "https://gradle.com/attestations/repository/v1",
+    "predicateType": "https://gradle.com/attestations/jvm/v1",
     "subject": [
       {
         "name": "pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3",
@@ -125,7 +125,7 @@
       }
     ],
     "predicate": {
-      "buildScanUri": "https://develocity.grdev.net/s/u4cqaqnytbwga",
+      "buildScanUri": "https://develocity.grdev.net/s/u4cqaq2ytbwga",
       "uri": "https://repo.maven.apache.org/maven2/"
     }
   }
