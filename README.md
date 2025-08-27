@@ -1,5 +1,7 @@
 # Develocity Provenance Governor Actions - BETA
 
+GitHub Actions to make [Develocity Provenance Governor](https://gradle.com/jfrog-gradle-swampup-announce/) part of your GitHub workflows.
+
 ---
 
 ## Publishing
