@@ -27606,7 +27606,8 @@ function reportFailedPolicyDetails(policies) {
                     { data: 'Status', header: true },
                     { data: 'Details', header: true },
                     { data: 'Build Scan', header: true },
-                    { data: 'Envelope', header: true }
+                    { data: 'Envelope', header: true },
+                    { data: 'Download Link', header: true }
                 ]
             ];
             policyEval.failures.concat(policyEval.successes).forEach((evaluation) => {
@@ -27644,6 +27645,11 @@ function reportFailedPolicyDetails(policies) {
                             JSON.stringify(attestation.envelope, null, 2) +
                             '\n```\n' +
                             '\n\n</details>\n'
+                    },
+                    {
+                        data: attestation.storeRequest.uri != null
+                            ? `\n\n[Download Link](${attestation.storeRequest.uri})\n`
+                            : ''
                     }
                 ]);
             });
