@@ -32,7 +32,7 @@ There is also a `subject-namespace` field that can be used with subject types th
 > ([Gradle](https://github.com/gradle/common-custom-user-data-gradle-plugin),
 > [Maven](https://github.com/gradle/common-custom-user-data-maven-extension),
 > [Sbt](https://github.com/gradle/common-custom-user-data-sbt-plugin))
-> to automatically add GitHub-related custom values to build scan,
+> to automatically add GitHub-related custom values to Build Scans,
 > like the `CI run` value used in the example configuration.
 
 ## Enforcement
