@@ -18,7 +18,7 @@ with:
   subject-repository-url: develocitytia.jfrog.io/docker-trial
 ```
 
-Requires a GitHub ID token with `write` permissions.
+Requires a GitHub OIDC token.
 
 One of `build-scan-ids` or `build-scan-queries` must be provided.
 Multiple IDs and queries may be specified, one per line.
@@ -49,6 +49,8 @@ with:
   subject-repository-url: develocitytia.jfrog.io/docker-trial
   policy-scan: ci-enforcement
 ```
+
+Requires a GitHub OIDC token.
 
 All properties are required. There is also a `subject-namespace` field that can
 be used with subject types that require it.

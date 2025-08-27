@@ -1,13 +1,15 @@
-name: 'Retrieve ID Token'
-description: 'A GitHub Action to retrieve and log the ID token'
+name: 'Publish Attestations'
+description:
+  'A GitHub Action to publish Develocity-derived attestations to a Develocity
+  Provenance Governor instance.'
 
 inputs:
   attestation-publisher-url:
-    description: 'The URL of the Develocity Attestation Publisher service'
+    description: 'The URL of the Develocity Provenance Governor instance'
     required: true
   tenant:
     description:
-      'The tenant ID configured in the Develocity Attestation Publisher service'
+      'The tenant ID configured in the Develocity Provenance Governor instance'
     required: true
   build-scan-ids:
     description:
@@ -40,13 +42,15 @@ inputs:
     required: true
   username:
     description:
-      'The username of the publishing user (It is recommended to use the GitHub
-      Actions token instead of a username/password)'
+      'The username of the Develocity Provenance Governor user (It is
+      recommended to use the GitHub Actions token instead of a
+      username/password)'
     required: false
   password:
     description:
-      'The password of the publishing user (It is recommended to use the GitHub
-      Actions token instead of a username/password)'
+      'The password of the Develocity Provenance Governor user (It is
+      recommended to use the GitHub Actions token instead of a
+      username/password)'
     required: false
 
 runs:
