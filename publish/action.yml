@@ -11,14 +11,14 @@ inputs:
     required: true
   build-scan-ids:
     description:
-      'The Develocity Build Scan IDs relevant to the published package. Either
-      this or build-scan-queries must be provided.'
+      'The Develocity Build Scan IDs relevant to the published package. Provided
+      one per line. Either this or build-scan-queries must be provided.'
     required: false
   build-scan-queries:
     description:
       'The Develocity Build Scan Advanced search syntax queries to used to
-      select build scans relevant to the published package. Either this or
-      build-scan-ids must be provided.'
+      select build scans relevant to the published package. Provided one per
+      line. Either this or build-scan-ids must be provided.'
     required: false
   subject-type:
     description: 'The type of the package being published'
@@ -51,4 +51,4 @@ inputs:
 
 runs:
   using: 'node20'
-  main: 'dist/publish/index.js'
+  main: '../dist/publish/index.js'
