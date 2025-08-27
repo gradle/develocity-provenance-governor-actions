@@ -45,7 +45,7 @@
  - `severity` = `medium`
 
 
-<table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th><th>Envelope</th></tr><tr><td>
+<table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th><th>Envelope</th><th>Download Link</th></tr><tr><td>
 
 `gradle-attestations-resolved-dependencies-1432382830781-312dd5f5.json`
 </td><td>❌</td><td><td>
@@ -82,6 +82,9 @@
 
 
 </details>
+</td><td>
+
+[Download Link](https://develocitytia.jfrog.io/artifactory/docker-trial/.evidence/ed0870faabc4387c5fee46e3b26ab0262610764cc6a708d37dc84a54e90652f6/a30f98e704871a244ac3f28c2ada5c120afe756e981438f221e21fff3042a11b/gradle-attestations-resolved-dependencies-1432382830781-312dd5f5.json)
 </td></tr></table>
 
 
@@ -97,7 +100,7 @@
  - `severity` = `high`
 
 
-<table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th><th>Envelope</th></tr><tr><td>
+<table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th><th>Envelope</th><th>Download Link</th></tr><tr><td>
 
 `gradle-attestations-resolved-dependencies-1432382830781-312dd5f5.json`
 </td><td>❌</td><td><td>
@@ -134,6 +137,9 @@
 
 
 </details>
+</td><td>
+
+[Download Link](https://develocitytia.jfrog.io/artifactory/docker-trial/.evidence/ed0870faabc4387c5fee46e3b26ab0262610764cc6a708d37dc84a54e90652f6/a30f98e704871a244ac3f28c2ada5c120afe756e981438f221e21fff3042a11b/gradle-attestations-resolved-dependencies-1432382830781-312dd5f5.json)
 </td></tr></table>
 
 

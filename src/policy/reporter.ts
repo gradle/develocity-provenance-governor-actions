@@ -239,7 +239,8 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
           { data: 'Status', header: true },
           { data: 'Details', header: true },
           { data: 'Build Scan', header: true },
-          { data: 'Envelope', header: true }
+          { data: 'Envelope', header: true },
+          { data: 'Download Link', header: true }
         ]
       ]
 
@@ -289,6 +290,12 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
               JSON.stringify(attestation.envelope, null, 2) +
               '\n```\n' +
               '\n\n</details>\n'
+          },
+          {
+            data:
+              attestation.storeRequest.uri != null
+                ? `\n\n[Download Link](${attestation.storeRequest.uri})\n`
+                : ''
           }
         ])
       })
