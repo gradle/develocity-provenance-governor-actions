@@ -27,6 +27,13 @@ and queries may be specified, one per line. Queries use the
 There is also a `subject-namespace` field that can be used with subject types
 that require it.
 
+> [!TIP] You can use the Common Custom User Data plugins
+> ([Gradle](https://github.com/gradle/common-custom-user-data-gradle-plugin),
+> [Maven](https://github.com/gradle/common-custom-user-data-maven-extension),
+> [Sbt](https://github.com/gradle/common-custom-user-data-sbt-plugin)) to
+> automatically add GitHub-related custom values to build scan, like the
+> `CI run` value used in the example configuration.
+
 ## Enforcement
 
 ```yaml
