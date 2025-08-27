@@ -20,19 +20,20 @@ with:
 
 Requires a GitHub ID token with `write` permissions.
 
-One of `build-scan-ids` or `build-scan-queries` must be provided. Multiple IDs
-and queries may be specified, one per line. Queries use the
-[Develocity advanced query syntax](https://docs.gradle.com/develocity/api-manual/#advanced_search_syntax).
+One of `build-scan-ids` or `build-scan-queries` must be provided.
+Multiple IDs and queries may be specified, one per line.
+Queries use
+the[Develocity advanced query syntax](https://docs.gradle.com/develocity/api-manual/#advanced_search_syntax).
 
-There is also a `subject-namespace` field that can be used with subject types
-that require it.
+There is also a `subject-namespace` field that can be used with subject types that require it.
 
-> [!TIP] You can use the Common Custom User Data plugins
+> [!TIP]
+> You can use the Common Custom User Data plugins
 > ([Gradle](https://github.com/gradle/common-custom-user-data-gradle-plugin),
 > [Maven](https://github.com/gradle/common-custom-user-data-maven-extension),
-> [Sbt](https://github.com/gradle/common-custom-user-data-sbt-plugin)) to
-> automatically add GitHub-related custom values to build scan, like the
-> `CI run` value used in the example configuration.
+> [Sbt](https://github.com/gradle/common-custom-user-data-sbt-plugin))
+> to automatically add GitHub-related custom values to build scan,
+> like the `CI run` value used in the example configuration.
 
 ## Enforcement
 
