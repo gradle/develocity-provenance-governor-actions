@@ -6,6 +6,8 @@
 
 **Policy Scan:** `security-scan`
 
+**Enforcement Point:** `test-enforcement-point`
+
 **Subject:** `pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3`
 
 **Digest:** `c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b`

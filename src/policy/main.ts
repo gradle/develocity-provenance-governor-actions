@@ -12,7 +12,7 @@ export async function run(): Promise<void> {
     })
     const policyScanName = core.getInput('policy-scan', { required: true })
     const enforcementPointName = core.getInput('enforcement-point', {
-      required: true
+      required: false
     })
 
     const tenant = core.getInput('tenant', { required: true })
