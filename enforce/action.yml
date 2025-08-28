@@ -13,7 +13,7 @@ inputs:
     required: true
   policy-scan:
     description:
-      'The policy scan to evaluate, using the name configured in the DDevelocity
+      'The policy scan to evaluate, using the name configured in the Develocity
       Provenance Governor service'
     required: true
   enforcement-point:
