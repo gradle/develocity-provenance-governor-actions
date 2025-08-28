@@ -15,7 +15,7 @@ with:
   build-scan-queries: 'value:"CI run=${{ github.run_id }}"'
   subject-type: oci
   subject-name: java-payment-calculator
-  subject-version: 1.0.0-SNAPSHOT-16152750186-4
+  subject-version: 1.2.3
   subject-digest: 1a6b2bf83435f2a9ccd33519ad3e817bf79aee6af1c7a15d26d8a256bfa9cc94
   subject-repository-url: develocitytia.jfrog.io/docker-trial
 ```
@@ -46,7 +46,7 @@ with:
   tenant: default
   subject-type: oci
   subject-name: java-payment-calculator
-  subject-version: 1.0.0-SNAPSHOT-16152750186-4
+  subject-version: 1.2.3
   subject-digest: 1a6b2bf83435f2a9ccd33519ad3e817bf79aee6af1c7a15d26d8a256bfa9cc94
   subject-repository-url: develocitytia.jfrog.io/docker-trial
   policy-scan: ci-enforcement
