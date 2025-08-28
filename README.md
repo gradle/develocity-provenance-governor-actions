@@ -1,58 +1,58 @@
-# GitHub Action Attestation Publisher
+# Develocity Provenance Governor Actions - BETA
+
+GitHub Actions to make [Develocity Provenance Governor](https://gradle.com/jfrog-gradle-swampup-announce/) part of your GitHub workflows.
 
 ---
 
-## Getting Started
+## Publishing
 
-TODO
-
-## Development
-
-### Prerequisites
-
-- Node.js (version specified in `.node-version` file)
-  - We recommend using a Node version manager like `nvm` or `nodenv` to
-    automatically pick up the correct version from the `.node-version` file
-
-### Setup
-
-1. Install the correct Node.js version:
-
-   ```bash
-   # If using nvm
-   nvm install
-   nvm use
-
-   # If using nodenv
-   nodenv install
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-### Building and Testing
-
-To build, lint, test, and package the project:
-
-```bash
-npm run build
-# Use npm run build-all, to update local dist folder (do not check those changes in)
+```yaml
+uses: gradle/develocity-provenance-governor-actions/publish@main
+with:
+  attestation-publisher-url: 'https://cavendish.sdlc-demo.gradle.com'
+  tenant: default
+  build-scan-ids: eo5xxyg3drtoc
+  build-scan-queries: 'value:"CI run=${{ github.run_id }}"'
+  subject-type: oci
+  subject-name: java-payment-calculator
+  subject-version: 1.2.3
+  subject-digest: 1a6b2bf83435f2a9ccd33519ad3e817bf79aee6af1c7a15d26d8a256bfa9cc94
+  subject-repository-url: develocitytia.jfrog.io/docker-trial
 ```
 
-### Testing the Report Generator
+Requires a GitHub OIDC token.
 
-You can test the report generator using the following command:
+One of `build-scan-ids` or `build-scan-queries` must be provided.
+Multiple IDs and queries may be specified, one per line.
+Queries use
+the[Develocity advanced query syntax](https://docs.gradle.com/develocity/api-manual/#advanced_search_syntax).
 
-```bash
-npm run render <http-status-code> <path-to-response-payload-file>
+There is also a `subject-namespace` field that can be used with subject types that require it.
+
+> [!TIP]
+> You can use the Common Custom User Data plugins
+> ([Gradle](https://github.com/gradle/common-custom-user-data-gradle-plugin),
+> [Maven](https://github.com/gradle/common-custom-user-data-maven-extension),
+> [Sbt](https://github.com/gradle/common-custom-user-data-sbt-plugin))
+> to automatically add GitHub-related custom values to Build Scans,
+> like the `CI run` value used in the example configuration.
+
+## Enforcement
+
+```yaml
+uses: gradle/develocity-provenance-governor-actions/enforce@main
+with:
+  policy-evaluator-url: 'https://cavendish.sdlc-demo.gradle.com'
+  tenant: default
+  subject-type: oci
+  subject-name: java-payment-calculator
+  subject-version: 1.2.3
+  subject-digest: 1a6b2bf83435f2a9ccd33519ad3e817bf79aee6af1c7a15d26d8a256bfa9cc94
+  subject-repository-url: develocitytia.jfrog.io/docker-trial
+  policy-scan: ci-enforcement
 ```
 
-Example:
+Requires a GitHub OIDC token.
 
-```bash
-npm run render 200 ./src/__fixtures__/success.json
-```
-
-This will generate a successful publish report.
+All properties are required. There is also a `subject-namespace` field that can
+be used with subject types that require it.

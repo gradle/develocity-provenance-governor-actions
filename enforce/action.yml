@@ -1,13 +1,15 @@
-name: 'Retrieve ID Token'
-description: 'A GitHub Action to retrieve and log the ID token'
+name: 'Enforce Policies'
+description:
+  'A GitHub Action to enforce policies configured in a Develocity Provenance
+  Governor instance.'
 
 inputs:
   policy-evaluator-url:
-    description: 'The URL of the Develocity Policy Evaluator service'
+    description: 'The URL of the Develocity Provenance Governor service'
     required: true
   tenant:
     description:
-      'The tenant ID configured in the Develocity Attestation Publisher service'
+      'The tenant ID configured in the Develocity Provenance Governor service'
     required: true
   policy-scan:
     description:
@@ -40,13 +42,15 @@ inputs:
     required: true
   username:
     description:
-      'The username of the Develocity Policy Evaluator user (It is recommended
-      to use the GitHub Actions token instead of a username/password)'
+      'The username of the Develocity Provenance Governor user (It is
+      recommended to use the GitHub Actions token instead of a
+      username/password)'
     required: false
   password:
     description:
-      'The password of the Develocity Policy Evaluator user (It is recommended
-      to use the GitHub Actions token instead of a username/password)'
+      'The password of the Develocity Provenance Governor user (It is
+      recommended to use the GitHub Actions token instead of a
+      username/password)'
     required: false
 
 runs:

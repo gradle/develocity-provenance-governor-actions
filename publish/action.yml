@@ -1,24 +1,26 @@
-name: 'Retrieve ID Token'
-description: 'A GitHub Action to retrieve and log the ID token'
+name: 'Publish Attestations'
+description:
+  'A GitHub Action to publish Develocity-derived attestations to a Develocity
+  Provenance Governor instance.'
 
 inputs:
   attestation-publisher-url:
-    description: 'The URL of the Develocity Attestation Publisher service'
+    description: 'The URL of the Develocity Provenance Governor instance'
     required: true
   tenant:
     description:
-      'The tenant ID configured in the Develocity Attestation Publisher service'
+      'The tenant ID configured in the Develocity Provenance Governor instance'
     required: true
   build-scan-ids:
     description:
-      'The Develocity Build Scan IDs relevant to the published package. Either
-      this or build-scan-queries must be provided.'
+      'The Develocity Build Scan IDs relevant to the published package. Provided
+      one per line. Either this or build-scan-queries must be provided.'
     required: false
   build-scan-queries:
     description:
       'The Develocity Build Scan Advanced search syntax queries to used to
-      select build scans relevant to the published package. Either this or
-      build-scan-ids must be provided.'
+      select build scans relevant to the published package. Provided one per
+      line. Either this or build-scan-ids must be provided.'
     required: false
   subject-type:
     description: 'The type of the package being published'
@@ -40,15 +42,17 @@ inputs:
     required: true
   username:
     description:
-      'The username of the publishing user (It is recommended to use the GitHub
-      Actions token instead of a username/password)'
+      'The username of the Develocity Provenance Governor user (It is
+      recommended to use the GitHub Actions token instead of a
+      username/password)'
     required: false
   password:
     description:
-      'The password of the publishing user (It is recommended to use the GitHub
-      Actions token instead of a username/password)'
+      'The password of the Develocity Provenance Governor user (It is
+      recommended to use the GitHub Actions token instead of a
+      username/password)'
     required: false
 
 runs:
   using: 'node20'
-  main: 'dist/publish/index.js'
+  main: '../dist/publish/index.js'

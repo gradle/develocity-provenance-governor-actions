@@ -28,7 +28,8 @@ export default [
       '**/linter',
       '**/node_modules',
       '**/script',
-      '**/__fixtures__/*.md'
+      '**/__fixtures__/*.md',
+      'README.md'
     ]
   },
   ...compat.extends(

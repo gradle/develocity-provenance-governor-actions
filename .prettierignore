@@ -4,3 +4,4 @@ dist/
 node_modules/
 coverage/
 src/**/__fixtures__/*.md
+README.md
