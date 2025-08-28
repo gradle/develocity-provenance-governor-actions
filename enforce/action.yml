@@ -14,8 +14,13 @@ inputs:
   policy-scan:
     description:
       'The policy scan to evaluate, using the name configured in the Develocity
-      Policy Evaluator service'
+      Provenance Governor service'
     required: true
+  enforcement-point:
+    description:
+      'The enforcement point to evaluate the scan for, using the name configured
+      in the Develocity Provenance Governor service'
+    required: false
   subject-type:
     description: 'The type of the package to evaluate policies against'
     required: true

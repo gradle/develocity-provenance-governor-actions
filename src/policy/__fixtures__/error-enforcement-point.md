@@ -6,6 +6,8 @@
 
 **Policy Scan:** `security-scan`
 
+**Enforcement Point:** `test-enforcement-point`
+
 **Subject:** `pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3`
 
 **Digest:** `c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b`
@@ -22,7 +24,7 @@
 ```json
 {
   "request": {
-    "uri": "http://localhost:8080/local-tenant/test-eval/policy-scans/test",
+    "uri": "http://localhost:8080/local-tenant/test-eval/policy-scans/test/enforcement-points/test-enforce",
     "tenant": {
       "name": "default",
       "develocityInstances": [
@@ -41,7 +43,8 @@
       "sha256": "c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b",
       "repositoryUrl": "develocitytia.jfrog.io/docker-trial"
     },
-    "policyScanName": "test"
+    "policyScanName": "test",
+    "enforcementPointName": "test-enforce"
   },
   "title": "Policy Scan Not Found",
   "detail": "The requested policy scan 'security-scan' was not found in the system",

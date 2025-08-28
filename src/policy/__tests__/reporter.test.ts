@@ -22,16 +22,36 @@ describe('policy reporter.js', () => {
     core.summary.emptyBuffer()
   })
 
-  it('Render a satisfied report', async () => {
+  it('Render a satisfied policy scan report', async () => {
     renderAndCompare('satisfied', 200)
   })
 
-  it('Render a unsatisfied report', async () => {
+  it('Render a unsatisfied policy scan report', async () => {
     renderAndCompare('unsatisfied', 200)
   })
 
-  it('Render a error report', async () => {
+  it('Render a error policy scan report', async () => {
     renderAndCompare('error', 404)
+  })
+
+  it('Render a satisfied evaluation point report', async () => {
+    renderAndCompare(
+      'satisfied-enforcement-point',
+      200,
+      'test-enforcement-point'
+    )
+  })
+
+  it('Render a unsatisfied evaluation point report', async () => {
+    renderAndCompare(
+      'unsatisfied-enforcement-point',
+      200,
+      'test-enforcement-point'
+    )
+  })
+
+  it('Render a error evaluation point report', async () => {
+    renderAndCompare('error-enforcement-point', 404, 'test-enforcement-point')
   })
 
   it('Calls core.setFailed and core.error on error report with setFailure=true', async () => {
@@ -40,6 +60,7 @@ describe('policy reporter.js', () => {
     )
     const subject = {
       scanName: 'security-scan',
+      enforcementPointName: 'test-enforcement-point',
       subjectName:
         'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
       digest: {
@@ -64,6 +85,7 @@ describe('policy reporter.js', () => {
     )
     const subject = {
       scanName: 'security-scan',
+      enforcementPointName: 'test-enforcement-point',
       subjectName:
         'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
       digest: {
@@ -87,6 +109,7 @@ describe('policy reporter.js', () => {
     )
     const subject = {
       scanName: 'security-scan',
+      enforcementPointName: 'test-enforcement-point',
       subjectName:
         'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
       digest: {
@@ -105,6 +128,7 @@ describe('policy reporter.js', () => {
 function renderAndCompare(
   fixtureName: string,
   status: number = 200,
+  enforcementPointName: string | undefined = undefined,
   scanName: string = 'security-scan',
   subjectName: string = 'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
   digest: string = 'c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b'
@@ -119,7 +143,12 @@ function renderAndCompare(
 
   new PolicySummaryReporter().report(
     status,
-    { scanName, subjectName, digest: { sha256: digest } },
+    {
+      scanName,
+      enforcementPointName,
+      subjectName,
+      digest: { sha256: digest }
+    },
     payload,
     false
   )

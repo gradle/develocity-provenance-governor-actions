@@ -1,6 +1,7 @@
 # Develocity Provenance Governor Actions - BETA
 
-GitHub Actions to make [Develocity Provenance Governor](https://gradle.com/jfrog-gradle-swampup-announce/) part of your GitHub workflows.
+GitHub Actions to make [Develocity Provenance Governor](https://gradle.com/jfrog-gradle-swampup-announce/) part of your
+GitHub workflows.
 
 ---
 
@@ -50,9 +51,13 @@ with:
   subject-digest: 1a6b2bf83435f2a9ccd33519ad3e817bf79aee6af1c7a15d26d8a256bfa9cc94
   subject-repository-url: develocitytia.jfrog.io/docker-trial
   policy-scan: ci-enforcement
+  enforcement-point: CI # Optional
 ```
 
 Requires a GitHub OIDC token.
 
-All properties are required. There is also a `subject-namespace` field that can
-be used with subject types that require it.
+All properties are required, except `enforcement-point`.
+If no enforcement point is provided, all policies in the scan will be evaluated and any `UNSATISFIED` result will be
+treated as a failure.
+
+There is also a `subject-namespace` field that can be used with subject types that require it.

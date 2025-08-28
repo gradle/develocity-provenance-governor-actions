@@ -133,6 +133,15 @@ function reportSubjectInfo(subject: PolicyRequestSubject) {
     .addEOL()
     .addEOL()
 
+  if (subject.enforcementPointName) {
+    core.summary
+      .addRaw('**Enforcement Point:** `')
+      .addRaw(subject.enforcementPointName)
+      .addRaw('`')
+      .addEOL()
+      .addEOL()
+  }
+
   core.summary
     .addRaw('**Subject:** `')
     .addRaw(subject.subjectName)

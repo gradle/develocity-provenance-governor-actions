@@ -3,6 +3,7 @@ import { createClient, Credentials } from '../client.js'
 import { createPolicyReporter } from './reporter.js'
 import { PackageURL } from 'packageurl-js'
 import { PolicyRequestSubject } from './model.js'
+import { getOptionalInput } from '../helpers.js'
 
 export async function run(): Promise<void> {
   try {
@@ -11,10 +12,11 @@ export async function run(): Promise<void> {
       required: true
     })
     const policyScanName = core.getInput('policy-scan', { required: true })
+    const enforcementPointName = getOptionalInput('enforcement-point')
 
     const tenant = core.getInput('tenant', { required: true })
     const pkgType = core.getInput('subject-type', { required: true })
-    const pkgNamespace = core.getInput('subject-namespace', { required: false })
+    const pkgNamespace = getOptionalInput('subject-namespace')
     const pkgName = core.getInput('subject-name', { required: true })
     const pkgVersion = core.getInput('subject-version', { required: true })
 
@@ -49,6 +51,7 @@ export async function run(): Promise<void> {
     const result = await client.evaluatePolicy(
       tenant,
       policyScanName,
+      enforcementPointName,
       subjectPurl,
       subjectDigest,
       repositoryUrl
@@ -58,6 +61,7 @@ export async function run(): Promise<void> {
     const reporter = createPolicyReporter()
     const subject = new PolicyRequestSubject(
       policyScanName,
+      enforcementPointName,
       subjectPurl.toString(),
       { sha256: subjectDigest }
     )

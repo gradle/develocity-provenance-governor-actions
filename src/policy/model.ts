@@ -8,6 +8,7 @@ import {
 
 export class PolicyRequestSubject {
   scanName: string
+  enforcementPointName?: string
   subjectName: string
   digest: {
     sha256: string
@@ -15,9 +16,11 @@ export class PolicyRequestSubject {
 
   constructor(
     scanName: string,
+    enforcementPointName: string | null,
     subjectName: string,
     digest: { sha256: string }
   ) {
+    this.enforcementPointName = enforcementPointName ?? undefined
     this.scanName = scanName
     this.subjectName = subjectName
     this.digest = digest
@@ -26,6 +29,7 @@ export class PolicyRequestSubject {
 
 export interface PolicyRequest extends BaseRequest<BaseCriteria> {
   policyScanName: string
+  enforcementPointName?: string
 }
 
 export type PolicyErrorResponse = BaseErrorResponse<PolicyRequest>

@@ -75,6 +75,7 @@ export interface Client {
   evaluatePolicy(
     tenant: string,
     policyScan: string,
+    enforcementPoint: string | null,
     purl: PackageURL,
     digest: string,
     repositoryUrl: string
@@ -181,6 +182,7 @@ class ApiClient implements Client {
    *
    * @param tenant Name of the tenant
    * @param policyScan Name of the policy scan to evaluate
+   * @param enforcementPoint Name of the enforcement point to evaluate against - optional
    * @param purl The pURL of the subject
    * @param digest The digest of the image, usually containing the digest type prefix (e.g. sha256:<digest-string-here>)
    * @param repositoryUrl The repository the subject artifact was published to.
@@ -188,12 +190,17 @@ class ApiClient implements Client {
   evaluatePolicy(
     tenant: string,
     policyScan: string,
+    enforcementPoint: string | null,
     purl: PackageURL,
     digest: string,
     repositoryUrl: string
   ): Promise<PolicyResult> {
     const namespacePath = purl.namespace ? `/${purl.namespace}` : ''
-    const evalUrl = `${this.baseUrl}${tenant}/packages/${purl.type}${namespacePath}/${purl.name}/${purl.version}/policy-scans/${policyScan}`
+    let evalUrl = `${this.baseUrl}${tenant}/packages/${purl.type}${namespacePath}/${purl.name}/${purl.version}/policy-scans/${policyScan}/`
+
+    if (enforcementPoint) {
+      evalUrl += `enforcement-points/${enforcementPoint}/`
+    }
 
     const payload = JSON.stringify({
       repositoryUrl: repositoryUrl,
