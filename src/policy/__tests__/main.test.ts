@@ -448,4 +448,87 @@ describe('main.ts', () => {
     expect(core.summary.write).toHaveBeenCalled()
     expect(core.getIDToken).not.toHaveBeenCalled()
   })
+
+  it('Handles policy evaluation without enforcement point parameter', async () => {
+    // given
+    const payload = JSON.parse(
+      fs.readFileSync('src/policy/__fixtures__/satisfied.json', 'utf8')
+    )
+
+    const client: Client = {
+      publishAttestation(): Promise<PublisherResult> {
+        throw new Error('Not implemented')
+      },
+      evaluatePolicy: jest.fn(() =>
+        Promise.resolve(new PolicyResult(200, true, payload))
+      )
+    }
+
+    createClient.mockImplementation((): Client => client)
+
+    core.getInput
+      .mockClear()
+      .mockReturnValueOnce('https://policy.example.com/') // policy-evaluator-url
+      .mockReturnValueOnce('security-scan') // policy-scan
+      .mockReturnValueOnce('') // enforcement-point (empty string)
+      .mockReturnValueOnce('tenant66') // tenant
+      .mockReturnValueOnce('oci') // subject-type
+      .mockReturnValueOnce('') // subject-namespace
+      .mockReturnValueOnce('java-payment-calculator') // subject-name
+      .mockReturnValueOnce('1.0.0-SNAPSHOT-16152750186-3') // subject-version
+      .mockReturnValueOnce(
+        'c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b'
+      ) // subject-digest
+      .mockReturnValueOnce('https://repo.example.com/') // subject-repository-url
+      .mockReturnValueOnce('') // username
+      .mockReturnValueOnce('') // password
+
+    // when
+    await run()
+
+    // then
+    // check error first, if something went wrong, fail fast
+    expect(core.setFailed).not.toHaveBeenCalled()
+
+    // expect interactions
+    expect(createClient).toHaveBeenNthCalledWith(
+      1,
+      'https://policy.example.com/',
+      'gha-token'
+    )
+
+    expect(createPolicyReporter).toHaveBeenCalledTimes(1)
+    expect(client.evaluatePolicy).toHaveBeenNthCalledWith(
+      1,
+      'tenant66',
+      'security-scan',
+      null, // null enforcement point (empty string converted to null)
+      expect.objectContaining({
+        type: 'oci',
+        name: 'java-payment-calculator',
+        version: '1.0.0-SNAPSHOT-16152750186-3'
+      }),
+      'c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b',
+      'https://repo.example.com/'
+    )
+
+    const expectedSubject = {
+      scanName: 'security-scan',
+      enforcementPointName: undefined, // undefined enforcement point (null converted to undefined in constructor)
+      subjectName:
+        'pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3',
+      digest: {
+        sha256:
+          'c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b'
+      }
+    }
+    expect(mockReporter.report).toHaveBeenNthCalledWith(
+      1,
+      200,
+      expectedSubject,
+      payload
+    )
+
+    expect(core.summary.write).toHaveBeenCalled()
+  })
 })
