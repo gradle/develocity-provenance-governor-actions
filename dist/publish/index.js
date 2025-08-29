@@ -27352,9 +27352,9 @@ class ApiClient {
      */
     evaluatePolicy(tenant, policyScan, enforcementPoint, purl, digest, repositoryUrl) {
         const namespacePath = purl.namespace ? `/${purl.namespace}` : '';
-        let evalUrl = `${this.baseUrl}${tenant}/packages/${purl.type}${namespacePath}/${purl.name}/${purl.version}/policy-scans/${policyScan}/`;
+        let evalUrl = `${this.baseUrl}${tenant}/packages/${purl.type}${namespacePath}/${purl.name}/${purl.version}/policy-scans/${policyScan}`;
         if (enforcementPoint) {
-            evalUrl += `enforcement-points/${enforcementPoint}/`;
+            evalUrl += `/enforcement-points/${enforcementPoint}`;
         }
         const payload = JSON.stringify({
             repositoryUrl: repositoryUrl,
