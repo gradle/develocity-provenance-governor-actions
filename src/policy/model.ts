@@ -80,9 +80,9 @@ export interface PolicyStoreResponse {
 }
 
 export enum PolicyResultStatus {
-  SATISFIED = 'SATISFIED',
-  UNSATISFIED = 'UNSATISFIED',
-  NOT_APPLICABLE = 'NOT_APPLICABLE'
+  SATISFIED = 'satisfied',
+  UNSATISFIED = 'unsatisfied',
+  NOT_APPLICABLE = 'not_applicable'
 }
 
 export interface PolicyEvaluation {

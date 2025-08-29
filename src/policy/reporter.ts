@@ -326,6 +326,7 @@ class PolicyEvaluations {
   constructor(policy: PolicyData, evaluations: AttestationEvaluation[]) {
     this.policy = policy
     this.evaluations = evaluations
+
     this.failures = evaluations.filter(
       (e) => e.evaluation.status == PolicyResultStatus.UNSATISFIED
     )
@@ -387,6 +388,14 @@ function collectPolicyEvaluations(
 
   results.forEach((a: PolicyAttestationEvaluation) => {
     a.evaluations.forEach((evaluation) => {
+      const status = <PolicyResultStatus>evaluation.status?.toLowerCase()
+
+      if (!Object.values(PolicyResultStatus).includes(status)) {
+        core.error('Unknown status in response: ' + evaluation.status)
+        throw Error(`Unknown status in response: ${evaluation.status}`)
+      }
+      evaluation.status = status
+
       const data = new PolicyData(
         evaluation.policyUri,
         evaluation.details.description,

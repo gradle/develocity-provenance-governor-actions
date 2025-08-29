@@ -59,7 +59,7 @@
         },
         {
           "policyUri": "https://policies.example.com/build-scan-verification",
-          "status": "SATISFIED",
+          "status": "satisfied",
           "details": {
             "description": "Build scan verification"
           },
@@ -70,7 +70,7 @@
         },
         {
           "policyUri": "https://policies.example.com/jvm-verification",
-          "status": "NOT_APPLICABLE",
+          "status": "not_applicable",
           "details": {},
           "labels": {
             "category": "verification",

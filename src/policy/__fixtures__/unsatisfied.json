@@ -48,7 +48,7 @@
       "evaluations": [
         {
           "policyUri": "https://policies.example.com/repo-source-check",
-          "status": "NOT_APPLICABLE",
+          "status": "not_applicable",
           "details": {},
           "labels": {
             "category": "security",
@@ -57,7 +57,7 @@
         },
         {
           "policyUri": "https://policies.example.com/build-scan-verification",
-          "status": "SATISFIED",
+          "status": "satisfied",
           "details": {
             "description": "Build scan verification",
             "remediation": "Ensure a build scan is published for the build"
@@ -69,7 +69,7 @@
         },
         {
           "policyUri": "https://policies.example.com/jvm-verification",
-          "status": "NOT_APPLICABLE",
+          "status": "not_applicable",
           "details": {},
           "labels": {
             "category": "verification",
@@ -120,7 +120,7 @@
         },
         {
           "policyUri": "https://policies.example.com/build-scan-verification",
-          "status": "SATISFIED",
+          "status": "satisfied",
           "details": {
             "description": "Build scan verification",
             "remediation": "Ensure a build scan is published for the build"
@@ -132,7 +132,7 @@
         },
         {
           "policyUri": "https://policies.example.com/jvm-verification",
-          "status": "UNSATISFIED",
+          "status": "unsatisfied",
           "details": {},
           "labels": {
             "category": "verification",
