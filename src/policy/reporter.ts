@@ -388,7 +388,7 @@ function collectPolicyEvaluations(
 
   results.forEach((a: PolicyAttestationEvaluation) => {
     a.evaluations.forEach((evaluation) => {
-      const status = <PolicyResultStatus>evaluation.status?.toLowerCase()
+      const status = <PolicyResultStatus>evaluation.status.toLowerCase()
 
       if (!Object.values(PolicyResultStatus).includes(status)) {
         core.error('Unknown status in response: ' + evaluation.status)
