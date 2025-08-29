@@ -27345,13 +27345,17 @@ class ApiClient {
      *
      * @param tenant Name of the tenant
      * @param policyScan Name of the policy scan to evaluate
+     * @param enforcementPoint Name of the enforcement point to evaluate against - optional
      * @param purl The pURL of the subject
      * @param digest The digest of the image, usually containing the digest type prefix (e.g. sha256:<digest-string-here>)
      * @param repositoryUrl The repository the subject artifact was published to.
      */
-    evaluatePolicy(tenant, policyScan, purl, digest, repositoryUrl) {
+    evaluatePolicy(tenant, policyScan, enforcementPoint, purl, digest, repositoryUrl) {
         const namespacePath = purl.namespace ? `/${purl.namespace}` : '';
-        const evalUrl = `${this.baseUrl}${tenant}/packages/${purl.type}${namespacePath}/${purl.name}/${purl.version}/policy-scans/${policyScan}`;
+        let evalUrl = `${this.baseUrl}${tenant}/packages/${purl.type}${namespacePath}/${purl.name}/${purl.version}/policy-scans/${policyScan}/`;
+        if (enforcementPoint) {
+            evalUrl += `enforcement-points/${enforcementPoint}/`;
+        }
         const payload = JSON.stringify({
             repositoryUrl: repositoryUrl,
             sha256: digest
@@ -29102,11 +29106,16 @@ class PublishRequestSubject {
     }
 }
 
+function getOptionalInput(name) {
+    const value = coreExports.getInput(name, { required: false });
+    return value === '' ? null : value;
+}
+
 async function run() {
     try {
         const tenant = coreExports.getInput('tenant', { required: true });
         const pkgType = coreExports.getInput('subject-type', { required: true });
-        const pkgNamespace = coreExports.getInput('subject-namespace', { required: false });
+        const pkgNamespace = getOptionalInput('subject-namespace');
         const pkgName = coreExports.getInput('subject-name', { required: true });
         const pkgVersion = coreExports.getInput('subject-version', { required: true });
         const buildScanIds = coreExports.getMultilineInput('build-scan-ids', {

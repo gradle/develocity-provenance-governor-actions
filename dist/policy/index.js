@@ -27345,13 +27345,17 @@ class ApiClient {
      *
      * @param tenant Name of the tenant
      * @param policyScan Name of the policy scan to evaluate
+     * @param enforcementPoint Name of the enforcement point to evaluate against - optional
      * @param purl The pURL of the subject
      * @param digest The digest of the image, usually containing the digest type prefix (e.g. sha256:<digest-string-here>)
      * @param repositoryUrl The repository the subject artifact was published to.
      */
-    evaluatePolicy(tenant, policyScan, purl, digest, repositoryUrl) {
+    evaluatePolicy(tenant, policyScan, enforcementPoint, purl, digest, repositoryUrl) {
         const namespacePath = purl.namespace ? `/${purl.namespace}` : '';
-        const evalUrl = `${this.baseUrl}${tenant}/packages/${purl.type}${namespacePath}/${purl.name}/${purl.version}/policy-scans/${policyScan}`;
+        let evalUrl = `${this.baseUrl}${tenant}/packages/${purl.type}${namespacePath}/${purl.name}/${purl.version}/policy-scans/${policyScan}/`;
+        if (enforcementPoint) {
+            evalUrl += `enforcement-points/${enforcementPoint}/`;
+        }
         const payload = JSON.stringify({
             repositoryUrl: repositoryUrl,
             sha256: digest
@@ -27421,9 +27425,11 @@ function reportProblemDetails(result) {
 
 class PolicyRequestSubject {
     scanName;
+    enforcementPointName;
     subjectName;
     digest;
-    constructor(scanName, subjectName, digest) {
+    constructor(scanName, enforcementPointName, subjectName, digest) {
+        this.enforcementPointName = enforcementPointName ?? undefined;
         this.scanName = scanName;
         this.subjectName = subjectName;
         this.digest = digest;
@@ -27434,9 +27440,9 @@ function hasUnsatisfiedEvaluation(evaluation) {
 }
 var PolicyResultStatus;
 (function (PolicyResultStatus) {
-    PolicyResultStatus["SATISFIED"] = "SATISFIED";
-    PolicyResultStatus["UNSATISFIED"] = "UNSATISFIED";
-    PolicyResultStatus["NOT_APPLICABLE"] = "NOT_APPLICABLE";
+    PolicyResultStatus["SATISFIED"] = "satisfied";
+    PolicyResultStatus["UNSATISFIED"] = "unsatisfied";
+    PolicyResultStatus["NOT_APPLICABLE"] = "not_applicable";
 })(PolicyResultStatus || (PolicyResultStatus = {}));
 
 function createPolicyReporter() {
@@ -27514,6 +27520,14 @@ function reportSubjectInfo(subject) {
         .addRaw('`')
         .addEOL()
         .addEOL();
+    if (subject.enforcementPointName) {
+        coreExports.summary
+            .addRaw('**Enforcement Point:** `')
+            .addRaw(subject.enforcementPointName)
+            .addRaw('`')
+            .addEOL()
+            .addEOL();
+    }
     coreExports.summary
         .addRaw('**Subject:** `')
         .addRaw(subject.subjectName)
@@ -27709,6 +27723,12 @@ function collectPolicyEvaluations(results) {
     const policyMap = new Map();
     results.forEach((a) => {
         a.evaluations.forEach((evaluation) => {
+            const status = evaluation.status.toLowerCase();
+            if (!Object.values(PolicyResultStatus).includes(status)) {
+                coreExports.error('Unknown status in response: ' + evaluation.status);
+                throw Error(`Unknown status in response: ${evaluation.status}`);
+            }
+            evaluation.status = status;
             const data = new PolicyData(evaluation.policyUri, evaluation.details.description, evaluation.details.remediation, evaluation.labels);
             const ae = new AttestationEvaluation(a.attestation, evaluation);
             const existing = policyMap.get(data.uri);
@@ -29271,6 +29291,11 @@ function requirePackageurlJs () {
 
 var packageurlJsExports = requirePackageurlJs();
 
+function getOptionalInput(name) {
+    const value = coreExports.getInput(name, { required: false });
+    return value === '' ? null : value;
+}
+
 async function run() {
     try {
         // Collect inputs
@@ -29278,9 +29303,10 @@ async function run() {
             required: true
         });
         const policyScanName = coreExports.getInput('policy-scan', { required: true });
+        const enforcementPointName = getOptionalInput('enforcement-point');
         const tenant = coreExports.getInput('tenant', { required: true });
         const pkgType = coreExports.getInput('subject-type', { required: true });
-        const pkgNamespace = coreExports.getInput('subject-namespace', { required: false });
+        const pkgNamespace = getOptionalInput('subject-namespace');
         const pkgName = coreExports.getInput('subject-name', { required: true });
         const pkgVersion = coreExports.getInput('subject-version', { required: true });
         const subjectDigest = coreExports.getInput('subject-digest', { required: true });
@@ -29296,10 +29322,10 @@ async function run() {
         coreExports.info(`Policy Evaluation URL: ${policyEvaluatorUrl} - for policy: ${policyScanName}`);
         coreExports.endGroup();
         const client = createClient(policyEvaluatorUrl, credentials);
-        const result = await client.evaluatePolicy(tenant, policyScanName, subjectPurl, subjectDigest, repositoryUrl);
+        const result = await client.evaluatePolicy(tenant, policyScanName, enforcementPointName, subjectPurl, subjectDigest, repositoryUrl);
         // create summary
         const reporter = createPolicyReporter();
-        const subject = new PolicyRequestSubject(policyScanName, subjectPurl.toString(), { sha256: subjectDigest });
+        const subject = new PolicyRequestSubject(policyScanName, enforcementPointName, subjectPurl.toString(), { sha256: subjectDigest });
         reporter.report(result.status, subject, result.result);
     }
     catch (error) {
