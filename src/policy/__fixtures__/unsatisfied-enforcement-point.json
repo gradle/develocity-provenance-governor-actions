@@ -49,7 +49,7 @@
       "evaluations": [
         {
           "policyUri": "https://policies.example.com/repo-source-check",
-          "status": "not_applicable",
+          "status": "not-applicable",
           "details": {},
           "labels": {
             "category": "security",
@@ -70,7 +70,7 @@
         },
         {
           "policyUri": "https://policies.example.com/jvm-verification",
-          "status": "not_applicable",
+          "status": "not-applicable",
           "details": {},
           "labels": {
             "category": "verification",
