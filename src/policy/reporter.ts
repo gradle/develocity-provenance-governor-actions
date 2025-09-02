@@ -108,9 +108,8 @@ function preprocessResults(
 }
 
 function header(heading: string) {
-  //TODO make reference the policy image in repo's main branch.  Needs the repo to be public
   const headerImage =
-    'https://raw.githubusercontent.com/gist/rnett/38fcc9ed1bafaa96934a788630148884/raw/52411f8f4910ba25dd44d7434644ec8dd9e79ad6/policy-header.svg'
+    'https://raw.githubusercontent.com/gradle/develocity-provenance-governor-actions/cf78bf3e54d43cf9806a3ee3bbc7e2a4683ff786/src/policy/policy-header.svg'
 
   core.summary
     .addBreak()
@@ -457,7 +456,7 @@ function statusIcon(status: PolicyResultStatus): string {
     case PolicyResultStatus.UNSATISFIED:
       return '❌'
     case PolicyResultStatus.NOT_APPLICABLE:
-      return 'N/A' //TODO why isn't this being used?
+      return 'N/A'
     default:
       return '❓'
   }

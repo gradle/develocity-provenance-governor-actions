@@ -1,6 +1,6 @@
 <br>
 
-<img src="https://raw.githubusercontent.com/gist/rnett/38fcc9ed1bafaa96934a788630148884/raw/52411f8f4910ba25dd44d7434644ec8dd9e79ad6/policy-header.svg" alt="Policy Evaluator" width="100%" height="auto">
+<img src="https://raw.githubusercontent.com/gradle/develocity-provenance-governor-actions/cf78bf3e54d43cf9806a3ee3bbc7e2a4683ff786/src/policy/policy-header.svg" alt="Policy Evaluator" width="100%" height="auto">
 
 # Policy Scan Evaluated - ❌ UNSATISFIED
 
