@@ -27442,7 +27442,7 @@ var PolicyResultStatus;
 (function (PolicyResultStatus) {
     PolicyResultStatus["SATISFIED"] = "satisfied";
     PolicyResultStatus["UNSATISFIED"] = "unsatisfied";
-    PolicyResultStatus["NOT_APPLICABLE"] = "not_applicable";
+    PolicyResultStatus["NOT_APPLICABLE"] = "not-applicable";
 })(PolicyResultStatus || (PolicyResultStatus = {}));
 
 function createPolicyReporter() {
