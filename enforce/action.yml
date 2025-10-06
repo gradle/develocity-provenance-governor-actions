@@ -18,8 +18,8 @@ inputs:
     required: true
   enforcement-point:
     description:
-      'The enforcement point to evaluate the scan for, using the name configured
-      in the Develocity Provenance Governor service'
+      'EXPERIMENTAL: The enforcement point to evaluate the scan for, using the
+      name configured in the Develocity Provenance Governor service'
     required: false
   subject-type:
     description: 'The type of the package to evaluate policies against'
