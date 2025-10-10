@@ -1,11 +1,6 @@
 {
   "request": {
-    "uri": "http://localhost:8080/local-tenant/packages/oci/java-payment-calculator/1.0.0-SNAPSHOT-16152750186-3/attestations",
-    "tenant": {
-      "name": "default",
-      "develocityInstances": ["sdlc-demo"],
-      "artifactoryInstances": ["develocity-tia"]
-    },
+    "uri": "http://localhost:8080/packages/oci/java-payment-calculator/1.0.0-SNAPSHOT-16152750186-3/attestations",
     "pkg": {
       "type": "oci",
       "name": "java-payment-calculator",

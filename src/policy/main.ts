@@ -14,7 +14,6 @@ export async function run(): Promise<void> {
     const policyScanName = core.getInput('policy-scan', { required: true })
     const enforcementPointName = getOptionalInput('enforcement-point')
 
-    const tenant = core.getInput('tenant', { required: true })
     const pkgType = core.getInput('subject-type', { required: true })
     const pkgNamespace = getOptionalInput('subject-namespace')
     const pkgName = core.getInput('subject-name', { required: true })
@@ -49,7 +48,6 @@ export async function run(): Promise<void> {
 
     const client = createClient(policyEvaluatorUrl, credentials)
     const result = await client.evaluatePolicy(
-      tenant,
       policyScanName,
       enforcementPointName,
       subjectPurl,

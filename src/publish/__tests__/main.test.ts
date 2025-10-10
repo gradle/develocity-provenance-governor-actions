@@ -65,7 +65,6 @@ describe('main.ts', () => {
 
     core.getInput
       .mockClear()
-      .mockReturnValueOnce('tenant11') // tenant
       .mockReturnValueOnce('type11') // subject-type
       .mockReturnValueOnce('namespace11') // subject-namespace
       .mockReturnValueOnce('name11') // subject-name
@@ -97,7 +96,6 @@ describe('main.ts', () => {
     expect(createPublisherReporter).toHaveBeenCalledTimes(1)
     expect(client.publishAttestation).toHaveBeenNthCalledWith(
       1,
-      'tenant11',
       'type11',
       'namespace11',
       'name11',
@@ -138,7 +136,6 @@ describe('main.ts', () => {
 
     core.getInput
       .mockClear()
-      .mockReturnValueOnce('tenant22') // tenant
       .mockReturnValueOnce('type22') // subject-type
       .mockReturnValueOnce('namespace22') // subject-namespace
       .mockReturnValueOnce('name22') // subject-name
@@ -167,7 +164,6 @@ describe('main.ts', () => {
     expect(createPublisherReporter).toHaveBeenCalledTimes(1)
     expect(client.publishAttestation).toHaveBeenNthCalledWith(
       1,
-      'tenant22',
       'type22',
       'namespace22',
       'name22',

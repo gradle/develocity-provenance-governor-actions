@@ -61,7 +61,6 @@ export function createClient(
  */
 export interface Client {
   publishAttestation(
-    tenant: string,
     pkgType: string,
     pkgNamespace: string | null,
     pkgName: string,
@@ -73,7 +72,6 @@ export interface Client {
   ): Promise<PublisherResult>
 
   evaluatePolicy(
-    tenant: string,
     policyScan: string,
     enforcementPoint: string | null,
     purl: PackageURL,
@@ -99,7 +97,6 @@ class ApiClient implements Client {
   /**
    * Publishes an attestation for the given subject.
    *
-   * @param tenant Name of the tenant
    * @param pkgType Type of subject as defined by PURL spec (oci, maven, npm, etc.)
    * @param pkgNamespace Package namespace as defined by PURL spec (e.g. a Maven groupId)
    * @param pkgName Package name as defined by PURL spec (e.g. a Maven artifactId)
@@ -111,7 +108,6 @@ class ApiClient implements Client {
    * @returns Promise that resolves when the attestation is published
    */
   async publishAttestation(
-    tenant: string,
     pkgType: string,
     pkgNamespace: string,
     pkgName: string,
@@ -122,8 +118,8 @@ class ApiClient implements Client {
     buildScanQueries: string[]
   ): Promise<PublisherResult> {
     const publisherUrl = pkgNamespace
-      ? `${this.baseUrl}${tenant}/packages/${pkgType}/${pkgNamespace}/${pkgName}/${pkgVersion}/attestations`
-      : `${this.baseUrl}${tenant}/packages/${pkgType}/${pkgName}/${pkgVersion}/attestations`
+      ? `${this.baseUrl}packages/${pkgType}/${pkgNamespace}/${pkgName}/${pkgVersion}/attestations`
+      : `${this.baseUrl}packages/${pkgType}/${pkgName}/${pkgVersion}/attestations`
 
     const payload = JSON.stringify({
       repositoryUrl: repositoryUrl,
@@ -180,7 +176,6 @@ class ApiClient implements Client {
   /**
    * Evaluates the policy for the given subject.
    *
-   * @param tenant Name of the tenant
    * @param policyScan Name of the policy scan to evaluate
    * @param enforcementPoint Name of the enforcement point to evaluate against - optional
    * @param purl The pURL of the subject
@@ -188,7 +183,6 @@ class ApiClient implements Client {
    * @param repositoryUrl The repository the subject artifact was published to.
    */
   evaluatePolicy(
-    tenant: string,
     policyScan: string,
     enforcementPoint: string | null,
     purl: PackageURL,
@@ -196,7 +190,7 @@ class ApiClient implements Client {
     repositoryUrl: string
   ): Promise<PolicyResult> {
     const namespacePath = purl.namespace ? `/${purl.namespace}` : ''
-    let evalUrl = `${this.baseUrl}${tenant}/packages/${purl.type}${namespacePath}/${purl.name}/${purl.version}/policy-scans/${policyScan}`
+    let evalUrl = `${this.baseUrl}packages/${purl.type}${namespacePath}/${purl.name}/${purl.version}/policy-scans/${policyScan}`
 
     if (enforcementPoint) {
       evalUrl += `/enforcement-points/${enforcementPoint}`
@@ -210,7 +204,6 @@ class ApiClient implements Client {
     console.log('Calling policy evaluator: ', evalUrl)
     console.debug('Calling evaluator with payload: ', payload)
 
-    // TODO: reduce duplicate code, I'm not sure what the evaluator code looks like, so it's duplicated for now
     try {
       const response = fetch(evalUrl, {
         method: 'POST',

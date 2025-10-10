@@ -23,7 +23,6 @@ describe('client.js - policy evaluation', () => {
     ) as Client
     const purl = new PackageURL('npm', 'namespace1', 'name1', '1.0.0')
     const result = await client.evaluatePolicy(
-      'tenant1',
       'scan1',
       'enforcement-point1',
       purl,
@@ -44,7 +43,7 @@ describe('client.js - policy evaluation', () => {
     }
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://policy.example.com/tenant1/packages/npm/namespace1/name1/1.0.0/policy-scans/scan1/enforcement-points/enforcement-point1',
+      'https://policy.example.com/packages/npm/namespace1/name1/1.0.0/policy-scans/scan1/enforcement-points/enforcement-point1',
       expected
     )
     expect(result).toEqual({
@@ -70,7 +69,6 @@ describe('client.js - policy evaluation', () => {
     ) as Client
     const purl = new PackageURL('npm', 'namespace1', 'name1', '1.0.0')
     const result = await client.evaluatePolicy(
-      'tenant1',
       'scan1',
       null,
       purl,
@@ -91,7 +89,7 @@ describe('client.js - policy evaluation', () => {
     }
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://policy.example.com/tenant1/packages/npm/namespace1/name1/1.0.0/policy-scans/scan1',
+      'https://policy.example.com/packages/npm/namespace1/name1/1.0.0/policy-scans/scan1',
       expected
     )
     expect(result).toEqual({
@@ -117,7 +115,6 @@ describe('client.js - policy evaluation', () => {
     }) as Client
     const purl = new PackageURL('npm', 'namespace1', 'name1', '1.0.0')
     const result = await client.evaluatePolicy(
-      'tenant1',
       'scan1',
       'enforcement-point1',
       purl,
@@ -138,7 +135,7 @@ describe('client.js - policy evaluation', () => {
     }
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://policy.example.com/tenant1/packages/npm/namespace1/name1/1.0.0/policy-scans/scan1/enforcement-points/enforcement-point1',
+      'https://policy.example.com/packages/npm/namespace1/name1/1.0.0/policy-scans/scan1/enforcement-points/enforcement-point1',
       expected
     )
     expect(result).toEqual({
@@ -164,7 +161,6 @@ describe('client.js - policy evaluation', () => {
     ) as Client
     const purl = new PackageURL('oci', null, 'name1', '1.0.0')
     const result = await client.evaluatePolicy(
-      'tenant1',
       'scan1',
       'enforcement-point1',
       purl,
@@ -185,7 +181,7 @@ describe('client.js - policy evaluation', () => {
     }
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://policy.example.com/tenant1/packages/oci/name1/1.0.0/policy-scans/scan1/enforcement-points/enforcement-point1',
+      'https://policy.example.com/packages/oci/name1/1.0.0/policy-scans/scan1/enforcement-points/enforcement-point1',
       expected
     )
     expect(result).toEqual({

@@ -27,7 +27,6 @@ describe('client.js - publishing', () => {
     ) as Client
 
     const result = await publisher.publishAttestation(
-      'tenant1',
       'type1',
       'namespace1',
       'name1',
@@ -55,7 +54,7 @@ describe('client.js - publishing', () => {
     }
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://attest.example.com/tenant1/packages/type1/namespace1/name1/version1/attestations',
+      'https://attest.example.com/packages/type1/namespace1/name1/version1/attestations',
       expected
     )
 
@@ -85,7 +84,6 @@ describe('client.js - publishing', () => {
     ) as Client
 
     const result = await publisher.publishAttestation(
-      'tenant1',
       'oci',
       null,
       'name1',
@@ -113,7 +111,7 @@ describe('client.js - publishing', () => {
     }
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://attest.example.com/tenant1/packages/oci/name1/version1/attestations',
+      'https://attest.example.com/packages/oci/name1/version1/attestations',
       expected
     )
 
@@ -143,7 +141,6 @@ describe('client.js - publishing', () => {
     }) as Client
 
     const result = await publisher.publishAttestation(
-      'tenant1',
       'type1',
       'namespace1',
       'name1',
@@ -171,7 +168,7 @@ describe('client.js - publishing', () => {
     }
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://attest.example.com/tenant1/packages/type1/namespace1/name1/version1/attestations',
+      'https://attest.example.com/packages/type1/namespace1/name1/version1/attestations',
       expected
     )
 

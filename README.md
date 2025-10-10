@@ -11,7 +11,6 @@ GitHub workflows.
 uses: gradle/develocity-provenance-governor-actions/publish@main
 with:
   attestation-publisher-url: 'https://cavendish.sdlc-demo.gradle.com'
-  tenant: default
   build-scan-ids: eo5xxyg3drtoc
   build-scan-queries: 'value:"CI run=${{ github.run_id }}"'
   subject-type: oci
@@ -44,20 +43,14 @@ There is also a `subject-namespace` field that can be used with subject types th
 uses: gradle/develocity-provenance-governor-actions/enforce@main
 with:
   policy-evaluator-url: 'https://cavendish.sdlc-demo.gradle.com'
-  tenant: default
   subject-type: oci
   subject-name: java-payment-calculator
   subject-version: 1.2.3
   subject-digest: 1a6b2bf83435f2a9ccd33519ad3e817bf79aee6af1c7a15d26d8a256bfa9cc94
   subject-repository-url: develocitytia.jfrog.io/docker-trial
   policy-scan: ci-enforcement
-  enforcement-point: CI # Optional
 ```
 
 Requires a GitHub OIDC token.
-
-All properties are required, except `enforcement-point`.
-If no enforcement point is provided, all policies in the scan will be evaluated and any `UNSATISFIED` result will be
-treated as a failure.
 
 There is also a `subject-namespace` field that can be used with subject types that require it.

@@ -7,7 +7,6 @@ import { getOptionalInput } from '../helpers.js'
 
 export async function run(): Promise<void> {
   try {
-    const tenant = core.getInput('tenant', { required: true })
     const pkgType = core.getInput('subject-type', { required: true })
     const pkgNamespace = getOptionalInput('subject-namespace')
     const pkgName = core.getInput('subject-name', { required: true })
@@ -53,15 +52,12 @@ export async function run(): Promise<void> {
       `Publishing attestation for subject: ${subjectPurl} - ${subjectDigest}`
     )
     core.info(`Subject Repository URL: ${repositoryUrl}`)
-    core.info(
-      `Publisher URL: ${attestationPublisherUrl} - in tenant: ${tenant}`
-    )
+    core.info(`Publisher URL: ${attestationPublisherUrl}`)
     core.endGroup()
 
     // publish the attestations
     const publisherClient = createClient(attestationPublisherUrl, credentials)
     const result = await publisherClient.publishAttestation(
-      tenant,
       pkgType,
       pkgNamespace,
       pkgName,

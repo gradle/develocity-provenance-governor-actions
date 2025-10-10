@@ -6,7 +6,7 @@
 
 **Error:** Not Found
 
-> Tenant with name [my-404-tenant] not found.
+> Artifact with name [java-payment-calculator] not found.
 
 **Type:** about:blank
 
@@ -17,8 +17,8 @@
   "type": "about:blank",
   "title": "Not Found",
   "status": 404,
-  "detail": "Tenant with name [my-404-tenant] not found.",
-  "instance": "/my-404-tenant/packages/oci/java-payment-calculator/1.0.0-SNAPSHOT-16152750186-4/attestations"
+  "detail": "Artifact with name [java-payment-calculator] not found.",
+  "instance": "/packages/oci/java-payment-calculator/1.0.0-SNAPSHOT-16152750186-4/attestations"
 }
 ```
 </details>

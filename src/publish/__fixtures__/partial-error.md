@@ -20,16 +20,7 @@
   "detail": "Failed to publish some attestations, see errors for details",
   "instance": "/default/packages/oci/java-payment-calculator/1.0.0-SNAPSHOT-16152750186/attestations",
   "request": {
-    "uri": "http://localhost:8080/default/packages/oci/java-payment-calculator/1.0.0-SNAPSHOT-16152750186/attestations",
-    "tenant": {
-      "name": "default",
-      "develocityInstances": [
-        "sdlc-demo"
-      ],
-      "artifactoryInstances": [
-        "develocity-tia"
-      ]
-    },
+    "uri": "http://localhost:8080/packages/oci/java-payment-calculator/1.0.0-SNAPSHOT-16152750186/attestations",
     "pkg": {
       "type": "oci",
       "name": "java-payment-calculator",
