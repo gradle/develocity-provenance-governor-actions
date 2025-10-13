@@ -2,8 +2,7 @@ import {
   BaseCriteria,
   BaseErrorResponse,
   BaseRequest,
-  BaseSuccessResponse,
-  Envelope
+  BaseSuccessResponse
 } from '../models.js'
 
 export class PolicyRequestSubject {
@@ -38,45 +37,12 @@ export class PolicySuccessResponse
   implements BaseSuccessResponse<PolicyRequest>
 {
   request: PolicyRequest
-  results: PolicyAttestationEvaluation[]
+  results: PolicyEvaluation[]
 
-  constructor(data: {
-    request: PolicyRequest
-    results: PolicyAttestationEvaluation[]
-  }) {
+  constructor(data: { request: PolicyRequest; results: PolicyEvaluation[] }) {
     this.request = data.request
     this.results = data.results
   }
-}
-
-export interface PolicyAttestationEvaluation {
-  attestation: PolicyAttestation
-  evaluations: PolicyEvaluation[]
-}
-
-export function hasUnsatisfiedEvaluation(
-  evaluation: PolicyAttestationEvaluation[]
-) {
-  return evaluation.some((element) =>
-    element.evaluations.some((e) => e.status === PolicyResultStatus.UNSATISFIED)
-  )
-}
-
-export interface PolicyAttestation {
-  envelope: Envelope
-  storeType: string
-  storeUri: string
-  storeRequest: PolicyStoreRequest
-  storeResponse: PolicyStoreResponse
-}
-
-export interface PolicyStoreRequest {
-  uri?: string
-  [key: string]: unknown
-}
-
-export interface PolicyStoreResponse {
-  [key: string]: unknown
 }
 
 export enum PolicyResultStatus {
@@ -87,13 +53,14 @@ export enum PolicyResultStatus {
 
 export interface PolicyEvaluation {
   policyUri: string
+  policyType: string
+  policyDescription?: string
+  policyRemediation?: string
+  attestationStoreInstance: string
+  attestationStoreUri: string
+  sourcedFromInstance?: string
+  sourcedFromUri?: string
   status: PolicyResultStatus
-  details: PolicyEvaluationDetails
+  details: Record<string, string>
   labels: Record<string, string>
-}
-
-export interface PolicyEvaluationDetails {
-  description?: string
-  remediation?: string
-  [key: string]: string | undefined
 }

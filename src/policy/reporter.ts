@@ -2,9 +2,6 @@ import { BaseReporter, Reporter, reportProblemDetails } from '../reporter.js'
 
 import * as core from '@actions/core'
 import {
-  hasUnsatisfiedEvaluation,
-  PolicyAttestation,
-  PolicyAttestationEvaluation,
   PolicyErrorResponse,
   PolicyEvaluation,
   PolicyRequestSubject,
@@ -61,14 +58,10 @@ export class PolicySummaryReporter extends BaseReporter<
 
     core.summary.addRaw('**Result:** ').addRaw(resultText).addEOL().addEOL()
 
-    const processedResults = preprocessResults(result.results)
-
-    const policies = collectPolicyEvaluations(processedResults)
+    const policies = collectPolicyEvaluations(result.results)
 
     reportPolicyTable(policies)
 
-    // reportTable(processedResults)
-    //
     if (hasFailures) {
       if (setFailure) {
         core.setFailed(
@@ -76,35 +69,8 @@ export class PolicySummaryReporter extends BaseReporter<
         )
       }
       reportFailedPolicyDetails(policies)
-      //
-      //   reportFailures(processedResults)
     }
-    //
-    // reportAllResults(processedResults)
   }
-}
-
-function preprocessResults(
-  results: PolicyAttestationEvaluation[]
-): PolicyAttestationEvaluation[] {
-  return results.sort((a, b) => {
-    const aUnsatisfied = a.evaluations.some(
-      (e) => e.status == PolicyResultStatus.UNSATISFIED
-    )
-    const bUnsatisfied = b.evaluations.some(
-      (e) => e.status == PolicyResultStatus.UNSATISFIED
-    )
-
-    if (aUnsatisfied && !bUnsatisfied) {
-      return -1 // a first
-    } else if (bUnsatisfied && !aUnsatisfied) {
-      return 1 // b first
-    } else {
-      return a.attestation.envelope.payload.predicateType.localeCompare(
-        b.attestation.envelope.payload.predicateType
-      )
-    }
-  })
 }
 
 function header(heading: string) {
@@ -157,9 +123,9 @@ function reportSubjectInfo(subject: PolicyRequestSubject) {
   core.summary.addEOL()
 }
 
-function attestationName(attestation: PolicyAttestation): string {
-  if (attestation.storeRequest.uri) {
-    const uri = attestation.storeRequest.uri
+function attestationName(attestation: PolicyEvaluationResult): string {
+  if (attestation.attestationUri) {
+    const uri = attestation.attestationUri
     return uri.substring(uri.lastIndexOf('/') + 1)
   } else {
     return 'N/A'
@@ -247,41 +213,30 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
           { data: 'Status', header: true },
           { data: 'Details', header: true },
           { data: 'Build Scan', header: true },
-          { data: 'Envelope', header: true },
           { data: 'Download Link', header: true }
         ]
       ]
 
       policyEval.failures.concat(policyEval.successes).forEach((evaluation) => {
-        const attestation = evaluation.attestation
+        const otherDetailsJson = JSON.stringify(evaluation.details, null, 2)
 
-        const {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          description: unused,
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          remediation: unused2,
-          ...otherDetails
-        } = evaluation.evaluation.details
-
-        const otherDetailsJson = JSON.stringify(otherDetails, null, 2)
-
-        if (evaluation.evaluation.status == PolicyResultStatus.UNSATISFIED) {
+        if (evaluation.status == PolicyResultStatus.UNSATISFIED) {
           core.error(
             'Policy ' +
               policyEval.policy.name() +
               ' on attestation ' +
-              attestationName(attestation) +
+              attestationName(evaluation) +
               ' evaluated to UNSATISFIED'
           )
         }
 
-        const buildScanUri = attestation.envelope.payload.predicate.buildScanUri
+        const buildScanUri = evaluation.sourceUri
 
         tableRows.push([
           {
-            data: `\n\n\`${attestationName(attestation)}\`\n`
+            data: `\n\n\`${attestationName(evaluation)}\`\n`
           },
-          { data: statusIcon(evaluation.evaluation.status) },
+          { data: statusIcon(evaluation.status) },
           {
             data:
               otherDetailsJson != '{}'
@@ -293,16 +248,8 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
           },
           {
             data:
-              '\n\n<details>\n\n<summary>Envelope</summary>\n\n' +
-              '\n\n```json\n' +
-              JSON.stringify(attestation.envelope, null, 2) +
-              '\n```\n' +
-              '\n\n</details>\n'
-          },
-          {
-            data:
-              attestation.storeRequest.uri != null
-                ? `\n\n[Download Link](${attestation.storeRequest.uri})\n`
+              evaluation.attestationUri != null
+                ? `\n\n[Download Link](${evaluation.attestationUri})\n`
                 : ''
           }
         ])
@@ -314,23 +261,23 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
 
 class PolicyEvaluations {
   policy: PolicyData
-  evaluations: AttestationEvaluation[]
+  evaluations: PolicyEvaluationResult[]
 
-  failures: AttestationEvaluation[]
-  successes: AttestationEvaluation[]
+  failures: PolicyEvaluationResult[]
+  successes: PolicyEvaluationResult[]
   status: PolicyResultStatus
 
   totalApplicableAttestations: number
 
-  constructor(policy: PolicyData, evaluations: AttestationEvaluation[]) {
+  constructor(policy: PolicyData, evaluations: PolicyEvaluationResult[]) {
     this.policy = policy
     this.evaluations = evaluations
 
     this.failures = evaluations.filter(
-      (e) => e.evaluation.status == PolicyResultStatus.UNSATISFIED
+      (e) => e.status == PolicyResultStatus.UNSATISFIED
     )
     this.successes = evaluations.filter(
-      (e) => e.evaluation.status == PolicyResultStatus.SATISFIED
+      (e) => e.status == PolicyResultStatus.SATISFIED
     )
     if (this.failures.length > 0) {
       this.status = PolicyResultStatus.UNSATISFIED
@@ -346,17 +293,20 @@ class PolicyEvaluations {
 
 class PolicyData {
   uri: string
+  type: string
   description?: string
   remediation?: string
   labels: Record<string, string>
 
   constructor(
     uri: string,
+    type: string,
     description: string | undefined,
     remediation: string | undefined,
     labels: Record<string, string>
   ) {
     this.uri = uri
+    this.type = type
     this.description = description
     this.remediation = remediation
     this.labels = labels
@@ -367,65 +317,78 @@ class PolicyData {
   }
 }
 
-class AttestationEvaluation {
-  attestation: PolicyAttestation
-  evaluation: PolicyEvaluation
+class PolicyEvaluationResult {
+  status: PolicyResultStatus
+  attestationUri: string
+  sourceUri?: string
+  details: Record<string, string>
 
-  constructor(attestation: PolicyAttestation, evaluation: PolicyEvaluation) {
-    this.attestation = attestation
-    this.evaluation = evaluation
+  constructor(
+    status: PolicyResultStatus,
+    attestationUri: string,
+    sourceUri: string | undefined,
+    details: Record<string, string>
+  ) {
+    this.status = status
+    this.attestationUri = attestationUri
+    this.sourceUri = sourceUri
+    this.details = details
   }
 }
 
 function collectPolicyEvaluations(
-  results: PolicyAttestationEvaluation[]
+  results: PolicyEvaluation[]
 ): PolicyEvaluations[] {
   const policyMap = new Map<
     string,
-    { policy: PolicyData; evaluations: AttestationEvaluation[] }
+    { policy: PolicyData; evaluations: PolicyEvaluationResult[] }
   >()
 
-  results.forEach((a: PolicyAttestationEvaluation) => {
-    a.evaluations.forEach((evaluation) => {
-      const status = <PolicyResultStatus>evaluation.status.toLowerCase()
+  results.forEach((r) => {
+    const status = <PolicyResultStatus>r.status.toLowerCase()
 
-      if (!Object.values(PolicyResultStatus).includes(status)) {
-        core.error('Unknown status in response: ' + evaluation.status)
-        throw Error(`Unknown status in response: ${evaluation.status}`)
+    if (!Object.values(PolicyResultStatus).includes(status)) {
+      core.error('Unknown status in response: ' + r.status)
+      throw Error(`Unknown status in response: ${r.status}`)
+    }
+    r.status = status
+
+    const data = new PolicyData(
+      r.policyUri,
+      r.policyType,
+      r.policyDescription,
+      r.policyRemediation,
+      r.labels
+    )
+
+    const result = new PolicyEvaluationResult(
+      r.status,
+      r.attestationStoreUri,
+      r.sourcedFromUri,
+      r.details
+    )
+
+    const existing = policyMap.get(data.uri)
+    if (existing) {
+      if (result.status == PolicyResultStatus.UNSATISFIED) {
+        existing.policy.description = result.details.description
+        existing.policy.remediation = result.details.remediation
       }
-      evaluation.status = status
 
-      const data = new PolicyData(
-        evaluation.policyUri,
-        evaluation.details.description,
-        evaluation.details.remediation,
-        evaluation.labels
-      )
-
-      const ae = new AttestationEvaluation(a.attestation, evaluation)
-
-      const existing = policyMap.get(data.uri)
-      if (existing) {
-        if (evaluation.status == PolicyResultStatus.UNSATISFIED) {
-          existing.policy.description = evaluation.details.description
-          existing.policy.remediation = evaluation.details.remediation
-        }
-
-        if (
-          evaluation.status == PolicyResultStatus.SATISFIED &&
-          !existing.policy.description
-        ) {
-          existing.policy.description = evaluation.details.description
-        }
-
-        existing.evaluations.push(ae)
-      } else {
-        policyMap.set(data.uri, {
-          policy: data,
-          evaluations: [ae]
-        })
+      if (
+        result.status == PolicyResultStatus.SATISFIED &&
+        !existing.policy.description
+      ) {
+        existing.policy.description = result.details.description
       }
-    })
+
+      existing.evaluations.push(result)
+    } else {
+      policyMap.set(data.uri, {
+        policy: data,
+        evaluations: [result]
+      })
+    }
   })
 
   const resultsList: PolicyEvaluations[] = []
@@ -441,12 +404,22 @@ function collectPolicyEvaluations(
 
   resultsList.sort((a, b) => {
     if (a.status == b.status) {
+      const byType = a.policy.type.localeCompare(b.policy.type)
+      if (byType != 0) {
+        return byType
+      }
       return a.policy.uri.localeCompare(b.policy.uri)
     } else {
       return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status)
     }
   })
   return resultsList
+}
+
+function hasUnsatisfiedEvaluation(evaluation: PolicyEvaluation[]) {
+  return evaluation.some(
+    (element) => element.status === PolicyResultStatus.UNSATISFIED
+  )
 }
 
 function statusIcon(status: PolicyResultStatus): string {
