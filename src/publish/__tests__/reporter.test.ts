@@ -11,7 +11,7 @@ const { PublisherSummaryReporter } = await import('../reporter.js')
 /**
  * Unit tests for src/reporter.ts
  */
-describe('reporter.js', () => {
+describe('publishing reporter.js', () => {
   beforeEach(() => {
     core.summary.emptyBuffer()
     jest.clearAllMocks()

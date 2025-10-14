@@ -1,59 +1,41 @@
-{
-  "request": {
-    "uri": "http://localhost:8080/test-eval/policy-scans/test/enforcement-points/test-enforce",
-    "pkg": {
-      "type": "oci",
-      "name": "java-payment-calculator",
-      "version": "1.0.0-SNAPSHOT-16152750186-3"
+[
+  {
+    "labels": {
+      "category": "verification",
+      "severity": "medium"
     },
-    "criteria": {
-      "sha256": "c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b",
-      "repositoryUrl": "develocitytia.jfrog.io/docker-trial"
-    },
-    "policyScanName": "test",
-    "enforcementPointName": "some-enforcement-point"
+    "policyUri": "https://policies.example.com/BuildScan/build-scan-verification",
+    "policyDescription": "Build scan verification",
+    "status": "SATISFIED",
+    "attestationStoreInstance": "af:http://store.example.com/attestation",
+    "attestationStoreUri": "http://store.example.com/attestation/attestationDownloadLink.dat",
+    "sourcedFromUri": "http://localhost:24300/s/wyqqaj64qu73k",
+    "details": {}
   },
-  "results": [
-    {
-      "labels": {
-        "category": "verification",
-        "severity": "medium"
-      },
-      "policyUri": "https://policies.example.com/build-scan-verification",
-      "policyDescription": "Build scan verification",
-      "status": "SATISFIED",
-      "attestationStoreInstance": "af:http://store.example.com/attestation",
-      "attestationStoreUri": "http://store.example.com/attestation/attestationDownloadLink.dat",
-      "sourcedFromUri": "http://localhost:24300/s/wyqqaj64qu73k",
-      "details": {
-      }
+  {
+    "labels": {
+      "category": "security",
+      "severity": "high"
     },
-    {
-      "labels": {
-        "category": "security",
-        "severity": "high"
-      },
-      "policyUri": "https://policies.example.com/repo-source-check",
-      "policyDescription": "Repository source verification",
-      "status": "satisfied",
-      "attestationStoreInstance": "af:http://store.example.com/attestation",
-      "attestationStoreUri": "http://store.example.com/attestation/attestationDownloadLink.dat",
-      "sourcedFromUri": "http://localhost:24300/s/wyqqaj64qu73k",
-      "details": {
-      }
+    "policyUri": "https://policies.example.com/Repository/repo-source-check",
+    "policyDescription": "Repository source verification",
+    "status": "satisfied",
+    "attestationStoreInstance": "af:http://store.example.com/attestation",
+    "attestationStoreUri": "http://store.example.com/attestation/attestationDownloadLink.dat",
+    "sourcedFromUri": "http://localhost:24300/s/wyqqaj64qu73k",
+    "details": {}
+  },
+  {
+    "labels": {
+      "category": "verification",
+      "severity": "medium"
     },
-    {
-      "labels": {
-        "category": "verification",
-        "severity": "medium"
-      },
-      "policyUri": "https://policies.example.com/jvm-verification",
-      "policyDecription": "",
-      "status": "not-applicable",
-      "attestationStoreInstance": "af:http://store.example.com/attestation",
-      "attestationStoreUri": "http://store.example.com/attestation/attestationDownloadLink.dat",
-      "sourcedFromUri": "http://localhost:24300/s/wyqqaj64qu73k",
-      "details": {}
-    }
-  ]
-}
+    "policyUri": "https://policies.example.com/Jvm/jvm-verification",
+    "policyDecription": "",
+    "status": "not-applicable",
+    "attestationStoreInstance": "af:http://store.example.com/attestation",
+    "attestationStoreUri": "http://store.example.com/attestation/attestationDownloadLink.dat",
+    "sourcedFromUri": "http://localhost:24300/s/wyqqaj64qu73k",
+    "details": {}
+  }
+]

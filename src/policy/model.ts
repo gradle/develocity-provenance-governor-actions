@@ -1,9 +1,4 @@
-import {
-  BaseCriteria,
-  BaseErrorResponse,
-  BaseRequest,
-  BaseSuccessResponse
-} from '../models.js'
+import { BaseCriteria, BaseErrorResponse, BaseRequest } from '../models.js'
 
 export class PolicyRequestSubject {
   scanName: string
@@ -33,17 +28,7 @@ export interface PolicyRequest extends BaseRequest<BaseCriteria> {
 
 export type PolicyErrorResponse = BaseErrorResponse<PolicyRequest>
 
-export class PolicySuccessResponse
-  implements BaseSuccessResponse<PolicyRequest>
-{
-  request: PolicyRequest
-  results: PolicyEvaluation[]
-
-  constructor(data: { request: PolicyRequest; results: PolicyEvaluation[] }) {
-    this.request = data.request
-    this.results = data.results
-  }
-}
+export type PolicySuccessResponse = PolicyEvaluation[]
 
 export enum PolicyResultStatus {
   SATISFIED = 'satisfied',
@@ -53,7 +38,6 @@ export enum PolicyResultStatus {
 
 export interface PolicyEvaluation {
   policyUri: string
-  policyType: string
   policyDescription?: string
   policyRemediation?: string
   attestationStoreInstance: string

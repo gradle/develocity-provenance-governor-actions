@@ -42,7 +42,7 @@ describe('policy reporter.js', () => {
     )
   })
 
-  it('Render a unsatisfied evaluation point report', async () => {
+  it('Render a unsatisfied enforcement point report', async () => {
     renderAndCompare(
       'unsatisfied-enforcement-point',
       200,
@@ -50,7 +50,7 @@ describe('policy reporter.js', () => {
     )
   })
 
-  it('Render a error evaluation point report', async () => {
+  it('Render a error enforcement point report', async () => {
     renderAndCompare('error-enforcement-point', 404, 'test-enforcement-point')
   })
 

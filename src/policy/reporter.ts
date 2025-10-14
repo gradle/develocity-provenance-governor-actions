@@ -47,7 +47,7 @@ export class PolicySummaryReporter extends BaseReporter<
     result: PolicySuccessResponse,
     setFailure: boolean
   ): void {
-    const hasFailures = hasUnsatisfiedEvaluation(result.results)
+    const hasFailures = hasUnsatisfiedEvaluation(result)
     const resultText = hasFailures
       ? statusIcon(PolicyResultStatus.UNSATISFIED) + ' UNSATISFIED'
       : statusIcon(PolicyResultStatus.SATISFIED) + ' SATISFIED'
@@ -58,7 +58,7 @@ export class PolicySummaryReporter extends BaseReporter<
 
     core.summary.addRaw('**Result:** ').addRaw(resultText).addEOL().addEOL()
 
-    const policies = collectPolicyEvaluations(result.results)
+    const policies = collectPolicyEvaluations(result)
 
     reportPolicyTable(policies)
 
@@ -136,6 +136,7 @@ function reportPolicyTable(policies: PolicyEvaluations[]) {
   const tableRows: SummaryTableRow[] = [
     [
       { data: 'Policy', header: true },
+      { data: 'Type', header: true },
       { data: 'Status', header: true },
       { data: 'Attestations Passed / Evaluated', header: true },
       { data: 'Description', header: true },
@@ -147,7 +148,10 @@ function reportPolicyTable(policies: PolicyEvaluations[]) {
   policies.forEach((evaluations, index) => {
     tableRows.push([
       {
-        data: `\n\n\`${evaluations.policy.name()}\`\n`
+        data: `\n\n\`${evaluations.policy.name}\`\n`
+      },
+      {
+        data: `\n\n\`${evaluations.policy.type}\`\n`
       },
       { data: statusIcon(evaluations.status) },
       {
@@ -182,27 +186,39 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
       core.summary
         .addRaw('## <a name="policy-detail-' + index + '"></a> Policy ')
         .addRaw('`')
-        .addRaw(policyEval.policy.name())
+        .addRaw(policyEval.policy.name)
         .addRaw('`')
         .addEOL()
         .addEOL()
 
       core.summary
-        .addRaw('**Description:** ')
-        .addRaw(policyEval.policy.description ?? '')
+        .addRaw('**Type:** ')
+        .addRaw('`')
+        .addRaw(policyEval.policy.type)
+        .addRaw('`')
         .addEOL()
         .addEOL()
 
-      core.summary
-        .addRaw('**Remediation:** ')
-        .addRaw(policyEval.policy.remediation ?? '')
-        .addEOL()
-        .addEOL()
+      if (policyEval.policy.description) {
+        core.summary
+          .addRaw('**Description:** ')
+          .addRaw(policyEval.policy.description)
+          .addEOL()
+          .addEOL()
+      }
+
+      if (policyEval.policy.remediation) {
+        core.summary
+          .addRaw('**Remediation:** ')
+          .addRaw(policyEval.policy.remediation)
+          .addEOL()
+          .addEOL()
+      }
 
       core.summary.addRaw('**Labels:**').addEOL().addEOL()
 
       Object.entries(policyEval.policy.labels).forEach(([key, value]) => {
-        core.summary.addRaw(' - `' + key + '` = `' + value + '`').addEOL()
+        core.summary.addRaw('- `' + key + '` = `' + value + '`').addEOL()
       })
 
       core.summary.addEOL().addEOL()
@@ -223,7 +239,7 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
         if (evaluation.status == PolicyResultStatus.UNSATISFIED) {
           core.error(
             'Policy ' +
-              policyEval.policy.name() +
+              policyEval.policy.name +
               ' on attestation ' +
               attestationName(evaluation) +
               ' evaluated to UNSATISFIED'
@@ -240,7 +256,9 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
           {
             data:
               otherDetailsJson != '{}'
-                ? '\n\n```json\n' + otherDetailsJson + '\n```\n'
+                ? '\n\n<details>\n\n<summary>Details</summary>\n\n```json\n' +
+                  otherDetailsJson +
+                  '\n```\n\n</details>\n'
                 : ''
           },
           {
@@ -293,6 +311,7 @@ class PolicyEvaluations {
 
 class PolicyData {
   uri: string
+  name: string
   type: string
   description?: string
   remediation?: string
@@ -300,20 +319,18 @@ class PolicyData {
 
   constructor(
     uri: string,
-    type: string,
     description: string | undefined,
     remediation: string | undefined,
     labels: Record<string, string>
   ) {
     this.uri = uri
-    this.type = type
     this.description = description
     this.remediation = remediation
     this.labels = labels
-  }
 
-  name(): string {
-    return this.uri.substring(this.uri.lastIndexOf('/') + 1)
+    const uriParts = uri.split('/')
+    this.type = uriParts[uriParts.length - 2]
+    this.name = uriParts[uriParts.length - 1]
   }
 }
 
@@ -355,7 +372,6 @@ function collectPolicyEvaluations(
 
     const data = new PolicyData(
       r.policyUri,
-      r.policyType,
       r.policyDescription,
       r.policyRemediation,
       r.labels
@@ -404,10 +420,6 @@ function collectPolicyEvaluations(
 
   resultsList.sort((a, b) => {
     if (a.status == b.status) {
-      const byType = a.policy.type.localeCompare(b.policy.type)
-      if (byType != 0) {
-        return byType
-      }
       return a.policy.uri.localeCompare(b.policy.uri)
     } else {
       return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status)
