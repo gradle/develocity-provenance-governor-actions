@@ -124,8 +124,8 @@ function reportSubjectInfo(subject: PolicyRequestSubject) {
 }
 
 function attestationName(attestation: PolicyEvaluationResult): string {
-  if (attestation.attestationUri) {
-    const uri = attestation.attestationUri
+  if (attestation.attestationDownloadUri) {
+    const uri = attestation.attestationDownloadUri
     return uri.substring(uri.lastIndexOf('/') + 1)
   } else {
     return 'N/A'
@@ -266,8 +266,8 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
           },
           {
             data:
-              evaluation.attestationUri != null
-                ? `\n\n[Download Link](${evaluation.attestationUri})\n`
+              evaluation.attestationDownloadUri != null
+                ? `\n\n[Download Link](${evaluation.attestationDownloadUri})\n`
                 : ''
           }
         ])
@@ -336,7 +336,7 @@ class PolicyData {
 
 class PolicyEvaluationResult {
   status: PolicyResultStatus
-  attestationUri: string
+  attestationDownloadUri: string
   sourceUri?: string
   details: Record<string, string>
 
@@ -347,7 +347,7 @@ class PolicyEvaluationResult {
     details: Record<string, string>
   ) {
     this.status = status
-    this.attestationUri = attestationUri
+    this.attestationDownloadUri = attestationUri
     this.sourceUri = sourceUri
     this.details = details
   }
