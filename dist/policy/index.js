@@ -27287,7 +27287,6 @@ class ApiClient {
     /**
      * Publishes an attestation for the given subject.
      *
-     * @param tenant Name of the tenant
      * @param pkgType Type of subject as defined by PURL spec (oci, maven, npm, etc.)
      * @param pkgNamespace Package namespace as defined by PURL spec (e.g. a Maven groupId)
      * @param pkgName Package name as defined by PURL spec (e.g. a Maven artifactId)
@@ -27298,10 +27297,10 @@ class ApiClient {
      * @param buildScanQueries The build scan queries to create attestations from.
      * @returns Promise that resolves when the attestation is published
      */
-    async publishAttestation(tenant, pkgType, pkgNamespace, pkgName, pkgVersion, digest, repositoryUrl, buildScanIds, buildScanQueries) {
+    async publishAttestation(pkgType, pkgNamespace, pkgName, pkgVersion, digest, repositoryUrl, buildScanIds, buildScanQueries) {
         const publisherUrl = pkgNamespace
-            ? `${this.baseUrl}${tenant}/packages/${pkgType}/${pkgNamespace}/${pkgName}/${pkgVersion}/attestations`
-            : `${this.baseUrl}${tenant}/packages/${pkgType}/${pkgName}/${pkgVersion}/attestations`;
+            ? `${this.baseUrl}packages/${pkgType}/${pkgNamespace}/${pkgName}/${pkgVersion}/attestations`
+            : `${this.baseUrl}packages/${pkgType}/${pkgName}/${pkgVersion}/attestations`;
         const payload = JSON.stringify({
             repositoryUrl: repositoryUrl,
             sha256: digest,
@@ -27343,16 +27342,15 @@ class ApiClient {
     /**
      * Evaluates the policy for the given subject.
      *
-     * @param tenant Name of the tenant
      * @param policyScan Name of the policy scan to evaluate
      * @param enforcementPoint Name of the enforcement point to evaluate against - optional
      * @param purl The pURL of the subject
      * @param digest The digest of the image, usually containing the digest type prefix (e.g. sha256:<digest-string-here>)
      * @param repositoryUrl The repository the subject artifact was published to.
      */
-    evaluatePolicy(tenant, policyScan, enforcementPoint, purl, digest, repositoryUrl) {
+    evaluatePolicy(policyScan, enforcementPoint, purl, digest, repositoryUrl) {
         const namespacePath = purl.namespace ? `/${purl.namespace}` : '';
-        let evalUrl = `${this.baseUrl}${tenant}/packages/${purl.type}${namespacePath}/${purl.name}/${purl.version}/policy-scans/${policyScan}`;
+        let evalUrl = `${this.baseUrl}packages/${purl.type}${namespacePath}/${purl.name}/${purl.version}/policy-scans/${policyScan}`;
         if (enforcementPoint) {
             evalUrl += `/enforcement-points/${enforcementPoint}`;
         }
@@ -27362,7 +27360,6 @@ class ApiClient {
         });
         console.log('Calling policy evaluator: ', evalUrl);
         console.debug('Calling evaluator with payload: ', payload);
-        // TODO: reduce duplicate code, I'm not sure what the evaluator code looks like, so it's duplicated for now
         try {
             const response = fetch(evalUrl, {
                 method: 'POST',
@@ -27435,9 +27432,6 @@ class PolicyRequestSubject {
         this.digest = digest;
     }
 }
-function hasUnsatisfiedEvaluation(evaluation) {
-    return evaluation.some((element) => element.evaluations.some((e) => e.status === PolicyResultStatus.UNSATISFIED));
-}
 var PolicyResultStatus;
 (function (PolicyResultStatus) {
     PolicyResultStatus["SATISFIED"] = "satisfied";
@@ -27459,44 +27453,22 @@ class PolicySummaryReporter extends BaseReporter {
         reportProblemDetails(result);
     }
     reportSuccess(subject, result, setFailure) {
-        const hasFailures = hasUnsatisfiedEvaluation(result.results);
+        const hasFailures = hasUnsatisfiedEvaluation(result);
         const resultText = hasFailures
             ? statusIcon(PolicyResultStatus.UNSATISFIED) + ' UNSATISFIED'
             : statusIcon(PolicyResultStatus.SATISFIED) + ' SATISFIED';
         header(`Policy Scan Evaluated - ${resultText}`);
         reportSubjectInfo(subject);
         coreExports.summary.addRaw('**Result:** ').addRaw(resultText).addEOL().addEOL();
-        const processedResults = preprocessResults(result.results);
-        const policies = collectPolicyEvaluations(processedResults);
+        const policies = collectPolicyEvaluations(result);
         reportPolicyTable(policies);
-        // reportTable(processedResults)
-        //
         if (hasFailures) {
             if (setFailure) {
                 coreExports.setFailed(`Policy scan ${subject.scanName} evaluated to UNSATISFIED for ${subject.subjectName}`);
             }
             reportFailedPolicyDetails(policies);
-            //
-            //   reportFailures(processedResults)
         }
-        //
-        // reportAllResults(processedResults)
     }
-}
-function preprocessResults(results) {
-    return results.sort((a, b) => {
-        const aUnsatisfied = a.evaluations.some((e) => e.status == PolicyResultStatus.UNSATISFIED);
-        const bUnsatisfied = b.evaluations.some((e) => e.status == PolicyResultStatus.UNSATISFIED);
-        if (aUnsatisfied && !bUnsatisfied) {
-            return -1; // a first
-        }
-        else if (bUnsatisfied && !aUnsatisfied) {
-            return 1; // b first
-        }
-        else {
-            return a.attestation.envelope.payload.predicateType.localeCompare(b.attestation.envelope.payload.predicateType);
-        }
-    });
 }
 function header(heading) {
     const headerImage = 'https://raw.githubusercontent.com/gradle/develocity-provenance-governor-actions/cf78bf3e54d43cf9806a3ee3bbc7e2a4683ff786/src/policy/policy-header.svg';
@@ -27542,8 +27514,8 @@ function reportSubjectInfo(subject) {
     coreExports.summary.addEOL();
 }
 function attestationName(attestation) {
-    if (attestation.storeRequest.uri) {
-        const uri = attestation.storeRequest.uri;
+    if (attestation.attestationDownloadUri) {
+        const uri = attestation.attestationDownloadUri;
         return uri.substring(uri.lastIndexOf('/') + 1);
     }
     else {
@@ -27554,6 +27526,7 @@ function reportPolicyTable(policies) {
     const tableRows = [
         [
             { data: 'Policy', header: true },
+            { data: 'Type', header: true },
             { data: 'Status', header: true },
             { data: 'Attestations Passed / Evaluated', header: true },
             { data: 'Description', header: true },
@@ -27564,7 +27537,10 @@ function reportPolicyTable(policies) {
     policies.forEach((evaluations, index) => {
         tableRows.push([
             {
-                data: `\n\n\`${evaluations.policy.name()}\`\n`
+                data: `\n\n\`${evaluations.policy.name}\`\n`
+            },
+            {
+                data: `\n\n\`${evaluations.policy.type}\`\n`
             },
             { data: statusIcon(evaluations.status) },
             {
@@ -27594,23 +27570,34 @@ function reportFailedPolicyDetails(policies) {
             coreExports.summary
                 .addRaw('## <a name="policy-detail-' + index + '"></a> Policy ')
                 .addRaw('`')
-                .addRaw(policyEval.policy.name())
+                .addRaw(policyEval.policy.name)
                 .addRaw('`')
                 .addEOL()
                 .addEOL();
             coreExports.summary
-                .addRaw('**Description:** ')
-                .addRaw(policyEval.policy.description ?? '')
+                .addRaw('**Type:** ')
+                .addRaw('`')
+                .addRaw(policyEval.policy.type)
+                .addRaw('`')
                 .addEOL()
                 .addEOL();
-            coreExports.summary
-                .addRaw('**Remediation:** ')
-                .addRaw(policyEval.policy.remediation ?? '')
-                .addEOL()
-                .addEOL();
+            if (policyEval.policy.description) {
+                coreExports.summary
+                    .addRaw('**Description:** ')
+                    .addRaw(policyEval.policy.description)
+                    .addEOL()
+                    .addEOL();
+            }
+            if (policyEval.policy.remediation) {
+                coreExports.summary
+                    .addRaw('**Remediation:** ')
+                    .addRaw(policyEval.policy.remediation)
+                    .addEOL()
+                    .addEOL();
+            }
             coreExports.summary.addRaw('**Labels:**').addEOL().addEOL();
             Object.entries(policyEval.policy.labels).forEach(([key, value]) => {
-                coreExports.summary.addRaw(' - `' + key + '` = `' + value + '`').addEOL();
+                coreExports.summary.addRaw('- `' + key + '` = `' + value + '`').addEOL();
             });
             coreExports.summary.addEOL().addEOL();
             const tableRows = [
@@ -27619,49 +27606,37 @@ function reportFailedPolicyDetails(policies) {
                     { data: 'Status', header: true },
                     { data: 'Details', header: true },
                     { data: 'Build Scan', header: true },
-                    { data: 'Envelope', header: true },
                     { data: 'Download Link', header: true }
                 ]
             ];
             policyEval.failures.concat(policyEval.successes).forEach((evaluation) => {
-                const attestation = evaluation.attestation;
-                const { 
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                description: unused, 
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                remediation: unused2, ...otherDetails } = evaluation.evaluation.details;
-                const otherDetailsJson = JSON.stringify(otherDetails, null, 2);
-                if (evaluation.evaluation.status == PolicyResultStatus.UNSATISFIED) {
+                const otherDetailsJson = JSON.stringify(evaluation.details, null, 2);
+                if (evaluation.status == PolicyResultStatus.UNSATISFIED) {
                     coreExports.error('Policy ' +
-                        policyEval.policy.name() +
+                        policyEval.policy.name +
                         ' on attestation ' +
-                        attestationName(attestation) +
+                        attestationName(evaluation) +
                         ' evaluated to UNSATISFIED');
                 }
-                const buildScanUri = attestation.envelope.payload.predicate.buildScanUri;
+                const buildScanUri = evaluation.sourceUri;
                 tableRows.push([
                     {
-                        data: `\n\n\`${attestationName(attestation)}\`\n`
+                        data: `\n\n\`${attestationName(evaluation)}\`\n`
                     },
-                    { data: statusIcon(evaluation.evaluation.status) },
+                    { data: statusIcon(evaluation.status) },
                     {
                         data: otherDetailsJson != '{}'
-                            ? '\n\n```json\n' + otherDetailsJson + '\n```\n'
+                            ? '\n\n<details>\n\n<summary>Details</summary>\n\n```json\n' +
+                                otherDetailsJson +
+                                '\n```\n\n</details>\n'
                             : ''
                     },
                     {
                         data: buildScanUri ? `\n\n[Build Scan](${buildScanUri})\n` : ''
                     },
                     {
-                        data: '\n\n<details>\n\n<summary>Envelope</summary>\n\n' +
-                            '\n\n```json\n' +
-                            JSON.stringify(attestation.envelope, null, 2) +
-                            '\n```\n' +
-                            '\n\n</details>\n'
-                    },
-                    {
-                        data: attestation.storeRequest.uri != null
-                            ? `\n\n[Download Link](${attestation.storeRequest.uri})\n`
+                        data: evaluation.attestationDownloadUri != null
+                            ? `\n\n[Download Link](${evaluation.attestationDownloadUri})\n`
                             : ''
                     }
                 ]);
@@ -27680,8 +27655,8 @@ class PolicyEvaluations {
     constructor(policy, evaluations) {
         this.policy = policy;
         this.evaluations = evaluations;
-        this.failures = evaluations.filter((e) => e.evaluation.status == PolicyResultStatus.UNSATISFIED);
-        this.successes = evaluations.filter((e) => e.evaluation.status == PolicyResultStatus.SATISFIED);
+        this.failures = evaluations.filter((e) => e.status == PolicyResultStatus.UNSATISFIED);
+        this.successes = evaluations.filter((e) => e.status == PolicyResultStatus.SATISFIED);
         if (this.failures.length > 0) {
             this.status = PolicyResultStatus.UNSATISFIED;
         }
@@ -27697,6 +27672,8 @@ class PolicyEvaluations {
 }
 class PolicyData {
     uri;
+    name;
+    type;
     description;
     remediation;
     labels;
@@ -27705,50 +27682,52 @@ class PolicyData {
         this.description = description;
         this.remediation = remediation;
         this.labels = labels;
-    }
-    name() {
-        return this.uri.substring(this.uri.lastIndexOf('/') + 1);
+        const uriParts = uri.split('/');
+        this.type = uriParts[uriParts.length - 2];
+        this.name = uriParts[uriParts.length - 1];
     }
 }
-class AttestationEvaluation {
-    attestation;
-    evaluation;
-    constructor(attestation, evaluation) {
-        this.attestation = attestation;
-        this.evaluation = evaluation;
+class PolicyEvaluationResult {
+    status;
+    attestationDownloadUri;
+    sourceUri;
+    details;
+    constructor(status, attestationUri, sourceUri, details) {
+        this.status = status;
+        this.attestationDownloadUri = attestationUri;
+        this.sourceUri = sourceUri;
+        this.details = details;
     }
 }
 function collectPolicyEvaluations(results) {
     const policyMap = new Map();
-    results.forEach((a) => {
-        a.evaluations.forEach((evaluation) => {
-            const status = evaluation.status.toLowerCase();
-            if (!Object.values(PolicyResultStatus).includes(status)) {
-                coreExports.error('Unknown status in response: ' + evaluation.status);
-                throw Error(`Unknown status in response: ${evaluation.status}`);
+    results.forEach((r) => {
+        const status = r.status.toLowerCase();
+        if (!Object.values(PolicyResultStatus).includes(status)) {
+            coreExports.error('Unknown status in response: ' + r.status);
+            throw Error(`Unknown status in response: ${r.status}`);
+        }
+        r.status = status;
+        const data = new PolicyData(r.policyUri, r.policyDescription, r.policyRemediation, r.labels);
+        const result = new PolicyEvaluationResult(r.status, r.attestationStoreUri, r.sourcedFromUri, r.details);
+        const existing = policyMap.get(data.uri);
+        if (existing) {
+            if (result.status == PolicyResultStatus.UNSATISFIED) {
+                existing.policy.description = result.details.description;
+                existing.policy.remediation = result.details.remediation;
             }
-            evaluation.status = status;
-            const data = new PolicyData(evaluation.policyUri, evaluation.details.description, evaluation.details.remediation, evaluation.labels);
-            const ae = new AttestationEvaluation(a.attestation, evaluation);
-            const existing = policyMap.get(data.uri);
-            if (existing) {
-                if (evaluation.status == PolicyResultStatus.UNSATISFIED) {
-                    existing.policy.description = evaluation.details.description;
-                    existing.policy.remediation = evaluation.details.remediation;
-                }
-                if (evaluation.status == PolicyResultStatus.SATISFIED &&
-                    !existing.policy.description) {
-                    existing.policy.description = evaluation.details.description;
-                }
-                existing.evaluations.push(ae);
+            if (result.status == PolicyResultStatus.SATISFIED &&
+                !existing.policy.description) {
+                existing.policy.description = result.details.description;
             }
-            else {
-                policyMap.set(data.uri, {
-                    policy: data,
-                    evaluations: [ae]
-                });
-            }
-        });
+            existing.evaluations.push(result);
+        }
+        else {
+            policyMap.set(data.uri, {
+                policy: data,
+                evaluations: [result]
+            });
+        }
     });
     const resultsList = [];
     policyMap.forEach((value) => {
@@ -27768,6 +27747,9 @@ function collectPolicyEvaluations(results) {
         }
     });
     return resultsList;
+}
+function hasUnsatisfiedEvaluation(evaluation) {
+    return evaluation.some((element) => element.status === PolicyResultStatus.UNSATISFIED);
 }
 function statusIcon(status) {
     switch (status) {
@@ -29303,7 +29285,6 @@ async function run() {
         });
         const policyScanName = coreExports.getInput('policy-scan', { required: true });
         const enforcementPointName = getOptionalInput('enforcement-point');
-        const tenant = coreExports.getInput('tenant', { required: true });
         const pkgType = coreExports.getInput('subject-type', { required: true });
         const pkgNamespace = getOptionalInput('subject-namespace');
         const pkgName = coreExports.getInput('subject-name', { required: true });
@@ -29321,7 +29302,7 @@ async function run() {
         coreExports.info(`Policy Evaluation URL: ${policyEvaluatorUrl} - for policy: ${policyScanName}`);
         coreExports.endGroup();
         const client = createClient(policyEvaluatorUrl, credentials);
-        const result = await client.evaluatePolicy(tenant, policyScanName, enforcementPointName, subjectPurl, subjectDigest, repositoryUrl);
+        const result = await client.evaluatePolicy(policyScanName, enforcementPointName, subjectPurl, subjectDigest, repositoryUrl);
         // create summary
         const reporter = createPolicyReporter();
         const subject = new PolicyRequestSubject(policyScanName, enforcementPointName, subjectPurl.toString(), { sha256: subjectDigest });

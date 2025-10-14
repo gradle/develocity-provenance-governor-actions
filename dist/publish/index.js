@@ -27287,7 +27287,6 @@ class ApiClient {
     /**
      * Publishes an attestation for the given subject.
      *
-     * @param tenant Name of the tenant
      * @param pkgType Type of subject as defined by PURL spec (oci, maven, npm, etc.)
      * @param pkgNamespace Package namespace as defined by PURL spec (e.g. a Maven groupId)
      * @param pkgName Package name as defined by PURL spec (e.g. a Maven artifactId)
@@ -27298,10 +27297,10 @@ class ApiClient {
      * @param buildScanQueries The build scan queries to create attestations from.
      * @returns Promise that resolves when the attestation is published
      */
-    async publishAttestation(tenant, pkgType, pkgNamespace, pkgName, pkgVersion, digest, repositoryUrl, buildScanIds, buildScanQueries) {
+    async publishAttestation(pkgType, pkgNamespace, pkgName, pkgVersion, digest, repositoryUrl, buildScanIds, buildScanQueries) {
         const publisherUrl = pkgNamespace
-            ? `${this.baseUrl}${tenant}/packages/${pkgType}/${pkgNamespace}/${pkgName}/${pkgVersion}/attestations`
-            : `${this.baseUrl}${tenant}/packages/${pkgType}/${pkgName}/${pkgVersion}/attestations`;
+            ? `${this.baseUrl}packages/${pkgType}/${pkgNamespace}/${pkgName}/${pkgVersion}/attestations`
+            : `${this.baseUrl}packages/${pkgType}/${pkgName}/${pkgVersion}/attestations`;
         const payload = JSON.stringify({
             repositoryUrl: repositoryUrl,
             sha256: digest,
@@ -27343,16 +27342,15 @@ class ApiClient {
     /**
      * Evaluates the policy for the given subject.
      *
-     * @param tenant Name of the tenant
      * @param policyScan Name of the policy scan to evaluate
      * @param enforcementPoint Name of the enforcement point to evaluate against - optional
      * @param purl The pURL of the subject
      * @param digest The digest of the image, usually containing the digest type prefix (e.g. sha256:<digest-string-here>)
      * @param repositoryUrl The repository the subject artifact was published to.
      */
-    evaluatePolicy(tenant, policyScan, enforcementPoint, purl, digest, repositoryUrl) {
+    evaluatePolicy(policyScan, enforcementPoint, purl, digest, repositoryUrl) {
         const namespacePath = purl.namespace ? `/${purl.namespace}` : '';
-        let evalUrl = `${this.baseUrl}${tenant}/packages/${purl.type}${namespacePath}/${purl.name}/${purl.version}/policy-scans/${policyScan}`;
+        let evalUrl = `${this.baseUrl}packages/${purl.type}${namespacePath}/${purl.name}/${purl.version}/policy-scans/${policyScan}`;
         if (enforcementPoint) {
             evalUrl += `/enforcement-points/${enforcementPoint}`;
         }
@@ -27362,7 +27360,6 @@ class ApiClient {
         });
         console.log('Calling policy evaluator: ', evalUrl);
         console.debug('Calling evaluator with payload: ', payload);
-        // TODO: reduce duplicate code, I'm not sure what the evaluator code looks like, so it's duplicated for now
         try {
             const response = fetch(evalUrl, {
                 method: 'POST',
@@ -29113,7 +29110,6 @@ function getOptionalInput(name) {
 
 async function run() {
     try {
-        const tenant = coreExports.getInput('tenant', { required: true });
         const pkgType = coreExports.getInput('subject-type', { required: true });
         const pkgNamespace = getOptionalInput('subject-namespace');
         const pkgName = coreExports.getInput('subject-name', { required: true });
@@ -29144,11 +29140,11 @@ async function run() {
         // helpful logging
         coreExports.startGroup(`Publishing attestation for subject: ${subjectPurl} - ${subjectDigest}`);
         coreExports.info(`Subject Repository URL: ${repositoryUrl}`);
-        coreExports.info(`Publisher URL: ${attestationPublisherUrl} - in tenant: ${tenant}`);
+        coreExports.info(`Publisher URL: ${attestationPublisherUrl}`);
         coreExports.endGroup();
         // publish the attestations
         const publisherClient = createClient(attestationPublisherUrl, credentials);
-        const result = await publisherClient.publishAttestation(tenant, pkgType, pkgNamespace, pkgName, pkgVersion, subjectDigest, repositoryUrl, buildScanIds ?? [], buildScanQueries ?? []);
+        const result = await publisherClient.publishAttestation(pkgType, pkgNamespace, pkgName, pkgVersion, subjectDigest, repositoryUrl, buildScanIds ?? [], buildScanQueries ?? []);
         // create summary
         const reporter = createPublisherReporter();
         const subject = new PublishRequestSubject(subjectPurl.toString(), {
