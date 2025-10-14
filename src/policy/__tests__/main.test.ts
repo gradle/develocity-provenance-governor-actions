@@ -68,7 +68,6 @@ describe('main.ts', () => {
       .mockReturnValueOnce('https://policy.example.com/') // policy-evaluator-url
       .mockReturnValueOnce('security-scan') // policy-scan
       .mockReturnValueOnce('test-enforcement-point') // enforcement-point
-      .mockReturnValueOnce('tenant11') // tenant
       .mockReturnValueOnce('oci') // subject-type
       .mockReturnValueOnce('') // subject-namespace
       .mockReturnValueOnce('java-payment-calculator') // subject-name
@@ -97,7 +96,6 @@ describe('main.ts', () => {
     expect(createPolicyReporter).toHaveBeenCalledTimes(1)
     expect(client.evaluatePolicy).toHaveBeenNthCalledWith(
       1,
-      'tenant11',
       'security-scan',
       'test-enforcement-point',
       expect.objectContaining({
@@ -151,7 +149,6 @@ describe('main.ts', () => {
       .mockReturnValueOnce('https://policy.example.com/') // policy-evaluator-url
       .mockReturnValueOnce('security-scan') // policy-scan
       .mockReturnValueOnce('test-enforcement-point') // enforcement-point
-      .mockReturnValueOnce('tenant22') // tenant
       .mockReturnValueOnce('oci') // subject-type
       .mockReturnValueOnce('') // subject-namespace
       .mockReturnValueOnce('java-payment-calculator') // subject-name
@@ -180,7 +177,6 @@ describe('main.ts', () => {
     expect(createPolicyReporter).toHaveBeenCalledTimes(1)
     expect(client.evaluatePolicy).toHaveBeenNthCalledWith(
       1,
-      'tenant22',
       'security-scan',
       'test-enforcement-point',
       expect.objectContaining({
@@ -234,7 +230,6 @@ describe('main.ts', () => {
       .mockReturnValueOnce('https://policy.example.com/') // policy-evaluator-url
       .mockReturnValueOnce('security-scan') // policy-scan
       .mockReturnValueOnce('test-enforcement-point') // enforcement-point
-      .mockReturnValueOnce('tenant33') // tenant
       .mockReturnValueOnce('oci') // subject-type
       .mockReturnValueOnce('') // subject-namespace
       .mockReturnValueOnce('java-payment-calculator') // subject-name
@@ -260,7 +255,6 @@ describe('main.ts', () => {
     expect(createPolicyReporter).toHaveBeenCalledTimes(1)
     expect(client.evaluatePolicy).toHaveBeenNthCalledWith(
       1,
-      'tenant33',
       'security-scan',
       'test-enforcement-point',
       expect.objectContaining({
@@ -314,7 +308,6 @@ describe('main.ts', () => {
       .mockReturnValueOnce('https://policy.example.com/') // policy-evaluator-url
       .mockReturnValueOnce('security-scan') // policy-scan
       .mockReturnValueOnce('test-enforcement-point') // enforcement-point
-      .mockReturnValueOnce('tenant44') // tenant
       .mockReturnValueOnce('maven') // subject-type
       .mockReturnValueOnce('com.example') // subject-namespace
       .mockReturnValueOnce('my-library') // subject-name
@@ -341,7 +334,6 @@ describe('main.ts', () => {
     expect(createPolicyReporter).toHaveBeenCalledTimes(1)
     expect(client.evaluatePolicy).toHaveBeenNthCalledWith(
       1,
-      'tenant44',
       'security-scan',
       'test-enforcement-point',
       expect.objectContaining({
@@ -392,7 +384,6 @@ describe('main.ts', () => {
       .mockReturnValueOnce('https://policy.example.com/') // policy-evaluator-url
       .mockReturnValueOnce('compliance-scan') // policy-scan
       .mockReturnValueOnce('test-enforcement-point') // enforcement-point
-      .mockReturnValueOnce('tenant55') // tenant
       .mockReturnValueOnce('npm') // subject-type
       .mockReturnValueOnce('@company') // subject-namespace
       .mockReturnValueOnce('my-package') // subject-name
@@ -419,7 +410,6 @@ describe('main.ts', () => {
     expect(createPolicyReporter).toHaveBeenCalledTimes(1)
     expect(client.evaluatePolicy).toHaveBeenNthCalledWith(
       1,
-      'tenant55',
       'compliance-scan',
       'test-enforcement-point',
       expect.objectContaining({
@@ -471,7 +461,6 @@ describe('main.ts', () => {
       .mockReturnValueOnce('https://policy.example.com/') // policy-evaluator-url
       .mockReturnValueOnce('security-scan') // policy-scan
       .mockReturnValueOnce('') // enforcement-point (empty string)
-      .mockReturnValueOnce('tenant66') // tenant
       .mockReturnValueOnce('oci') // subject-type
       .mockReturnValueOnce('') // subject-namespace
       .mockReturnValueOnce('java-payment-calculator') // subject-name
@@ -500,7 +489,6 @@ describe('main.ts', () => {
     expect(createPolicyReporter).toHaveBeenCalledTimes(1)
     expect(client.evaluatePolicy).toHaveBeenNthCalledWith(
       1,
-      'tenant66',
       'security-scan',
       null, // null enforcement point (empty string converted to null)
       expect.objectContaining({

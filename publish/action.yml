@@ -7,10 +7,6 @@ inputs:
   attestation-publisher-url:
     description: 'The URL of the Develocity Provenance Governor instance'
     required: true
-  tenant:
-    description:
-      'The tenant ID configured in the Develocity Provenance Governor instance'
-    required: true
   build-scan-ids:
     description:
       'The Develocity Build Scan IDs relevant to the published package. Provided

@@ -1,145 +1,45 @@
-{
-  "request": {
-    "uri": "http://localhost:8080/local-tenant/test-eval/policy-scans/test",
-    "tenant": {
-      "name": "default",
-      "develocityInstances": ["sdlc-demo"],
-      "artifactoryInstances": ["develocity-tia"]
+[
+  {
+    "labels": {
+      "category": "verification",
+      "severity": "medium"
     },
-    "pkg": {
-      "type": "oci",
-      "name": "java-payment-calculator",
-      "version": "1.0.0-SNAPSHOT-16152750186-3"
-    },
-    "criteria": {
-      "sha256": "c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b",
-      "repositoryUrl": "develocitytia.jfrog.io/docker-trial"
-    },
-    "policyScanName": "test"
+    "policyUri": "https://policies.example.com/Jvm/jvm-verification",
+    "policyDescription": "",
+    "status": "unsatisfied",
+    "attestationStoreInstance": "af:https://develocitytia.jfrog.io/artifactory/",
+    "attestationStoreUri": "https://develocitytia.jfrog.io/artifactory/docker-trial/.evidence/c35e1a4fecb35e4f7a829b2ae3d4bea93ad66247a062dda4b3301df79d73f5f8/3f6cabfb527d740e79e0f49e2f4e564279d8c74a0bfc4481fc3a44e6b085fe91/gradle-java-toolchain-1759959918012-eda0f750.jsonnull",
+    "sourcedFromUri": "http://localhost:24300/s/wyqqaj64qu73k",
+    "details": {}
   },
-  "results": [
-    {
-      "attestation": {
-        "envelope": {
-          "payload": {
-            "_type": "https://in-toto.io/Statement/v1",
-            "predicateType": "https://gradle.com/attestations/repository/v1",
-            "subject": [
-              {
-                "name": "pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3",
-                "digest": {
-                  "sha256": "c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b"
-                }
-              }
-            ],
-            "predicate": {
-              "buildScanUri": "https://develocity.grdev.net/s/u4cqaqnytbwga",
-              "uri": "https://repo.maven.apache.org/maven2/"
-            }
-          }
-        },
-        "storeType": "artifactory",
-        "storeUri": "https://develocitytia.jfrog.io/attestation/",
-        "storeRequest": {
-          "uri": "https://develocitytia.jfrog.io/artifactory/docker-trial/.evidence/ed0870faabc4387c5fee46e3b26ab0262610764cc6a708d37dc84a54e90652f6/a30f98e704871a244ac3f28c2ada5c120afe756e981438f221e21fff3042a11b/gradle-attestations-resolved-dependencies-1755182830781-304dd5f5.json"
-        },
-        "storeResponse": {}
-      },
-      "evaluations": [
-        {
-          "policyUri": "https://policies.example.com/repo-source-check",
-          "status": "not-applicable",
-          "details": {},
-          "labels": {
-            "category": "security",
-            "severity": "high"
-          }
-        },
-        {
-          "policyUri": "https://policies.example.com/build-scan-verification",
-          "status": "satisfied",
-          "details": {
-            "description": "Build scan verification",
-            "remediation": "Ensure a build scan is published for the build"
-          },
-          "labels": {
-            "category": "verification",
-            "severity": "medium"
-          }
-        },
-        {
-          "policyUri": "https://policies.example.com/jvm-verification",
-          "status": "not-applicable",
-          "details": {},
-          "labels": {
-            "category": "verification",
-            "severity": "medium"
-          }
-        }
-      ]
+  {
+    "labels": {
+      "category": "security",
+      "severity": "high"
     },
-    {
-      "attestation": {
-        "envelope": {
-          "payload": {
-            "_type": "https://in-toto.io/Statement/v1",
-            "predicateType": "https://gradle.com/attestations/jvm/v1",
-            "subject": [
-              {
-                "name": "pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3",
-                "digest": {
-                  "sha256": "c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b"
-                }
-              }
-            ],
-            "predicate": {
-              "buildScanUri": "https://develocity.grdev.net/s/u4cqaq2ytbwga",
-              "uri": "https://repo.maven.apache.org/maven2/"
-            }
-          }
-        },
-        "storeType": "artifactory",
-        "storeUri": "https://develocitytia.jfrog.io/attestation/",
-        "storeRequest": {
-          "uri": "https://develocitytia.jfrog.io/artifactory/docker-trial/.evidence/ed0870faabc4387c5fee46e3b26ab0262610764cc6a708d37dc84a54e90652f6/a30f98e704871a244ac3f28c2ada5c120afe756e981438f221e21fff3042a11b/gradle-attestations-resolved-dependencies-1432382830781-312dd5f5.json"
-        },
-        "storeResponse": {}
-      },
-      "evaluations": [
-        {
-          "policyUri": "https://policies.example.com/repo-source-check",
-          "status": "UNSATISFIED",
-          "details": {
-            "description": "Repository source verification",
-            "remediation": "Ensure the repository is from a trusted source"
-          },
-          "labels": {
-            "category": "security",
-            "severity": "high"
-          }
-        },
-        {
-          "policyUri": "https://policies.example.com/build-scan-verification",
-          "status": "satisfied",
-          "details": {
-            "description": "Build scan verification",
-            "remediation": "Ensure a build scan is published for the build"
-          },
-          "labels": {
-            "category": "verification",
-            "severity": "medium"
-          }
-        },
-        {
-          "policyUri": "https://policies.example.com/jvm-verification",
-          "status": "unsatisfied",
-          "details": {},
-          "labels": {
-            "category": "verification",
-            "severity": "medium"
-          }
-        }
-      ]
+    "policyUri": "https://policies.example.com/Repository/repo-source-check",
+    "policyDescription": "Repository source verification",
+    "policyRemediation": "Ensure the repository is from a trusted source",
+    "status": "UNSATISFIED",
+    "attestationStoreInstance": "af:https://develocitytia.jfrog.io/artifactory/",
+    "attestationStoreUri": "https://develocitytia.jfrog.io/artifactory/docker-trial/.evidence/c35e1a4fecb35e4f7a829b2ae3d4bea93ad66247a062dda4b3301df79d73f5f8/3f6cabfb527d740e79e0f49e2f4e564279d8c74a0bfc4481fc3a44e6b085fe91/gradle-java-toolchain-1759959918012-eda0f750.jsonnull",
+    "sourcedFromUri": "http://localhost:24300/s/wyqqaj64qu73k",
+    "details": {
+      "test": "detail"
     }
-  ]
-}
+  },
+  {
+    "labels": {
+      "category": "verification",
+      "severity": "medium"
+    },
+    "policyUri": "https://policies.example.com/BuildScan/build-scan-verification",
+    "policyDescription": "Build scan verification",
+    "policyRemediation": "Ensure a build scan is published for the build",
+    "status": "satisfied",
+    "attestationStoreInstance": "af:https://develocitytia.jfrog.io/artifactory/",
+    "attestationStoreUri": "https://develocitytia.jfrog.io/artifactory/docker-trial/.evidence/c35e1a4fecb35e4f7a829b2ae3d4bea93ad66247a062dda4b3301df79d73f5f8/3f6cabfb527d740e79e0f49e2f4e564279d8c74a0bfc4481fc3a44e6b085fe91/gradle-java-toolchain-1759959918012-eda0f750.jsonnull",
+    "sourcedFromUri": "http://localhost:24300/s/wyqqaj64qu73k",
+    "details": {}
+  }
+]

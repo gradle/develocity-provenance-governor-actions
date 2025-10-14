@@ -22,16 +22,7 @@
 ```json
 {
   "request": {
-    "uri": "http://localhost:8080/local-tenant/test-eval/policy-scans/test",
-    "tenant": {
-      "name": "default",
-      "develocityInstances": [
-        "sdlc-demo"
-      ],
-      "artifactoryInstances": [
-        "develocity-tia"
-      ]
-    },
+    "uri": "http://localhost:8080/test-eval/policy-scans/test",
     "pkg": {
       "type": "oci",
       "name": "java-payment-calculator",

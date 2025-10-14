@@ -13,82 +13,60 @@
 
 **Result:** ❌ UNSATISFIED
 
-<table><tr><th>Policy</th><th>Status</th><th>Attestations Passed / Evaluated</th><th>Description</th><th>Remediation</th><th>Failure Details</th></tr><tr><td>
+<table><tr><th>Policy</th><th>Type</th><th>Status</th><th>Attestations Passed / Evaluated</th><th>Description</th><th>Remediation</th><th>Failure Details</th></tr><tr><td>
 
 `jvm-verification`
+</td><td>
+
+`Jvm`
 </td><td>❌</td><td>0 / 1</td><td><td><td>
 
 [Link](#user-content-policy-detail-0)
 </td></tr><tr><td>
 
 `repo-source-check`
+</td><td>
+
+`Repository`
 </td><td>❌</td><td>0 / 1</td><td>Repository source verification</td><td>Ensure the repository is from a trusted source</td><td>
 
 [Link](#user-content-policy-detail-1)
 </td></tr><tr><td>
 
 `build-scan-verification`
-</td><td>✅</td><td>2 / 2</td><td>Build scan verification</td><td><td></tr></table>
+</td><td>
+
+`BuildScan`
+</td><td>✅</td><td>1 / 1</td><td>Build scan verification</td><td><td></tr></table>
 
 
 # Failed Policies
 
 ## <a name="policy-detail-0"></a> Policy `jvm-verification`
 
-**Description:** 
-
-**Remediation:** 
+**Type:** `Jvm`
 
 **Labels:**
 
- - `category` = `verification`
- - `severity` = `medium`
+- `category` = `verification`
+- `severity` = `medium`
 
 
-<table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th><th>Envelope</th><th>Download Link</th></tr><tr><td>
+<table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th><th>Download Link</th></tr><tr><td>
 
-`gradle-attestations-resolved-dependencies-1432382830781-312dd5f5.json`
+`gradle-java-toolchain-1759959918012-eda0f750.jsonnull`
 </td><td>❌</td><td><td>
 
-[Build Scan](https://develocity.grdev.net/s/u4cqaq2ytbwga)
+[Build Scan](http://localhost:24300/s/wyqqaj64qu73k)
 </td><td>
 
-<details>
-
-<summary>Envelope</summary>
-
-
-
-```json
-{
-  "payload": {
-    "_type": "https://in-toto.io/Statement/v1",
-    "predicateType": "https://gradle.com/attestations/jvm/v1",
-    "subject": [
-      {
-        "name": "pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3",
-        "digest": {
-          "sha256": "c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b"
-        }
-      }
-    ],
-    "predicate": {
-      "buildScanUri": "https://develocity.grdev.net/s/u4cqaq2ytbwga",
-      "uri": "https://repo.maven.apache.org/maven2/"
-    }
-  }
-}
-```
-
-
-</details>
-</td><td>
-
-[Download Link](https://develocitytia.jfrog.io/artifactory/docker-trial/.evidence/ed0870faabc4387c5fee46e3b26ab0262610764cc6a708d37dc84a54e90652f6/a30f98e704871a244ac3f28c2ada5c120afe756e981438f221e21fff3042a11b/gradle-attestations-resolved-dependencies-1432382830781-312dd5f5.json)
+[Download Link](https://develocitytia.jfrog.io/artifactory/docker-trial/.evidence/c35e1a4fecb35e4f7a829b2ae3d4bea93ad66247a062dda4b3301df79d73f5f8/3f6cabfb527d740e79e0f49e2f4e564279d8c74a0bfc4481fc3a44e6b085fe91/gradle-java-toolchain-1759959918012-eda0f750.jsonnull)
 </td></tr></table>
 
 
 ## <a name="policy-detail-1"></a> Policy `repo-source-check`
+
+**Type:** `Repository`
 
 **Description:** Repository source verification
 
@@ -96,50 +74,32 @@
 
 **Labels:**
 
- - `category` = `security`
- - `severity` = `high`
+- `category` = `security`
+- `severity` = `high`
 
 
-<table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th><th>Envelope</th><th>Download Link</th></tr><tr><td>
+<table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th><th>Download Link</th></tr><tr><td>
 
-`gradle-attestations-resolved-dependencies-1432382830781-312dd5f5.json`
-</td><td>❌</td><td><td>
-
-[Build Scan](https://develocity.grdev.net/s/u4cqaq2ytbwga)
-</td><td>
+`gradle-java-toolchain-1759959918012-eda0f750.jsonnull`
+</td><td>❌</td><td>
 
 <details>
 
-<summary>Envelope</summary>
-
-
+<summary>Details</summary>
 
 ```json
 {
-  "payload": {
-    "_type": "https://in-toto.io/Statement/v1",
-    "predicateType": "https://gradle.com/attestations/jvm/v1",
-    "subject": [
-      {
-        "name": "pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3",
-        "digest": {
-          "sha256": "c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b"
-        }
-      }
-    ],
-    "predicate": {
-      "buildScanUri": "https://develocity.grdev.net/s/u4cqaq2ytbwga",
-      "uri": "https://repo.maven.apache.org/maven2/"
-    }
-  }
+  "test": "detail"
 }
 ```
-
 
 </details>
 </td><td>
 
-[Download Link](https://develocitytia.jfrog.io/artifactory/docker-trial/.evidence/ed0870faabc4387c5fee46e3b26ab0262610764cc6a708d37dc84a54e90652f6/a30f98e704871a244ac3f28c2ada5c120afe756e981438f221e21fff3042a11b/gradle-attestations-resolved-dependencies-1432382830781-312dd5f5.json)
+[Build Scan](http://localhost:24300/s/wyqqaj64qu73k)
+</td><td>
+
+[Download Link](https://develocitytia.jfrog.io/artifactory/docker-trial/.evidence/c35e1a4fecb35e4f7a829b2ae3d4bea93ad66247a062dda4b3301df79d73f5f8/3f6cabfb527d740e79e0f49e2f4e564279d8c74a0bfc4481fc3a44e6b085fe91/gradle-java-toolchain-1759959918012-eda0f750.jsonnull)
 </td></tr></table>
 
 

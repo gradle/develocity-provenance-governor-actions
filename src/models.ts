@@ -6,13 +6,6 @@ export interface BaseErrorResponse<Request> {
   request?: Request
 }
 
-export interface Tenant {
-  name: string
-  description: string
-  develocityInstances: string[]
-  artifactoryInstances: string[]
-}
-
 export interface Package {
   type: string
   name: string
@@ -27,7 +20,6 @@ export interface BaseCriteria {
 
 export interface BaseRequest<Criteria extends BaseCriteria> {
   uri: string
-  tenant: Tenant
   pkg: Package
   criteria: Criteria
 }

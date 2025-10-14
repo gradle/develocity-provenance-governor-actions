@@ -1,10 +1,5 @@
 import * as core from '@actions/core'
-import {
-  BaseCriteria,
-  BaseErrorResponse,
-  BaseRequest,
-  BaseSuccessResponse
-} from './models.js'
+import { BaseErrorResponse } from './models.js'
 
 export interface Reporter<Subject, Success, Error> {
   report(
@@ -21,7 +16,7 @@ export interface Reporter<Subject, Success, Error> {
 
 export abstract class BaseReporter<
   Subject,
-  Success extends BaseSuccessResponse<BaseRequest<BaseCriteria>>,
+  Success,
   Error extends BaseErrorResponse<unknown>
 > implements Reporter<Subject, Success, Error>
 {
