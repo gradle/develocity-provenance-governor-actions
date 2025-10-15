@@ -27321,15 +27321,22 @@ class ApiClient {
             body: payload
         }))
             .then(async (response) => {
-            const data = await response.json();
+            if (!response.ok) {
+                console.error('Attestation publication request failed with status: ', response.status, response.statusText);
+            }
+            const text = await response.text();
+            if (!response.ok) {
+                console.info('Response text: ', text);
+            }
             if (coreExports.isDebug()) {
                 coreExports.debug('Received attestation publisher response: ' +
                     response.status +
                     ' ' +
                     response.statusText +
                     ' : ' +
-                    JSON.stringify(data, null, 2));
+                    text);
             }
+            const data = JSON.parse(text);
             return new PublisherResult(response.status, response.ok, data);
         })
             .catch((error) => {
@@ -27370,15 +27377,22 @@ class ApiClient {
             body: payload
         }))
             .then(async (response) => {
-            const data = await response.json();
+            if (!response.ok) {
+                console.error('Policy evaluation request failed with status: ', response.status, response.statusText);
+            }
+            const text = await response.text();
+            if (!response.ok) {
+                console.info('Response text: ', text);
+            }
             if (coreExports.isDebug()) {
                 coreExports.debug('Received policy evaluation response: ' +
                     response.status +
                     ' ' +
                     response.statusText +
                     ' : ' +
-                    JSON.stringify(data, null, 2));
+                    text);
             }
+            const data = JSON.parse(text);
             return new PolicyResult(response.status, response.ok, data);
         })
             .catch((error) => {
