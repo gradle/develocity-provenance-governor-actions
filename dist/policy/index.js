@@ -27726,14 +27726,6 @@ function collectPolicyEvaluations(results) {
         const result = new PolicyEvaluationResult(r.status, r.attestationStoreUri, r.sourcedFromUri, r.details);
         const existing = policyMap.get(data.uri);
         if (existing) {
-            if (result.status == PolicyResultStatus.UNSATISFIED) {
-                existing.policy.description = result.details.description;
-                existing.policy.remediation = result.details.remediation;
-            }
-            if (result.status == PolicyResultStatus.SATISFIED &&
-                !existing.policy.description) {
-                existing.policy.description = result.details.description;
-            }
             existing.evaluations.push(result);
         }
         else {
