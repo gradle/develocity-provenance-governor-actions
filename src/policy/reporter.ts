@@ -374,14 +374,14 @@ function collectPolicyEvaluations(
       r.policyUri,
       r.policyDescription,
       r.policyRemediation,
-      r.labels
+      r.labels ?? {}
     )
 
     const result = new PolicyEvaluationResult(
       r.status,
       r.attestationStoreUri,
       r.sourcedFromUri,
-      r.details
+      r.details ?? {}
     )
 
     const existing = policyMap.get(data.uri)

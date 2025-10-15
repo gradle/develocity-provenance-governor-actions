@@ -38,7 +38,7 @@ export enum PolicyResultStatus {
 
 export interface PolicyEvaluation {
   status: PolicyResultStatus
-  labels: Record<string, string>
+  labels?: Record<string, string>
   policyUri: string
   policyDescription?: string
   policyRemediation?: string
@@ -46,5 +46,5 @@ export interface PolicyEvaluation {
   attestationStoreInstance: string
   attestationStoreUri: string
   sourcedFromUri?: string
-  details: Record<string, string>
+  details?: Record<string, string>
 }
