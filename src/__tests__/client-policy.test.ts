@@ -13,7 +13,7 @@ describe('client.js - policy evaluation', () => {
       Promise.resolve({
         ok: true,
         status: 200,
-        json: () => Promise.resolve(jsonResponse)
+        text: () => Promise.resolve(JSON.stringify(jsonResponse))
       } as Response)
     )
 
@@ -59,7 +59,7 @@ describe('client.js - policy evaluation', () => {
       Promise.resolve({
         ok: true,
         status: 200,
-        json: () => Promise.resolve(jsonResponse)
+        text: () => Promise.resolve(JSON.stringify(jsonResponse))
       } as Response)
     )
 
@@ -105,7 +105,7 @@ describe('client.js - policy evaluation', () => {
       Promise.resolve({
         ok: true,
         status: 200,
-        json: () => Promise.resolve(jsonResponse)
+        text: () => Promise.resolve(JSON.stringify(jsonResponse))
       } as Response)
     )
 
@@ -151,7 +151,7 @@ describe('client.js - policy evaluation', () => {
       Promise.resolve({
         ok: true,
         status: 200,
-        json: () => Promise.resolve(jsonResponse)
+        text: () => Promise.resolve(JSON.stringify(jsonResponse))
       } as Response)
     )
 

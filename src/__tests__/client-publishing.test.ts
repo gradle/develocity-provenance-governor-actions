@@ -17,7 +17,7 @@ describe('client.js - publishing', () => {
       Promise.resolve({
         ok: true,
         status: 200,
-        json: () => Promise.resolve(jsonResponse)
+        text: () => Promise.resolve(JSON.stringify(jsonResponse))
       } as Response)
     )
 
@@ -74,7 +74,7 @@ describe('client.js - publishing', () => {
       Promise.resolve({
         ok: true,
         status: 200,
-        json: () => Promise.resolve(jsonResponse)
+        text: () => Promise.resolve(JSON.stringify(jsonResponse))
       } as Response)
     )
 
@@ -131,7 +131,7 @@ describe('client.js - publishing', () => {
       Promise.resolve({
         ok: true,
         status: 200,
-        json: () => Promise.resolve(jsonResponse)
+        text: () => Promise.resolve(JSON.stringify(jsonResponse))
       } as Response)
     )
 

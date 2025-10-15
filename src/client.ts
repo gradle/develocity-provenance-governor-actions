@@ -145,7 +145,18 @@ class ApiClient implements Client {
         })
       )
       .then(async (response) => {
-        const data = await response.json()
+        if (!response.ok) {
+          console.error(
+            'Attestation publication request failed with status: ',
+            response.status,
+            response.statusText
+          )
+        }
+        const text = await response.text()
+
+        if (!response.ok) {
+          console.info('Response text: ', text)
+        }
 
         if (core.isDebug()) {
           core.debug(
@@ -154,9 +165,11 @@ class ApiClient implements Client {
               ' ' +
               response.statusText +
               ' : ' +
-              JSON.stringify(data, null, 2)
+              text
           )
         }
+
+        const data = JSON.parse(text)
 
         return new PublisherResult(
           response.status,
@@ -218,7 +231,18 @@ class ApiClient implements Client {
         })
       )
       .then(async (response) => {
-        const data = await response.json()
+        if (!response.ok) {
+          console.error(
+            'Policy evaluation request failed with status: ',
+            response.status,
+            response.statusText
+          )
+        }
+        const text = await response.text()
+
+        if (!response.ok) {
+          console.info('Response text: ', text)
+        }
 
         if (core.isDebug()) {
           core.debug(
@@ -227,9 +251,11 @@ class ApiClient implements Client {
               ' ' +
               response.statusText +
               ' : ' +
-              JSON.stringify(data, null, 2)
+              text
           )
         }
+
+        const data = JSON.parse(text)
 
         return new PolicyResult(
           response.status,
