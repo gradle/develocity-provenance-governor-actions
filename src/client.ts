@@ -133,17 +133,18 @@ class ApiClient implements Client {
     console.log('Calling publisher: ', publisherUrl)
     console.debug('Calling publisher with payload: ', payload)
 
-    try {
-      const response = fetch(publisherUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: this.authHeaderValue()
-        },
-        body: payload
-      })
-
-      return response.then(async (response) => {
+    return Promise.resolve()
+      .then(() =>
+        fetch(publisherUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: this.authHeaderValue()
+          },
+          body: payload
+        })
+      )
+      .then(async (response) => {
         const data = await response.json()
 
         if (core.isDebug()) {
@@ -163,14 +164,15 @@ class ApiClient implements Client {
           data as PublishSuccessResponse | PublishErrorResponse
         )
       })
-    } catch (error) {
-      return Promise.resolve(
-        new PublisherResult(0, false, {
-          detail:
-            error instanceof Error ? error.message : 'Unknown error occurred'
-        })
-      )
-    }
+      .catch((error) => {
+        console.error('Error response from attestation publication: ', error)
+        return Promise.resolve(
+          new PublisherResult(0, false, {
+            detail:
+              error instanceof Error ? error.message : 'Unknown error occurred'
+          })
+        )
+      })
   }
 
   /**
@@ -204,17 +206,18 @@ class ApiClient implements Client {
     console.log('Calling policy evaluator: ', evalUrl)
     console.debug('Calling evaluator with payload: ', payload)
 
-    try {
-      const response = fetch(evalUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: this.authHeaderValue()
-        },
-        body: payload
-      })
-
-      return response.then(async (response) => {
+    return Promise.resolve()
+      .then(() =>
+        fetch(evalUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: this.authHeaderValue()
+          },
+          body: payload
+        })
+      )
+      .then(async (response) => {
         const data = await response.json()
 
         if (core.isDebug()) {
@@ -233,15 +236,16 @@ class ApiClient implements Client {
           response.ok,
           data as PolicySuccessResponse | PolicyErrorResponse
         )
+      })
+      .catch((error) => {
+        console.error('Error response from policy evaluation: ', error)
+        return Promise.resolve(
+          new PolicyResult(0, false, {
+            detail:
+              error instanceof Error ? error.message : 'Unknown error occurred'
+          })
+        )
       }) as Promise<PolicyResult>
-    } catch (error) {
-      return Promise.resolve(
-        new PolicyResult(0, false, {
-          detail:
-            error instanceof Error ? error.message : 'Unknown error occurred'
-        })
-      )
-    }
   }
 
   authHeaderValue(): string {
