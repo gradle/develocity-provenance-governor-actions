@@ -215,13 +215,15 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
           .addEOL()
       }
 
-      core.summary.addRaw('**Labels:**').addEOL().addEOL()
+      if (Object.keys(policyEval.policy.labels).length > 0) {
+        core.summary.addRaw('**Labels:**').addEOL().addEOL()
 
-      Object.entries(policyEval.policy.labels).forEach(([key, value]) => {
-        core.summary.addRaw('- `' + key + '` = `' + value + '`').addEOL()
-      })
+        Object.entries(policyEval.policy.labels).forEach(([key, value]) => {
+          core.summary.addRaw('- `' + key + '` = `' + value + '`').addEOL()
+        })
 
-      core.summary.addEOL().addEOL()
+        core.summary.addEOL().addEOL()
+      }
 
       const tableRows: SummaryTableRow[] = [
         [

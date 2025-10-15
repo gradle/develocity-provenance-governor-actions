@@ -72,29 +72,10 @@
 
 **Remediation:** Ensure the repository is from a trusted source
 
-**Labels:**
-
-- `category` = `security`
-- `severity` = `high`
-
-
 <table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th><th>Download Link</th></tr><tr><td>
 
 `gradle-java-toolchain-1759959918012-eda0f750.jsonnull`
-</td><td>❌</td><td>
-
-<details>
-
-<summary>Details</summary>
-
-```json
-{
-  "test": "detail"
-}
-```
-
-</details>
-</td><td>
+</td><td>❌</td><td><td>
 
 [Build Scan](http://localhost:24300/s/wyqqaj64qu73k)
 </td><td>
