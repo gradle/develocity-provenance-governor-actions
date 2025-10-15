@@ -27311,33 +27311,33 @@ class ApiClient {
         });
         console.log('Calling publisher: ', publisherUrl);
         console.debug('Calling publisher with payload: ', payload);
-        try {
-            const response = fetch(publisherUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: this.authHeaderValue()
-                },
-                body: payload
-            });
-            return response.then(async (response) => {
-                const data = await response.json();
-                if (coreExports.isDebug()) {
-                    coreExports.debug('Received attestation publisher response: ' +
-                        response.status +
-                        ' ' +
-                        response.statusText +
-                        ' : ' +
-                        JSON.stringify(data, null, 2));
-                }
-                return new PublisherResult(response.status, response.ok, data);
-            });
-        }
-        catch (error) {
+        return Promise.resolve()
+            .then(() => fetch(publisherUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: this.authHeaderValue()
+            },
+            body: payload
+        }))
+            .then(async (response) => {
+            const data = await response.json();
+            if (coreExports.isDebug()) {
+                coreExports.debug('Received attestation publisher response: ' +
+                    response.status +
+                    ' ' +
+                    response.statusText +
+                    ' : ' +
+                    JSON.stringify(data, null, 2));
+            }
+            return new PublisherResult(response.status, response.ok, data);
+        })
+            .catch((error) => {
+            console.error('Error response from attestation publication: ', error);
             return Promise.resolve(new PublisherResult(0, false, {
                 detail: error instanceof Error ? error.message : 'Unknown error occurred'
             }));
-        }
+        });
     }
     /**
      * Evaluates the policy for the given subject.
@@ -27360,33 +27360,33 @@ class ApiClient {
         });
         console.log('Calling policy evaluator: ', evalUrl);
         console.debug('Calling evaluator with payload: ', payload);
-        try {
-            const response = fetch(evalUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: this.authHeaderValue()
-                },
-                body: payload
-            });
-            return response.then(async (response) => {
-                const data = await response.json();
-                if (coreExports.isDebug()) {
-                    coreExports.debug('Received policy evaluation response: ' +
-                        response.status +
-                        ' ' +
-                        response.statusText +
-                        ' : ' +
-                        JSON.stringify(data, null, 2));
-                }
-                return new PolicyResult(response.status, response.ok, data);
-            });
-        }
-        catch (error) {
+        return Promise.resolve()
+            .then(() => fetch(evalUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: this.authHeaderValue()
+            },
+            body: payload
+        }))
+            .then(async (response) => {
+            const data = await response.json();
+            if (coreExports.isDebug()) {
+                coreExports.debug('Received policy evaluation response: ' +
+                    response.status +
+                    ' ' +
+                    response.statusText +
+                    ' : ' +
+                    JSON.stringify(data, null, 2));
+            }
+            return new PolicyResult(response.status, response.ok, data);
+        })
+            .catch((error) => {
+            console.error('Error response from policy evaluation: ', error);
             return Promise.resolve(new PolicyResult(0, false, {
                 detail: error instanceof Error ? error.message : 'Unknown error occurred'
             }));
-        }
+        });
     }
     authHeaderValue() {
         return typeof this.credentials === 'string'
