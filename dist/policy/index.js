@@ -27609,11 +27609,13 @@ function reportFailedPolicyDetails(policies) {
                     .addEOL()
                     .addEOL();
             }
-            coreExports.summary.addRaw('**Labels:**').addEOL().addEOL();
-            Object.entries(policyEval.policy.labels).forEach(([key, value]) => {
-                coreExports.summary.addRaw('- `' + key + '` = `' + value + '`').addEOL();
-            });
-            coreExports.summary.addEOL().addEOL();
+            if (Object.keys(policyEval.policy.labels).length > 0) {
+                coreExports.summary.addRaw('**Labels:**').addEOL().addEOL();
+                Object.entries(policyEval.policy.labels).forEach(([key, value]) => {
+                    coreExports.summary.addRaw('- `' + key + '` = `' + value + '`').addEOL();
+                });
+                coreExports.summary.addEOL().addEOL();
+            }
             const tableRows = [
                 [
                     { data: 'Attestation', header: true },
@@ -27722,8 +27724,8 @@ function collectPolicyEvaluations(results) {
             throw Error(`Unknown status in response: ${r.status}`);
         }
         r.status = status;
-        const data = new PolicyData(r.policyUri, r.policyDescription, r.policyRemediation, r.labels);
-        const result = new PolicyEvaluationResult(r.status, r.attestationStoreUri, r.sourcedFromUri, r.details);
+        const data = new PolicyData(r.policyUri, r.policyDescription, r.policyRemediation, r.labels ?? {});
+        const result = new PolicyEvaluationResult(r.status, r.attestationStoreUri, r.sourcedFromUri, r.details ?? {});
         const existing = policyMap.get(data.uri);
         if (existing) {
             existing.evaluations.push(result);
