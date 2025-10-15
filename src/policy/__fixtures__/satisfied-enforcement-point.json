@@ -31,7 +31,7 @@
       "severity": "medium"
     },
     "policyUri": "https://policies.example.com/Jvm/jvm-verification",
-    "policyDecription": "",
+    "policyDescription": "",
     "status": "not-applicable",
     "attestationStoreInstance": "af:http://store.example.com/attestation",
     "attestationStoreUri": "http://store.example.com/attestation/attestationDownloadLink.dat",
