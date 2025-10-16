@@ -10,7 +10,7 @@ GitHub workflows.
 ```yaml
 uses: gradle/develocity-provenance-governor-actions/publish@main
 with:
-  attestation-publisher-url: 'https://cavendish.sdlc-demo.gradle.com'
+  attestation-publisher-url: 'https://develocity-provenance-governor.example.com'
   build-scan-ids: eo5xxyg3drtoc
   build-scan-queries: 'value:"CI run=${{ github.run_id }}"'
   subject-type: oci
@@ -42,12 +42,12 @@ There is also a `subject-namespace` field that can be used with subject types th
 ```yaml
 uses: gradle/develocity-provenance-governor-actions/enforce@main
 with:
-  policy-evaluator-url: 'https://cavendish.sdlc-demo.gradle.com'
+  policy-evaluator-url: 'https://develocity-provenance-governor.example.com'
   subject-type: oci
   subject-name: java-payment-calculator
   subject-version: 1.2.3
   subject-digest: 1a6b2bf83435f2a9ccd33519ad3e817bf79aee6af1c7a15d26d8a256bfa9cc94
-  subject-repository-url: develocitytia.jfrog.io/docker-trial
+  subject-repository-url: develocitytia.jfrog.io/docker-example-repo
   policy-scan: ci-enforcement
 ```
 
