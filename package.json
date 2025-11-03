@@ -33,7 +33,7 @@
     "packageurl-js": "^2.0.1"
   },
   "devDependencies": {
-    "@eslint/compat": "^1.4.0",
+    "@eslint/compat": "^1.4.1",
     "@github/local-action": "^6.0.2",
     "@gradle-tech/develocity-agent": "https://develocity-npm-pkgs.gradle.com/gradle-develocity-agent-2.0.0-rc-1.tgz",
     "@jest/globals": "^30.2.0",
@@ -41,10 +41,10 @@
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-typescript": "^12.3.0",
     "@types/jest": "^30.0.0",
-    "@types/node": "^20.19.23",
+    "@types/node": "^20.19.24",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.32.1",
-    "eslint": "^9.38.0",
+    "eslint": "^9.39.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.31.0",
