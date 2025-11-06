@@ -96,9 +96,9 @@ function subjectInfo(
 
     // get the artifact uri from the result items
     if (result && result.successes && result.successes[0]) {
-      storeUri = result.successes[0].storeUri
+      storeUri = result.successes[0].storeUri.replace(/\/+$/, '')
     } else if ('errors' in result && result.errors && result.errors[0]) {
-      storeUri = result.errors[0].storeUri
+      storeUri = result.errors[0].storeUri.replace(/\/+$/, '')
     }
 
     uiArtifactUri = `${storeUri}/ui/repos/tree/General/${repoUrlParts[1]}/${result.request.pkg.name}/${tag}`
