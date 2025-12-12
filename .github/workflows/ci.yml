@@ -31,14 +31,13 @@ jobs:
           node-version-file: .node-version
           cache: npm
 
-      - name: Generate short-lived access token
-        id: generate-token
-        env:
-          KEY_FOR_TOKEN: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
-        run: |
-          DV_TOKEN=$(curl -X POST "https://develocity-ext-github.grdev.net/api/auth/token?permissions=publishScan&projectIds=cavendish-github-actions&expiresInHours=1" -H "Authorization: Bearer $KEY_FOR_TOKEN")
-          echo "::add-mask::$DV_TOKEN"
-          echo "DEVELOCITY_ACCESS_KEY=develocity-ext-github.grdev.net=$DV_TOKEN" >> $GITHUB_ENV
+      - name: Setup Develocity for npm
+        uses: gradle/develocity-actions/setup-npm@09247f276f2bc73be8ebd0efced38273412d38d0 #v2.0
+        with:
+          develocity-injection-enabled: true
+          develocity-access-key:
+            develocity-ext-github.grdev.net=${{ secrets.DEVELOCITY_ACCESS_KEY }}
+          develocity-url: https://develocity-ext-github.grdev.net
 
       - name: Install Dependencies
         id: npm-ci
@@ -46,24 +45,16 @@ jobs:
 
       - name: Check Format
         id: npm-format-check
-        env:
-          NODE_OPTIONS: '-r @gradle-tech/develocity-agent/preload'
         run: npm run format:check
 
       - name: Lint
         id: npm-lint
-        env:
-          NODE_OPTIONS: '-r @gradle-tech/develocity-agent/preload'
         run: npm run lint
 
       - name: Test
         id: npm-test
-        env:
-          NODE_OPTIONS: '-r @gradle-tech/develocity-agent/preload'
         run: npm run test
 
       - name: Package
         id: npm-package
-        env:
-          NODE_OPTIONS: '-r @gradle-tech/develocity-agent/preload'
         run: npm run package
