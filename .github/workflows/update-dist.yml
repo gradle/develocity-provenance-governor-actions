@@ -30,6 +30,14 @@ jobs:
         with:
           node-version-file: .node-version
 
+      - name: Setup Develocity for npm
+        uses: gradle/develocity-actions/setup-npm@09247f276f2bc73be8ebd0efced38273412d38d0 #v2.0
+        with:
+          develocity-injection-enabled: true
+          develocity-access-key: >
+            develocity-ext-github.grdev.net=${{ secrets.DEVELOCITY_ACCESS_KEY }}
+          develocity-url: https://develocity-ext-github.grdev.net
+
       - name: Install Dependencies
         id: npm-ci
         run: npm ci
