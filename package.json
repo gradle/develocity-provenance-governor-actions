@@ -29,7 +29,7 @@
     "render": "node --loader ts-node/esm script/render.js"
   },
   "dependencies": {
-    "@actions/core": "^1.11.1",
+    "@actions/core": "^2.0.1",
     "packageurl-js": "^2.0.1"
   },
   "devDependencies": {
