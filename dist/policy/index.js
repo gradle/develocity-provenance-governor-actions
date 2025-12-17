@@ -27622,8 +27622,7 @@ function reportFailedPolicyDetails(policies) {
                     { data: 'Attestation', header: true },
                     { data: 'Status', header: true },
                     { data: 'Details', header: true },
-                    { data: 'Build Scan', header: true },
-                    { data: 'Download Link', header: true }
+                    { data: 'Build Scan', header: true }
                 ]
             ];
             policyEval.failures.concat(policyEval.successes).forEach((evaluation) => {
@@ -27650,9 +27649,6 @@ function reportFailedPolicyDetails(policies) {
                     },
                     {
                         data: buildScanUri ? `\n\n[Build Scan](${buildScanUri})\n` : ''
-                    },
-                    {
-                        data: ''
                     }
                 ]);
             });
