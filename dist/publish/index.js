@@ -28949,7 +28949,9 @@ class PublisherSummaryReporter extends BaseReporter {
     reportSuccess(subject, result) {
         coreExports.info(`Attestation publishing for subject: ${subject.name} completed successfully!`);
         header('Attestations Published');
+        coreExports.info('Before subject info');
         subjectInfo(subject, result);
+        coreExports.info('Before grouping successes');
         const items = groupSuccessByResource(result.successes);
         const rows = [headerRow()];
         items.forEach((success) => {
@@ -29067,19 +29069,27 @@ function headerRow() {
     ];
 }
 function groupSuccessByResource(items) {
+    coreExports.info('Success items received for grouping:');
+    coreExports.info(JSON.stringify(items, null, 2));
     return [...items].sort((a, b) => {
         // First sort by storeType
-        const storeTypeCompare = a.storeType.localeCompare(b.storeType);
+        const aStoreType = a.storeType ?? '';
+        const bStoreType = b.storeType ?? '';
+        const storeTypeCompare = aStoreType.localeCompare(bStoreType);
         if (storeTypeCompare !== 0)
             return storeTypeCompare;
         // Then by predicate_type
-        return a.storeResponse.predicate_type.localeCompare(b.storeResponse.predicate_type);
+        const aPredicateType = a.storeResponse?.predicate_type ?? '';
+        const bPredicateType = b.storeResponse?.predicate_type ?? '';
+        return aPredicateType.localeCompare(bPredicateType);
     });
 }
 function successItemToRow(item) {
     const statement = getStatement(item.storeRequest);
-    const predicateType = item.storeResponse.predicate_type;
-    const downloadUri = `${item.storeUri}/ui/api/v1/download/${item.storeResponse.uri}`;
+    const predicateType = item.storeResponse?.predicate_type ?? 'Unknown';
+    const storeUri = item.storeUri ?? '';
+    const responseUri = item.storeResponse?.uri ?? '';
+    const downloadUri = `${storeUri}/ui/api/v1/download/${responseUri}`;
     if (statement) {
         const predicate = JSON.stringify(statement.predicate, null, 2);
         const codeBlock = `\n\`\`\`json\n${predicate}\n\`\`\`\n`;
