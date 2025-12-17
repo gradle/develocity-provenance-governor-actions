@@ -124,6 +124,7 @@ function reportSubjectInfo(subject: PolicyRequestSubject) {
 }
 
 function attestationName(attestation: PolicyEvaluationResult): string {
+  core.info('Attestation: ' + JSON.stringify(attestation, null, 2))
   if (attestation.attestationDownloadUri) {
     const uri = attestation.attestationDownloadUri
     return uri.substring(uri.lastIndexOf('/') + 1)
