@@ -28949,9 +28949,7 @@ class PublisherSummaryReporter extends BaseReporter {
     reportSuccess(subject, result) {
         coreExports.info(`Attestation publishing for subject: ${subject.name} completed successfully!`);
         header('Attestations Published');
-        coreExports.info('Before subject info');
         subjectInfo(subject, result);
-        coreExports.info('Before grouping successes');
         const items = groupSuccessByResource(result.successes);
         const rows = [headerRow()];
         items.forEach((success) => {
@@ -29069,8 +29067,6 @@ function headerRow() {
     ];
 }
 function groupSuccessByResource(items) {
-    coreExports.info('Success items received for grouping:');
-    coreExports.info(JSON.stringify(items, null, 2));
     return [...items].sort((a, b) => {
         // First sort by storeType
         const aStoreType = a.storeType ?? '';
