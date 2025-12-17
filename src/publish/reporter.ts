@@ -196,6 +196,9 @@ function headerRow() {
 function groupSuccessByResource(
   items: PublishSuccessItem[]
 ): PublishSuccessItem[] {
+  core.info('Success items received for grouping:')
+  core.info(JSON.stringify(items, null, 2))
+  
   return [...items].sort((a, b) => {
     // First sort by storeType
     const aStoreType = a.storeType ?? ''
