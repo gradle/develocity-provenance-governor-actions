@@ -231,8 +231,7 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
           { data: 'Attestation', header: true },
           { data: 'Status', header: true },
           { data: 'Details', header: true },
-          { data: 'Build Scan', header: true },
-          { data: 'Download Link', header: true }
+          { data: 'Build Scan', header: true }
         ]
       ]
 
@@ -266,9 +265,6 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
           },
           {
             data: buildScanUri ? `\n\n[Build Scan](${buildScanUri})\n` : ''
-          },
-          {
-            data: ''
           }
         ])
       })
