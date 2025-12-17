@@ -268,10 +268,7 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
             data: buildScanUri ? `\n\n[Build Scan](${buildScanUri})\n` : ''
           },
           {
-            data:
-              evaluation.attestationDownloadUri != null
-                ? `\n\n[Download Link](${evaluation.attestationDownloadUri})\n`
-                : ''
+            data: ''
           }
         ])
       })
@@ -382,7 +379,7 @@ function collectPolicyEvaluations(
 
     const result = new PolicyEvaluationResult(
       r.status,
-      r.attestationUri,
+      r.attestationStoreUri,
       r.sourcedFromUri,
       r.details ?? {}
     )
