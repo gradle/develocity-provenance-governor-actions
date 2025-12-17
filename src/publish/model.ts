@@ -26,17 +26,32 @@ export interface PublishRequestCriteria extends BaseCriteria {
 export type PublishRequest = BaseRequest<PublishRequestCriteria>
 
 export interface StoreResponse {
-  repository: string
-  path: string
-  name: string
-  uri: string
-  sha256: string
-  predicate_category: string
-  predicate_type: string
-  predicate_slug: string
-  created_at: string
-  created_by: string
-  verified: boolean
+  repository?: string
+  path?: string
+  name?: string
+  uri?: string
+  sha256?: string
+  predicate_category?: string
+  predicate_type?: string
+  predicate_slug?: string
+  created_at?: string
+  created_by?: string
+  verified?: boolean
+  // S3 response structure
+  checksumType?: string
+  metadata?: {
+    'package-name'?: string
+    'package-version'?: string
+    'package-namespace'?: string
+    'package-digest'?: string
+    'sourced-from-uri'?: string
+    'content-type'?: string
+    'predicate-type'?: string
+    'package-type'?: string
+  }
+  serverSideEncryption?: string
+  checksumCRC64NVME?: string
+  eTag?: string
 }
 
 export interface StoreErrorResponse {
