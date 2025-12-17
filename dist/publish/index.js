@@ -29078,15 +29078,21 @@ function groupSuccessByResource(items) {
         const storeTypeCompare = aStoreType.localeCompare(bStoreType);
         if (storeTypeCompare !== 0)
             return storeTypeCompare;
-        // Then by predicate_type
-        const aPredicateType = a.storeResponse?.predicate_type ?? '';
-        const bPredicateType = b.storeResponse?.predicate_type ?? '';
+        // Then by predicate_type (check both new metadata structure and old top-level)
+        const aPredicateType = a.storeResponse?.metadata?.['predicate-type'] ??
+            a.storeResponse?.predicate_type ??
+            '';
+        const bPredicateType = b.storeResponse?.metadata?.['predicate-type'] ??
+            b.storeResponse?.predicate_type ??
+            '';
         return aPredicateType.localeCompare(bPredicateType);
     });
 }
 function successItemToRow(item) {
     const statement = getStatement(item.storeRequest);
-    const predicateType = item.storeResponse?.predicate_type ?? 'Unknown';
+    const predicateType = item.storeResponse?.metadata?.['predicate-type'] ??
+        item.storeResponse?.predicate_type ??
+        'Unknown';
     const storeUri = item.storeUri ?? '';
     const responseUri = item.storeResponse?.uri ?? '';
     const downloadUri = `${storeUri}/ui/api/v1/download/${responseUri}`;
