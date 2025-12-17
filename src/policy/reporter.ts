@@ -375,7 +375,7 @@ function collectPolicyEvaluations(
 
     const result = new PolicyEvaluationResult(
       r.status,
-      r.attestationStoreUri,
+      r.attestationUri,
       r.sourcedFromUri,
       r.details ?? {}
     )
