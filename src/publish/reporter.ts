@@ -33,8 +33,10 @@ export class PublisherSummaryReporter extends BaseReporter<
     )
 
     header('Attestations Published')
+    core.info('Before subject info')
     subjectInfo(subject, result)
 
+    core.info('Before grouping successes')
     const items = groupSuccessByResource(result.successes)
     const rows: SummaryTableRow[] = [headerRow()]
 
