@@ -202,9 +202,9 @@ function groupSuccessByResource(
     if (storeTypeCompare !== 0) return storeTypeCompare
 
     // Then by predicate_type
-    return a.storeResponse.predicate_type.localeCompare(
-      b.storeResponse.predicate_type
-    )
+    const aPredicateType = a.storeResponse.predicate_type ?? ''
+    const bPredicateType = b.storeResponse.predicate_type ?? ''
+    return aPredicateType.localeCompare(bPredicateType)
   })
 }
 
