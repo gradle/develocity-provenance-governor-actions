@@ -27720,7 +27720,7 @@ function collectPolicyEvaluations(results) {
         }
         r.status = status;
         const data = new PolicyData(r.policyUri, r.policyDescription, r.policyRemediation, r.labels ?? {});
-        const result = new PolicyEvaluationResult(r.status, r.attestationStoreUri, r.sourcedFromUri, r.details ?? {});
+        const result = new PolicyEvaluationResult(r.status, r.attestationUri, r.sourcedFromUri, r.details ?? {});
         const existing = policyMap.get(data.uri);
         if (existing) {
             existing.evaluations.push(result);
