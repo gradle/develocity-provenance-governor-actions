@@ -44,7 +44,7 @@ export interface PolicyEvaluation {
   policyRemediation?: string
   attestationUri: string
   attestationStoreInstance: string
-  attestationStoreUri: string
+  attestationUri: string
   sourcedFromUri?: string
   details?: Record<string, string>
 }
