@@ -29333,7 +29333,8 @@ function successItemToRow(item, repositoryUrl) {
     let storeUri = item.storeUri ?? '';
     // Use repositoryUrl if item.storeUri contains "attestations/af:"
     if (storeUri.includes('attestations/af:')) {
-        storeUri = 'https://' + repositoryUrl;
+        const host = repositoryUrl.split('/')[0];
+        storeUri = 'https://' + host;
     }
     const responseUri = item.storeResponse?.uri ?? '';
     const downloadUri = `${storeUri}/ui/api/v1/download/${responseUri}`;
