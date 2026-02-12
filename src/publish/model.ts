@@ -8,7 +8,8 @@ import {
 /**
  * Interface defining the structure of an error response from the Attestation Publisher.
  */
-export interface PublishErrorResponse extends BaseErrorResponse<PublishRequest> {
+export interface PublishErrorResponse
+  extends BaseErrorResponse<PublishRequest> {
   successes?: Array<PublishSuccessItem>
   errors?: Array<PublishFailedItem>
 }
@@ -123,7 +124,9 @@ export class PublishRequestSubject {
   }
 }
 
-export class PublishSuccessResponse implements BaseSuccessResponse<PublishRequest> {
+export class PublishSuccessResponse
+  implements BaseSuccessResponse<PublishRequest>
+{
   successes: PublishSuccessItem[]
   request: PublishRequest
 

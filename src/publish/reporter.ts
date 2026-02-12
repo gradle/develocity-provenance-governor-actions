@@ -39,7 +39,10 @@ export class PublisherSummaryReporter extends BaseReporter<
     const rows: SummaryTableRow[] = [headerRow()]
 
     items.forEach((success) => {
-      const row = successItemToRow(success)
+      const row = successItemToRow(
+        success,
+        result.request.criteria.repositoryUrl
+      )
       rows.push(row)
     })
 
@@ -76,7 +79,7 @@ export class PublisherSummaryReporter extends BaseReporter<
         })
       }
 
-      rows.push(...successRows(result))
+      rows.push(...successRows(result, result.request.criteria.repositoryUrl))
       core.summary.addTable(rows)
       core.summary.addEOL()
     }
@@ -130,7 +133,10 @@ function errorRow(error: PublishFailedItem) {
   ]
 }
 
-function successRows(result: PublishSuccessResponse | PublishErrorResponse) {
+function successRows(
+  result: PublishSuccessResponse | PublishErrorResponse,
+  repositoryUrl: string
+) {
   // TODO merge this table creation with the one below
   // const rows: SummaryTableRow[] = [headerRow()]
   const rows: SummaryTableRow[] = []
@@ -140,7 +146,7 @@ function successRows(result: PublishSuccessResponse | PublishErrorResponse) {
     const items = groupSuccessByResource(result?.successes)
 
     items.forEach((success) => {
-      const row = successItemToRow(success)
+      const row = successItemToRow(success, repositoryUrl)
       rows.push(row)
     })
   }
@@ -216,13 +222,22 @@ function groupSuccessByResource(
   })
 }
 
-function successItemToRow(item: PublishSuccessItem): string[] {
+function successItemToRow(
+  item: PublishSuccessItem,
+  repositoryUrl: string
+): string[] {
   const statement = getStatement(item.storeRequest)
   const predicateType =
     item.storeResponse?.metadata?.['predicate-type'] ??
     item.storeResponse?.predicate_type ??
     'Unknown'
-  const storeUri = item.storeUri ?? ''
+  let storeUri = item.storeUri ?? ''
+
+  // Use repositoryUrl if item.storeUri contains "attestations/af:"
+  if (storeUri.includes('attestations/af:')) {
+    storeUri = repositoryUrl
+  }
+
   const responseUri = item.storeResponse?.uri ?? ''
   const downloadUri = `${storeUri}/ui/api/v1/download/${responseUri}`
 

@@ -18,7 +18,8 @@ export abstract class BaseReporter<
   Subject,
   Success,
   Error extends BaseErrorResponse<unknown>
-> implements Reporter<Subject, Success, Error> {
+> implements Reporter<Subject, Success, Error>
+{
   report(
     status: number,
     subject: Subject,
