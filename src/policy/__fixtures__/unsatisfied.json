@@ -4,29 +4,26 @@
       "category": "verification",
       "severity": "medium"
     },
-    "policyUri": "https://policies.example.com/Jvm/jvm-verification",
+    "policyUri": "/policies/Jvm/jvm-verification",
     "policyDescription": "",
     "status": "unsatisfied",
-    "attestationStoreInstance": "af:https://develocitytia.jfrog.io/artifactory/",
-    "attestationStoreUri": "https://develocitytia.jfrog.io/artifactory/docker-trial/.evidence/c35e1a4fecb35e4f7a829b2ae3d4bea93ad66247a062dda4b3301df79d73f5f8/3f6cabfb527d740e79e0f49e2f4e564279d8c74a0bfc4481fc3a44e6b085fe91/gradle-java-toolchain-1759959918012-eda0f750.jsonnull",
+    "attestationUri": "/packages/oci/gradle-java-toolchain/latest/sha256:7352aa3e5051c3ef26aa5277fd30a51b34150441d9e9554c9a9961e8b44975d2/attestations/af:tia/ZG9ja2VyLXRyaWFsLy5ldmlkZW5jZS8zMjYzN2Y1ZDQyNTNhNDk0MWZkZDE3YjRjYjExOTdlMmUxZjRkZjQyNDBjZmU2ZjNiN2ViNjJlYWM4YmJlMjc0LzczNTJhYTNlNTA1MWMzZWYyNmFhNTI3N2ZkMzBhNTFiMzQxNTA0NDFkOWU5NTU0YzlhOTk2MWU4YjQ0OTc1ZDIvZ3JhZGxlLWJ1aWxkLXRvb2wtMTc2NTIyMDE4Njk0My0xMjYwYTgwZS5qc29u",
     "sourcedFromUri": "http://localhost:24300/s/wyqqaj64qu73k"
   },
   {
-    "policyUri": "https://policies.example.com/Repository/repo-source-check",
+    "policyUri": "/policies/Repository/repo-source-check",
     "policyDescription": "Repository source verification",
     "policyRemediation": "Ensure the repository is from a trusted source",
     "status": "UNSATISFIED",
-    "attestationStoreInstance": "af:https://develocitytia.jfrog.io/artifactory/",
-    "attestationStoreUri": "https://develocitytia.jfrog.io/artifactory/docker-trial/.evidence/c35e1a4fecb35e4f7a829b2ae3d4bea93ad66247a062dda4b3301df79d73f5f8/3f6cabfb527d740e79e0f49e2f4e564279d8c74a0bfc4481fc3a44e6b085fe91/gradle-java-toolchain-1759959918012-eda0f750.jsonnull",
+    "attestationUri": "/packages/oci/gradle-java-toolchain/latest/sha256:7352aa3e5051c3ef26aa5277fd30a51b34150441d9e9554c9a9961e8b44975d2/attestations/af:tia/ZG9ja2VyLXRyaWFsLy5ldmlkZW5jZS8zMjYzN2Y1ZDQyNTNhNDk0MWZkZDE3YjRjYjExOTdlMmUxZjRkZjQyNDBjZmU2ZjNiN2ViNjJlYWM4YmJlMjc0LzczNTJhYTNlNTA1MWMzZWYyNmFhNTI3N2ZkMzBhNTFiMzQxNTA0NDFkOWU5NTU0YzlhOTk2MWU4YjQ0OTc1ZDIvZ3JhZGxlLWJ1aWxkLXRvb2wtMTc2NTIyMDE4Njk0My0xMjYwYTgwZS5qc29u",
     "sourcedFromUri": "http://localhost:24300/s/wyqqaj64qu73k"
   },
   {
-    "policyUri": "https://policies.example.com/BuildScan/build-scan-verification",
+    "policyUri": "/policies/BuildScan/build-scan-verification",
     "policyDescription": "Build scan verification",
     "policyRemediation": "Ensure a build scan is published for the build",
     "status": "satisfied",
-    "attestationStoreInstance": "af:https://develocitytia.jfrog.io/artifactory/",
-    "attestationStoreUri": "https://develocitytia.jfrog.io/artifactory/docker-trial/.evidence/c35e1a4fecb35e4f7a829b2ae3d4bea93ad66247a062dda4b3301df79d73f5f8/3f6cabfb527d740e79e0f49e2f4e564279d8c74a0bfc4481fc3a44e6b085fe91/gradle-java-toolchain-1759959918012-eda0f750.jsonnull",
+    "attestationUri": "/packages/oci/gradle-java-toolchain/latest/sha256:7352aa3e5051c3ef26aa5277fd30a51b34150441d9e9554c9a9961e8b44975d2/attestations/af:tia/ZG9ja2VyLXRyaWFsLy5ldmlkZW5jZS8zMjYzN2Y1ZDQyNTNhNDk0MWZkZDE3YjRjYjExOTdlMmUxZjRkZjQyNDBjZmU2ZjNiN2ViNjJlYWM4YmJlMjc0LzczNTJhYTNlNTA1MWMzZWYyNmFhNTI3N2ZkMzBhNTFiMzQxNTA0NDFkOWU5NTU0YzlhOTk2MWU4YjQ0OTc1ZDIvZ3JhZGxlLWJ1aWxkLXRvb2wtMTc2NTIyMDE4Njk0My0xMjYwYTgwZS5qc29u",
     "sourcedFromUri": "http://localhost:24300/s/wyqqaj64qu73k"
   }
 ]
