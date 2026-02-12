@@ -235,7 +235,7 @@ function successItemToRow(
 
   // Use repositoryUrl if item.storeUri contains "attestations/af:"
   if (storeUri.includes('attestations/af:')) {
-    storeUri = repositoryUrl
+    storeUri = 'https://' + repositoryUrl
   }
 
   const responseUri = item.storeResponse?.uri ?? ''
