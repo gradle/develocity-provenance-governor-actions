@@ -54,15 +54,12 @@
 - `severity` = `medium`
 
 
-<table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th><th>Download Link</th></tr><tr><td>
+<table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th></tr><tr><td>
 
-`gradle-java-toolchain-1759959918012-eda0f750.jsonnull`
+`N/A`
 </td><td>❌</td><td><td>
 
 [Build Scan](http://localhost:24300/s/wyqqaj64qu73k)
-</td><td>
-
-[Download Link](https://develocitytia.jfrog.io/artifactory/docker-trial/.evidence/c35e1a4fecb35e4f7a829b2ae3d4bea93ad66247a062dda4b3301df79d73f5f8/3f6cabfb527d740e79e0f49e2f4e564279d8c74a0bfc4481fc3a44e6b085fe91/gradle-java-toolchain-1759959918012-eda0f750.jsonnull)
 </td></tr></table>
 
 
@@ -80,9 +77,9 @@
 - `severity` = `high`
 
 
-<table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th><th>Download Link</th></tr><tr><td>
+<table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th></tr><tr><td>
 
-`gradle-java-toolchain-1759959918012-eda0f750.jsonnull`
+`N/A`
 </td><td>❌</td><td>
 
 <details>
@@ -99,9 +96,6 @@
 </td><td>
 
 [Build Scan](http://localhost:24300/s/wyqqaj64qu73k)
-</td><td>
-
-[Download Link](https://develocitytia.jfrog.io/artifactory/docker-trial/.evidence/c35e1a4fecb35e4f7a829b2ae3d4bea93ad66247a062dda4b3301df79d73f5f8/3f6cabfb527d740e79e0f49e2f4e564279d8c74a0bfc4481fc3a44e6b085fe91/gradle-java-toolchain-1759959918012-eda0f750.jsonnull)
 </td></tr></table>
 
 
