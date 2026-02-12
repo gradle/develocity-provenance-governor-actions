@@ -29072,70 +29072,14 @@ function groupSuccessByResource(items) {
         const storeTypeCompare = a.storeType.localeCompare(b.storeType);
         if (storeTypeCompare !== 0)
             return storeTypeCompare;
-<<<<<<< HEAD
         // Then by predicate_type
         return a.storeResponse.predicate_type.localeCompare(b.storeResponse.predicate_type);
-=======
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        // Then by predicate_type
-        return a.storeResponse.predicate_type.localeCompare(b.storeResponse.predicate_type);
-=======
-        // Then by predicate_type (check both new metadata structure and old top-level)
-        const aPredicateType = a.storeResponse?.metadata?.['predicate-type'] ??
-            a.storeResponse?.predicate_type ??
-            '';
-        const bPredicateType = b.storeResponse?.metadata?.['predicate-type'] ??
-            b.storeResponse?.predicate_type ??
-            '';
-        return aPredicateType.localeCompare(bPredicateType);
->>>>>>> 6f900d6 ([bot] Update dist directory)
-=======
-        // Then by predicate_type
-        return a.storeResponse.predicate_type.localeCompare(b.storeResponse.predicate_type);
->>>>>>> dbcd0c4 (Don't change dist files)
-<<<<<<< HEAD
->>>>>>> f441702 (Don't change dist files)
-=======
-=======
-        // Then by predicate_type
-        return a.storeResponse.predicate_type.localeCompare(b.storeResponse.predicate_type);
->>>>>>> a4cca82 (Unchange dist directory)
->>>>>>> 3140bb8 (Unchange dist directory)
     });
 }
 function successItemToRow(item) {
     const statement = getStatement(item.storeRequest);
-<<<<<<< HEAD
     const predicateType = item.storeResponse.predicate_type;
     const downloadUri = `${item.storeUri}/ui/api/v1/download/${item.storeResponse.uri}`;
-=======
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    const predicateType = item.storeResponse.predicate_type;
-    const downloadUri = `${item.storeUri}/ui/api/v1/download/${item.storeResponse.uri}`;
-=======
-    const predicateType = item.storeResponse?.metadata?.['predicate-type'] ??
-        item.storeResponse?.predicate_type ??
-        'Unknown';
-    const storeUri = item.storeUri ?? '';
-    const responseUri = item.storeResponse?.uri ?? '';
-    const downloadUri = `${storeUri}/ui/api/v1/download/${responseUri}`;
->>>>>>> 6f900d6 ([bot] Update dist directory)
-=======
-    const predicateType = item.storeResponse.predicate_type;
-    const downloadUri = `${item.storeUri}/ui/api/v1/download/${item.storeResponse.uri}`;
->>>>>>> dbcd0c4 (Don't change dist files)
-<<<<<<< HEAD
->>>>>>> f441702 (Don't change dist files)
-=======
-=======
-    const predicateType = item.storeResponse.predicate_type;
-    const downloadUri = `${item.storeUri}/ui/api/v1/download/${item.storeResponse.uri}`;
->>>>>>> a4cca82 (Unchange dist directory)
->>>>>>> 3140bb8 (Unchange dist directory)
     if (statement) {
         const predicate = JSON.stringify(statement.predicate, null, 2);
         const codeBlock = `\n\`\`\`json\n${predicate}\n\`\`\`\n`;
