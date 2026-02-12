@@ -29228,14 +29228,14 @@ function subjectInfo(subject, result) {
     if (result && result.request) {
         const repoUrlParts = result.request.criteria.repositoryUrl.split('/');
         const tag = result.request.pkg.version;
-        let storeUri;
         // get the artifact uri from the result items
-        if (result && result.successes && result.successes[0]) {
-            storeUri = result.successes[0].storeUri.replace(/\/+$/, '');
+        /*     if (result && result.successes && result.successes[0]) {
+          storeUri = result.successes[0].storeUri.replace(/\/+$/, '')
+        } else if ('errors' in result && result.errors && result.errors[0]) {
+          storeUri = result.errors[0].storeUri.replace(/\/+$/, '')
         }
-        else if ('errors' in result && result.errors && result.errors[0]) {
-            storeUri = result.errors[0].storeUri.replace(/\/+$/, '');
-        }
+     */
+        const storeUri = 'https://' + repoUrlParts[0];
         uiArtifactUri = `${storeUri}/ui/repos/tree/General/${repoUrlParts[1]}/${result.request.pkg.name}/${tag}`;
     }
     subjectSubHeader(subject?.name ?? 'Unknown', subject?.digest?.sha256 ?? 'Unknown', uiArtifactUri);
