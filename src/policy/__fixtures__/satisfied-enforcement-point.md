@@ -12,27 +12,30 @@
 
 **Digest:** `c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b`
 
-
 **Result:** ✅ SATISFIED
 
 <table><tr><th>Policy</th><th>Type</th><th>Status</th><th>Attestations Passed / Evaluated</th><th>Description</th><th>Remediation</th><th>Failure Details</th></tr><tr><td>
 
 `build-scan-verification`
+
 </td><td>
 
 `BuildScan`
+
 </td><td>✅</td><td>1 / 1</td><td>Build scan verification</td><td><td></tr><tr><td>
 
 `repo-source-check`
+
 </td><td>
 
 `Repository`
+
 </td><td>✅</td><td>1 / 1</td><td>Repository source verification</td><td><td></tr><tr><td>
 
 `jvm-verification`
+
 </td><td>
 
 `Jvm`
+
 </td><td>N/A</td><td>0 / 0</td><td><td><td></tr></table>
-
-

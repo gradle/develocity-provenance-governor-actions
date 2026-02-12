@@ -12,35 +12,41 @@
 
 **Digest:** `c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b`
 
-
 **Result:** ❌ UNSATISFIED
 
 <table><tr><th>Policy</th><th>Type</th><th>Status</th><th>Attestations Passed / Evaluated</th><th>Description</th><th>Remediation</th><th>Failure Details</th></tr><tr><td>
 
 `jvm-verification`
+
 </td><td>
 
 `Jvm`
+
 </td><td>❌</td><td>0 / 1</td><td><td><td>
 
 [Link](#user-content-policy-detail-0)
+
 </td></tr><tr><td>
 
 `repo-source-check`
+
 </td><td>
 
 `Repository`
+
 </td><td>❌</td><td>0 / 1</td><td>Repository source verification</td><td>Ensure the repository is from a trusted source</td><td>
 
 [Link](#user-content-policy-detail-1)
+
 </td></tr><tr><td>
 
 `build-scan-verification`
+
 </td><td>
 
 `BuildScan`
-</td><td>✅</td><td>1 / 1</td><td>Build scan verification</td><td><td></tr></table>
 
+</td><td>✅</td><td>1 / 1</td><td>Build scan verification</td><td><td></tr></table>
 
 # Failed Policies
 
@@ -53,15 +59,15 @@
 - `category` = `verification`
 - `severity` = `medium`
 
-
 <table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th></tr><tr><td>
 
 `N/A`
+
 </td><td>❌</td><td><td>
 
 [Build Scan](http://localhost:24300/s/wyqqaj64qu73k)
-</td></tr></table>
 
+</td></tr></table>
 
 ## <a name="policy-detail-1"></a> Policy `repo-source-check`
 
@@ -76,10 +82,10 @@
 - `category` = `security`
 - `severity` = `high`
 
-
 <table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th></tr><tr><td>
 
 `N/A`
+
 </td><td>❌</td><td>
 
 <details>
@@ -96,6 +102,5 @@
 </td><td>
 
 [Build Scan](http://localhost:24300/s/wyqqaj64qu73k)
+
 </td></tr></table>
-
-
