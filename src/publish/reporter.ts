@@ -101,11 +101,16 @@ function subjectInfo(
     } else if ('errors' in result && result.errors && result.errors[0]) {
       storeUri = result.errors[0].storeUri.replace(/\/+$/, '')
     }
- */
-
+   */
     const storeUri = 'https://' + repoUrlParts[0]
 
-    uiArtifactUri = `${storeUri}/ui/repos/tree/General/${repoUrlParts[1]}/${result.request.pkg.name}/${tag}`
+    let subjectPath = `${result.request.pkg.name}/${tag}`
+
+    if (result && result.successes && result.successes[0]) {
+      subjectPath = `${result.successes[0].storeResponse.path}`
+    }
+
+    uiArtifactUri = `${storeUri}/ui/repos/tree/General/${repoUrlParts[1]}/${subjectPath}`
   }
 
   subjectSubHeader(
