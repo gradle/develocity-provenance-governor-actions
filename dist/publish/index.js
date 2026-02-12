@@ -29078,6 +29078,7 @@ function groupSuccessByResource(items) {
 =======
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         // Then by predicate_type
         return a.storeResponse.predicate_type.localeCompare(b.storeResponse.predicate_type);
 =======
@@ -29094,7 +29095,14 @@ function groupSuccessByResource(items) {
         // Then by predicate_type
         return a.storeResponse.predicate_type.localeCompare(b.storeResponse.predicate_type);
 >>>>>>> dbcd0c4 (Don't change dist files)
+<<<<<<< HEAD
 >>>>>>> f441702 (Don't change dist files)
+=======
+=======
+        // Then by predicate_type
+        return a.storeResponse.predicate_type.localeCompare(b.storeResponse.predicate_type);
+>>>>>>> a4cca82 (Unchange dist directory)
+>>>>>>> 3140bb8 (Unchange dist directory)
     });
 }
 function successItemToRow(item) {
@@ -29103,6 +29111,7 @@ function successItemToRow(item) {
     const predicateType = item.storeResponse.predicate_type;
     const downloadUri = `${item.storeUri}/ui/api/v1/download/${item.storeResponse.uri}`;
 =======
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     const predicateType = item.storeResponse.predicate_type;
@@ -29119,7 +29128,14 @@ function successItemToRow(item) {
     const predicateType = item.storeResponse.predicate_type;
     const downloadUri = `${item.storeUri}/ui/api/v1/download/${item.storeResponse.uri}`;
 >>>>>>> dbcd0c4 (Don't change dist files)
+<<<<<<< HEAD
 >>>>>>> f441702 (Don't change dist files)
+=======
+=======
+    const predicateType = item.storeResponse.predicate_type;
+    const downloadUri = `${item.storeUri}/ui/api/v1/download/${item.storeResponse.uri}`;
+>>>>>>> a4cca82 (Unchange dist directory)
+>>>>>>> 3140bb8 (Unchange dist directory)
     if (statement) {
         const predicate = JSON.stringify(statement.predicate, null, 2);
         const codeBlock = `\n\`\`\`json\n${predicate}\n\`\`\`\n`;
