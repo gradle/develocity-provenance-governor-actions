@@ -230,8 +230,7 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
           { data: 'Attestation', header: true },
           { data: 'Status', header: true },
           { data: 'Details', header: true },
-          { data: 'Build Scan', header: true },
-          { data: 'Download Link', header: true }
+          { data: 'Build Scan', header: true }
         ]
       ]
 
@@ -265,12 +264,6 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
           },
           {
             data: buildScanUri ? `\n\n[Build Scan](${buildScanUri})\n` : ''
-          },
-          {
-            data:
-              evaluation.attestationDownloadUri != null
-                ? `\n\n[Download Link](${evaluation.attestationDownloadUri})\n`
-                : ''
           }
         ])
       })
@@ -381,7 +374,7 @@ function collectPolicyEvaluations(
 
     const result = new PolicyEvaluationResult(
       r.status,
-      r.attestationStoreUri,
+      r.attestationUri,
       r.sourcedFromUri,
       r.details ?? {}
     )

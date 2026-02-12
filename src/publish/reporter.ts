@@ -198,20 +198,33 @@ function groupSuccessByResource(
 ): PublishSuccessItem[] {
   return [...items].sort((a, b) => {
     // First sort by storeType
-    const storeTypeCompare = a.storeType.localeCompare(b.storeType)
+    const aStoreType = a.storeType ?? ''
+    const bStoreType = b.storeType ?? ''
+    const storeTypeCompare = aStoreType.localeCompare(bStoreType)
     if (storeTypeCompare !== 0) return storeTypeCompare
 
-    // Then by predicate_type
-    return a.storeResponse.predicate_type.localeCompare(
-      b.storeResponse.predicate_type
-    )
+    // Then by predicate_type (check both new metadata structure and old top-level)
+    const aPredicateType =
+      a.storeResponse?.metadata?.['predicate-type'] ??
+      a.storeResponse?.predicate_type ??
+      ''
+    const bPredicateType =
+      b.storeResponse?.metadata?.['predicate-type'] ??
+      b.storeResponse?.predicate_type ??
+      ''
+    return aPredicateType.localeCompare(bPredicateType)
   })
 }
 
 function successItemToRow(item: PublishSuccessItem): string[] {
   const statement = getStatement(item.storeRequest)
-  const predicateType = item.storeResponse.predicate_type
-  const downloadUri = `${item.storeUri}/ui/api/v1/download/${item.storeResponse.uri}`
+  const predicateType =
+    item.storeResponse?.metadata?.['predicate-type'] ??
+    item.storeResponse?.predicate_type ??
+    'Unknown'
+  const storeUri = item.storeUri ?? ''
+  const responseUri = item.storeResponse?.uri ?? ''
+  const downloadUri = `${storeUri}/ui/api/v1/download/${responseUri}`
 
   if (statement) {
     const predicate = JSON.stringify(statement.predicate, null, 2)

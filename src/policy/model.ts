@@ -37,14 +37,12 @@ export enum PolicyResultStatus {
 }
 
 export interface PolicyEvaluation {
-  status: PolicyResultStatus
   labels?: Record<string, string>
+  status: PolicyResultStatus
   policyUri: string
   policyDescription?: string
   policyRemediation?: string
   attestationUri: string
-  attestationStoreInstance: string
-  attestationStoreUri: string
   sourcedFromUri?: string
   details?: Record<string, string>
 }
