@@ -12,7 +12,6 @@
 
 **Digest:** `c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b`
 
-
 **Error:** Policy Scan Not Found
 
 > The requested policy scan 'security-scan' was not found in the system
@@ -43,5 +42,5 @@
   "type": "about:blank"
 }
 ```
-</details>
 
+</details>

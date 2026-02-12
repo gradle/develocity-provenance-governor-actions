@@ -21,5 +21,5 @@
   "instance": "/packages/oci/java-payment-calculator/1.0.0-SNAPSHOT-16152750186-4/attestations"
 }
 ```
-</details>
 
+</details>
