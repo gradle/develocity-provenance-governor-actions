@@ -105,12 +105,18 @@ function subjectInfo(
     const storeUri = 'https://' + repoUrlParts[0]
 
     let subjectPath = `${result.request.pkg.name}/${tag}`
+    let repository = repoUrlParts[1]
 
-    if (result && result.successes && result.successes[0]) {
-      subjectPath = `${result.successes[0].storeResponse.path}`
+    if (result && result.successes && result.successes[0]?.storeResponse) {
+      if (result.successes[0].storeResponse.path) {
+        subjectPath = result.successes[0].storeResponse.path
+      }
+      if (result.successes[0].storeResponse.repository) {
+        repository = result.successes[0].storeResponse.repository
+      }
     }
 
-    uiArtifactUri = `${storeUri}/ui/repos/tree/General/${repoUrlParts[1]}/${subjectPath}`
+    uiArtifactUri = `${storeUri}/ui/repos/tree/General/${repository}/${subjectPath}`
   }
 
   subjectSubHeader(
