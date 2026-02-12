@@ -29194,7 +29194,7 @@ class PublisherSummaryReporter extends BaseReporter {
         const items = groupSuccessByResource(result.successes);
         const rows = [headerRow()];
         items.forEach((success) => {
-            const row = successItemToRow(success);
+            const row = successItemToRow(success, result.request.criteria.repositoryUrl);
             rows.push(row);
         });
         coreExports.summary.addTable(rows);
@@ -29217,7 +29217,7 @@ class PublisherSummaryReporter extends BaseReporter {
                     rows.push(row);
                 });
             }
-            rows.push(...successRows(result));
+            rows.push(...successRows(result, result.request.criteria.repositoryUrl));
             coreExports.summary.addTable(rows);
             coreExports.summary.addEOL();
         }
@@ -29255,7 +29255,7 @@ function errorRow(error) {
         { data: error?.storeResponse?.message }
     ];
 }
-function successRows(result) {
+function successRows(result, repositoryUrl) {
     // TODO merge this table creation with the one below
     // const rows: SummaryTableRow[] = [headerRow()]
     const rows = [];
@@ -29263,7 +29263,7 @@ function successRows(result) {
     if (result?.successes) {
         const items = groupSuccessByResource(result?.successes);
         items.forEach((success) => {
-            const row = successItemToRow(success);
+            const row = successItemToRow(success, repositoryUrl);
             rows.push(row);
         });
     }
@@ -29325,12 +29325,16 @@ function groupSuccessByResource(items) {
         return aPredicateType.localeCompare(bPredicateType);
     });
 }
-function successItemToRow(item) {
+function successItemToRow(item, repositoryUrl) {
     const statement = getStatement(item.storeRequest);
     const predicateType = item.storeResponse?.metadata?.['predicate-type'] ??
         item.storeResponse?.predicate_type ??
         'Unknown';
-    const storeUri = item.storeUri ?? '';
+    let storeUri = item.storeUri ?? '';
+    // Use repositoryUrl if item.storeUri contains "attestations/af:"
+    if (storeUri.includes('attestations/af:')) {
+        storeUri = repositoryUrl;
+    }
     const responseUri = item.storeResponse?.uri ?? '';
     const downloadUri = `${storeUri}/ui/api/v1/download/${responseUri}`;
     if (statement) {
