@@ -107,12 +107,17 @@ function subjectInfo(
     let subjectPath = `${result.request.pkg.name}/${tag}`
     let repository = repoUrlParts[1]
 
-    if (result && result.successes && result.successes[0]?.storeResponse) {
-      if (result.successes[0].storeResponse.path) {
-        subjectPath = result.successes[0].storeResponse.path
-      }
-      if (result.successes[0].storeResponse.repository) {
-        repository = result.successes[0].storeResponse.repository
+    if (result && result.successes) {
+      const artifactorySuccess = result.successes.find(
+        (item) => item.storeType === 'artifactory'
+      )
+      if (artifactorySuccess?.storeResponse) {
+        if (artifactorySuccess.storeResponse.path) {
+          subjectPath = artifactorySuccess.storeResponse.path
+        }
+        if (artifactorySuccess.storeResponse.repository) {
+          repository = artifactorySuccess.storeResponse.repository
+        }
       }
     }
 
