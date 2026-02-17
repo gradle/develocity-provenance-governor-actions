@@ -20,6 +20,7 @@ jobs:
     if: github.repository == 'gradle/develocity-provenance-governor-actions'
     permissions:
       contents: write
+      pull-requests: write
     runs-on: ubuntu-latest
 
     steps:
@@ -45,14 +46,23 @@ jobs:
       - name: Build distribution
         run: npm run package
 
-      # Commit and push changes; has no effect if the files did not change
-      # Important: The push event will not trigger any other workflows, see
-      # https://github.com/stefanzweifel/git-auto-commit-action?tab=readme-ov-file#commits-made-by-this-action-do-not-trigger-new-workflow-runs
-      - name: Commit & push changes
-        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
+      # Create or update a pull request with dist changes.
+      # This avoids direct pushes to protected branches like main.
+      - name: Create dist update pull request
+        uses: peter-evans/create-pull-request@v7
         with:
-          commit_author: bot-githubaction <bot-githubaction@gradle.com>
-          commit_user_name: bot-githubaction
-          commit_user_email: bot-githubaction@gradle.com
+          author: bot-githubaction <bot-githubaction@gradle.com>
+          committer: bot-githubaction <bot-githubaction@gradle.com>
           commit_message: '[bot] Update dist directory'
-          file_pattern: dist
+          add-paths: |
+            dist/**
+          branch: bot/update-dist-${{ github.ref_name }}
+          base: ${{ github.ref_name }}
+          title: '[bot] Update dist directory'
+          body: |
+            Automated dist update generated from `${{ github.ref_name }}`.
+
+            - Trigger: `${{ github.workflow }}`
+            - Commit: `${{ github.sha }}`
+          labels: |
+            automation

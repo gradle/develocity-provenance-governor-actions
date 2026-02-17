@@ -10,6 +10,9 @@ permissions:
 
 jobs:
   fail-on-dist-update:
+    if:
+      ${{ !(github.event_name == 'pull_request' && startsWith(github.head_ref,
+      'bot/update-dist-')) }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
