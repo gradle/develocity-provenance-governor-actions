@@ -4,14 +4,14 @@
 
 # Attestations Published
 
-**Subject:**
-<a href="https://develocitytia.jfrog.io/ui/repos/tree/General/docker-trial/java-payment-calculator/1.0.0-SNAPSHOT-16152750186-3">pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3</a>
+**Subject:** <a href="https://develocitytia.jfrog.io/ui/repos/tree/General/docker-trial/java-payment-calculator/1.0.0-SNAPSHOT-16152750186-3/manifest.json">pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3</a>
 
 **Digest:** `c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b`
 
 <table><tr><th>Type</th><th>Published</th><th>Attestation</th></tr><tr><td>
 
 `https://gradle.com/attestations/repository/v1`</td><td>✅</td><td>
+
 
 <details open>
 
@@ -24,8 +24,8 @@
 }
 ```
 
+
 </details>
 
 [Download](https://develocitytia.jfrog.io/ui/api/v1/download/docker-trial/.evidence/aa2fa444849b0384f9ec5e8c70fd4c536ace38b3b83173eb295f3d848edadf7a/f9b2d27fbeca208cd71430ffae8139802467cf6db56b76a2739c2d5e1339084f/gradle-attestations-repository-1752171092262-dc7d228c.json)
-
 </td></tr></table>
