@@ -29374,15 +29374,6 @@ function reportSubjectInfo(subject) {
         .addEOL();
     summary.addEOL();
 }
-function attestationName(attestation) {
-    if (attestation.attestationDownloadUri) {
-        const uri = attestation.attestationDownloadUri;
-        return uri.substring(uri.lastIndexOf('/') + 1);
-    }
-    else {
-        return 'N/A';
-    }
-}
 function reportPolicyTable(policies) {
     const tableRows = [
         [
@@ -29465,7 +29456,6 @@ function reportFailedPolicyDetails(policies) {
             }
             const tableRows = [
                 [
-                    { data: 'Attestation', header: true },
                     { data: 'Status', header: true },
                     { data: 'Details', header: true },
                     { data: 'Build Scan', header: true }
@@ -29476,15 +29466,10 @@ function reportFailedPolicyDetails(policies) {
                 if (evaluation.status == PolicyResultStatus.UNSATISFIED) {
                     error$1('Policy ' +
                         policyEval.policy.name +
-                        ' on attestation ' +
-                        attestationName(evaluation) +
-                        ' evaluated to UNSATISFIED');
+                        ' on attestation evaluated to UNSATISFIED');
                 }
                 const buildScanUri = evaluation.sourceUri;
                 tableRows.push([
-                    {
-                        data: `\n\n\`${attestationName(evaluation)}\`\n`
-                    },
                     { data: statusIcon(evaluation.status) },
                     {
                         data: otherDetailsJson != '{}'
