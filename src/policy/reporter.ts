@@ -123,15 +123,6 @@ function reportSubjectInfo(subject: PolicyRequestSubject) {
   core.summary.addEOL()
 }
 
-function attestationName(attestation: PolicyEvaluationResult): string {
-  if (attestation.attestationDownloadUri) {
-    const uri = attestation.attestationDownloadUri
-    return uri.substring(uri.lastIndexOf('/') + 1)
-  } else {
-    return 'N/A'
-  }
-}
-
 function reportPolicyTable(policies: PolicyEvaluations[]) {
   const tableRows: SummaryTableRow[] = [
     [
@@ -227,7 +218,6 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
 
       const tableRows: SummaryTableRow[] = [
         [
-          { data: 'Attestation', header: true },
           { data: 'Status', header: true },
           { data: 'Details', header: true },
           { data: 'Build Scan', header: true }
@@ -241,18 +231,13 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
           core.error(
             'Policy ' +
               policyEval.policy.name +
-              ' on attestation ' +
-              attestationName(evaluation) +
-              ' evaluated to UNSATISFIED'
+              ' on attestation evaluated to UNSATISFIED'
           )
         }
 
         const buildScanUri = evaluation.sourceUri
 
         tableRows.push([
-          {
-            data: `\n\n\`${attestationName(evaluation)}\`\n`
-          },
           { data: statusIcon(evaluation.status) },
           {
             data:

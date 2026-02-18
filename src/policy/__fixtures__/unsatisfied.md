@@ -52,10 +52,7 @@
 - `severity` = `medium`
 
 
-<table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th></tr><tr><td>
-
-`ZG9ja2VyLXRyaWFsLy5ldmlkZW5jZS8zMjYzN2Y1ZDQyNTNhNDk0MWZkZDE3YjRjYjExOTdlMmUxZjRkZjQyNDBjZmU2ZjNiN2ViNjJlYWM4YmJlMjc0LzczNTJhYTNlNTA1MWMzZWYyNmFhNTI3N2ZkMzBhNTFiMzQxNTA0NDFkOWU5NTU0YzlhOTk2MWU4YjQ0OTc1ZDIvZ3JhZGxlLWJ1aWxkLXRvb2wtMTc2NTIyMDE4Njk0My0xMjYwYTgwZS5qc29u`
-</td><td>❌</td><td><td>
+<table><tr><th>Status</th><th>Details</th><th>Build Scan</th></tr><tr><td>❌</td><td><td>
 
 [Build Scan](http://localhost:24300/s/wyqqaj64qu73k)
 </td></tr></table>
@@ -69,10 +66,7 @@
 
 **Remediation:** Ensure the repository is from a trusted source
 
-<table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th></tr><tr><td>
-
-`ZG9ja2VyLXRyaWFsLy5ldmlkZW5jZS8zMjYzN2Y1ZDQyNTNhNDk0MWZkZDE3YjRjYjExOTdlMmUxZjRkZjQyNDBjZmU2ZjNiN2ViNjJlYWM4YmJlMjc0LzczNTJhYTNlNTA1MWMzZWYyNmFhNTI3N2ZkMzBhNTFiMzQxNTA0NDFkOWU5NTU0YzlhOTk2MWU4YjQ0OTc1ZDIvZ3JhZGxlLWJ1aWxkLXRvb2wtMTc2NTIyMDE4Njk0My0xMjYwYTgwZS5qc29u`
-</td><td>❌</td><td><td>
+<table><tr><th>Status</th><th>Details</th><th>Build Scan</th></tr><tr><td>❌</td><td><td>
 
 [Build Scan](http://localhost:24300/s/wyqqaj64qu73k)
 </td></tr></table>
