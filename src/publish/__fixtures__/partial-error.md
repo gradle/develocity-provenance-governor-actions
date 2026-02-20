@@ -119,7 +119,7 @@
 ```
 </details>
 
-**Subject:** <a href="https://develocitytia.jfrog.io/ui/repos/tree/General/docker-trial/java-payment-calculator/1.0.0-SNAPSHOT-16152750186">pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3</a>
+**Subject:** <a href="https://develocitytia.jfrog.io/ui/repos/tree/General/docker-trial/java-payment-calculator/1.0.0-SNAPSHOT-16152750186-3/manifest.json">pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3</a>
 
 **Digest:** `c8d8f52ac5cd63188e705ac55dd01ee3a22f419a6b311175f84d965573af563b`
 
