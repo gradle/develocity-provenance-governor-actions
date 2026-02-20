@@ -136,10 +136,8 @@ function renderAndCompare(
   const payload = JSON.parse(
     fs.readFileSync(`src/policy/__fixtures__/${fixtureName}.json`, 'utf8')
   )
-  const expectedReport = fs.readFileSync(
-    `src/policy/__fixtures__/${fixtureName}.md`,
-    'utf8'
-  )
+  const expectedReportPath = `src/policy/__fixtures__/${fixtureName}.md`
+  const expectedReport = fs.readFileSync(expectedReportPath, 'utf8')
 
   new PolicySummaryReporter().report(
     status,
@@ -155,5 +153,10 @@ function renderAndCompare(
 
   // verify the summary text looks good
   const summaryContent = core.summary.stringify()
+
+  if (process.env.UPDATE_FIXTURES === '1') {
+    fs.writeFileSync(expectedReportPath, summaryContent)
+  }
+
   expect(summaryContent).toBe(expectedReport)
 }
