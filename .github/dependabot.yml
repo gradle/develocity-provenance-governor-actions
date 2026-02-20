@@ -18,6 +18,11 @@ updates:
       - dependency-name: '@types/node'
         update-types:
           - 'version-update:semver-major'
+      - dependency-name: 'eslint'
+        update-types:
+          - 'version-update:semver-major'
+        # Ignore ESLint 10.x for 2 months (until 2 months from today)
+        expires: 2026-04-20
     groups:
       npm-development:
         dependency-type: development
