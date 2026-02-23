@@ -19,6 +19,7 @@ updates:
         update-types:
           - 'version-update:semver-major'
       - dependency-name: 'eslint'
+        # Ignored because eslint-plugin-import does not support ESLint 10.x yet
         versions:
           - '>=10.0.0'
     groups:
