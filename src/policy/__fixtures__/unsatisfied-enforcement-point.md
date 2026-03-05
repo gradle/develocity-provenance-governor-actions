@@ -54,10 +54,7 @@
 - `severity` = `medium`
 
 
-<table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th></tr><tr><td>
-
-`N/A`
-</td><td>❌</td><td><td>
+<table><tr><th>Status</th><th>Details</th><th>Build Scan</th></tr><tr><td>❌</td><td><td>
 
 [Build Scan](http://localhost:24300/s/wyqqaj64qu73k)
 </td></tr></table>
@@ -77,10 +74,7 @@
 - `severity` = `high`
 
 
-<table><tr><th>Attestation</th><th>Status</th><th>Details</th><th>Build Scan</th></tr><tr><td>
-
-`N/A`
-</td><td>❌</td><td>
+<table><tr><th>Status</th><th>Details</th><th>Build Scan</th></tr><tr><td>❌</td><td>
 
 <details>
 

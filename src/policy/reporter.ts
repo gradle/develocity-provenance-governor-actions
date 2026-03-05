@@ -227,7 +227,6 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
 
       const tableRows: SummaryTableRow[] = [
         [
-          { data: 'Attestation', header: true },
           { data: 'Status', header: true },
           { data: 'Details', header: true },
           { data: 'Build Scan', header: true }
@@ -250,9 +249,6 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
         const buildScanUri = evaluation.sourceUri
 
         tableRows.push([
-          {
-            data: `\n\n\`${attestationName(evaluation)}\`\n`
-          },
           { data: statusIcon(evaluation.status) },
           {
             data:
