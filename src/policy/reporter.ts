@@ -253,7 +253,7 @@ function reportFailedPolicyDetails(policies: PolicyEvaluations[]) {
           {
             data:
               otherDetailsJson != '{}'
-                ? '\n\n<details>\n\n<summary>Details</summary>\n\n```json\n' +
+                ? '\n\n<details open>\n\n<summary>Details</summary>\n\n```json\n' +
                   otherDetailsJson +
                   '\n```\n\n</details>\n'
                 : ''

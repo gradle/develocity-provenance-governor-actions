@@ -76,7 +76,7 @@
 
 <table><tr><th>Status</th><th>Details</th><th>Build Scan</th></tr><tr><td>❌</td><td>
 
-<details>
+<details open>
 
 <summary>Details</summary>
 
