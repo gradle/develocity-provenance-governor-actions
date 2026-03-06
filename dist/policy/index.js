@@ -29465,7 +29465,6 @@ function reportFailedPolicyDetails(policies) {
             }
             const tableRows = [
                 [
-                    { data: 'Attestation', header: true },
                     { data: 'Status', header: true },
                     { data: 'Details', header: true },
                     { data: 'Build Scan', header: true }
@@ -29482,13 +29481,10 @@ function reportFailedPolicyDetails(policies) {
                 }
                 const buildScanUri = evaluation.sourceUri;
                 tableRows.push([
-                    {
-                        data: `\n\n\`${attestationName(evaluation)}\`\n`
-                    },
                     { data: statusIcon(evaluation.status) },
                     {
                         data: otherDetailsJson != '{}'
-                            ? '\n\n<details>\n\n<summary>Details</summary>\n\n```json\n' +
+                            ? '\n\n<details open>\n\n<summary>Details</summary>\n\n```json\n' +
                                 otherDetailsJson +
                                 '\n```\n\n</details>\n'
                             : ''
