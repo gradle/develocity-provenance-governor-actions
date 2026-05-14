@@ -46,7 +46,12 @@ describe('publishing reporter.js', () => {
       }
     }
 
-    new PublisherSummaryReporter().report(404, subject, payload, true)
+    new PublisherSummaryReporter('develocitytia.jfrog.io/docker-trial').report(
+      404,
+      subject,
+      payload,
+      true
+    )
 
     expect(core.setFailed).toHaveBeenCalledWith(
       'Attestation publishing for subject pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3 errored'
@@ -68,7 +73,12 @@ describe('publishing reporter.js', () => {
       }
     }
 
-    new PublisherSummaryReporter().report(400, subject, payload, true)
+    new PublisherSummaryReporter('develocitytia.jfrog.io/docker-trial').report(
+      400,
+      subject,
+      payload,
+      true
+    )
 
     expect(core.setFailed).toHaveBeenCalledWith(
       'Attestation publishing for subject pkg:oci/java-payment-calculator@1.0.0-SNAPSHOT-16152750186-3 errored'
@@ -90,7 +100,12 @@ describe('publishing reporter.js', () => {
       }
     }
 
-    new PublisherSummaryReporter().report(200, subject, payload, true)
+    new PublisherSummaryReporter('develocitytia.jfrog.io/docker-trial').report(
+      200,
+      subject,
+      payload,
+      true
+    )
 
     expect(core.setFailed).not.toHaveBeenCalled()
     expect(core.error).not.toHaveBeenCalled()
@@ -111,7 +126,7 @@ function renderAndCompare(
     'utf8'
   )
 
-  new PublisherSummaryReporter().report(
+  new PublisherSummaryReporter('develocitytia.jfrog.io/docker-trial').report(
     status,
     { name: subjectName, digest: { sha256: digest } },
     payload,

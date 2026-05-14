@@ -94,6 +94,10 @@ describe('main.ts', () => {
     )
 
     expect(createPublisherReporter).toHaveBeenCalledTimes(1)
+    expect(createPublisherReporter).toHaveBeenNthCalledWith(
+      1,
+      'https://repo.example.com/'
+    )
     expect(client.publishAttestation).toHaveBeenNthCalledWith(
       1,
       'type11',
@@ -162,6 +166,10 @@ describe('main.ts', () => {
     )
 
     expect(createPublisherReporter).toHaveBeenCalledTimes(1)
+    expect(createPublisherReporter).toHaveBeenNthCalledWith(
+      1,
+      'https://repo.example.com/'
+    )
     expect(client.publishAttestation).toHaveBeenNthCalledWith(
       1,
       'type22',

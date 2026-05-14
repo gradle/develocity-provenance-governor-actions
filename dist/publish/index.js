@@ -30806,18 +30806,23 @@ function reportProblemDetails(result) {
         .addEOL();
 }
 
-function createPublisherReporter() {
-    return new PublisherSummaryReporter();
+function createPublisherReporter(repositoryUrl) {
+    return new PublisherSummaryReporter(repositoryUrl);
 }
 class PublisherSummaryReporter extends BaseReporter {
+    repositoryUrl;
+    constructor(repositoryUrl) {
+        super();
+        this.repositoryUrl = repositoryUrl;
+    }
     reportSuccess(subject, result) {
         info(`Attestation publishing for subject: ${subject.name} completed successfully!`);
         header('Attestations Published');
-        subjectInfo(subject, result);
+        subjectInfo(subject, this.repositoryUrl, result);
         const items = groupSuccessByResource(result.successes);
         const rows = [headerRow()];
         items.forEach((success) => {
-            const row = successItemToRow(success, result.request.criteria.repositoryUrl);
+            const row = successItemToRow(success, this.repositoryUrl);
             rows.push(row);
         });
         summary.addTable(rows);
@@ -30831,7 +30836,7 @@ class PublisherSummaryReporter extends BaseReporter {
         reportProblemDetails(result);
         // print table if we have errors or successes
         if (result?.errors || result?.successes) {
-            subjectInfo(subject, result);
+            subjectInfo(subject, this.repositoryUrl, result);
             // header
             const rows = [errorHeaderRow()];
             if (result?.errors) {
@@ -30840,16 +30845,16 @@ class PublisherSummaryReporter extends BaseReporter {
                     rows.push(row);
                 });
             }
-            rows.push(...successRows(result, result.request.criteria.repositoryUrl));
+            rows.push(...successRows(result, this.repositoryUrl));
             summary.addTable(rows);
             summary.addEOL();
         }
     }
 }
-function subjectInfo(subject, result) {
+function subjectInfo(subject, repositoryUrl, result) {
     let uiArtifactUri;
     if (result && result.request) {
-        const repoUrlParts = result.request.criteria.repositoryUrl.split('/');
+        const repoUrlParts = repositoryUrl.split('/');
         const tag = result.request.pkg.version;
         // get the artifact uri from the result items
         /*     if (result && result.successes && result.successes[0]) {
@@ -31054,7 +31059,7 @@ async function run() {
         const publisherClient = createClient(attestationPublisherUrl, credentials);
         const result = await publisherClient.publishAttestation(pkgType, pkgNamespace, pkgName, pkgVersion, subjectDigest, repositoryUrl, buildScanIds ?? [], buildScanQueries ?? []);
         // create summary
-        const reporter = createPublisherReporter();
+        const reporter = createPublisherReporter(repositoryUrl);
         const subject = new PublishRequestSubject(subjectPurl.toString(), {
             sha256: subjectDigest
         });

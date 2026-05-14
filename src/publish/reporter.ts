@@ -11,12 +11,14 @@ import {
   StoreRequest
 } from './model.js'
 
-export function createPublisherReporter(): Reporter<
+export function createPublisherReporter(
+  repositoryUrl: string
+): Reporter<
   PublishRequestSubject,
   PublishSuccessResponse,
   PublishErrorResponse
 > {
-  return new PublisherSummaryReporter()
+  return new PublisherSummaryReporter(repositoryUrl)
 }
 
 export class PublisherSummaryReporter extends BaseReporter<
@@ -24,6 +26,13 @@ export class PublisherSummaryReporter extends BaseReporter<
   PublishSuccessResponse,
   PublishErrorResponse
 > {
+  private readonly repositoryUrl: string
+
+  constructor(repositoryUrl: string) {
+    super()
+    this.repositoryUrl = repositoryUrl
+  }
+
   reportSuccess(
     subject: PublishRequestSubject,
     result: PublishSuccessResponse
@@ -33,16 +42,13 @@ export class PublisherSummaryReporter extends BaseReporter<
     )
 
     header('Attestations Published')
-    subjectInfo(subject, result)
+    subjectInfo(subject, this.repositoryUrl, result)
 
     const items = groupSuccessByResource(result.successes)
     const rows: SummaryTableRow[] = [headerRow()]
 
     items.forEach((success) => {
-      const row = successItemToRow(
-        success,
-        result.request.criteria.repositoryUrl
-      )
+      const row = successItemToRow(success, this.repositoryUrl)
       rows.push(row)
     })
 
@@ -67,7 +73,7 @@ export class PublisherSummaryReporter extends BaseReporter<
 
     // print table if we have errors or successes
     if (result?.errors || result?.successes) {
-      subjectInfo(subject, result)
+      subjectInfo(subject, this.repositoryUrl, result)
 
       // header
       const rows: SummaryTableRow[] = [errorHeaderRow()]
@@ -79,7 +85,7 @@ export class PublisherSummaryReporter extends BaseReporter<
         })
       }
 
-      rows.push(...successRows(result, result.request.criteria.repositoryUrl))
+      rows.push(...successRows(result, this.repositoryUrl))
       core.summary.addTable(rows)
       core.summary.addEOL()
     }
@@ -88,11 +94,12 @@ export class PublisherSummaryReporter extends BaseReporter<
 
 function subjectInfo(
   subject: PublishRequestSubject,
+  repositoryUrl: string,
   result?: PublishSuccessResponse | PublishErrorResponse
 ) {
   let uiArtifactUri
   if (result && result.request) {
-    const repoUrlParts = result.request.criteria.repositoryUrl.split('/')
+    const repoUrlParts = repositoryUrl.split('/')
     const tag = result.request.pkg.version
 
     // get the artifact uri from the result items
