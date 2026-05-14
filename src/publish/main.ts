@@ -69,7 +69,7 @@ export async function run(): Promise<void> {
     )
 
     // create summary
-    const reporter = createPublisherReporter()
+    const reporter = createPublisherReporter(repositoryUrl)
     const subject = new PublishRequestSubject(subjectPurl.toString(), {
       sha256: subjectDigest
     })
