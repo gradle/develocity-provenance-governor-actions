@@ -21,7 +21,6 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      id-token: write
     runs-on: ubuntu-latest
 
     steps:
@@ -32,31 +31,44 @@ jobs:
         with:
           node-version-file: .node-version
 
-      - name: Get Secrets
-        uses: gradle/actions-internal/get-aws-secrets@v1
-        if: github.repository_owner == 'gradle'
-        continue-on-error: true
-        with:
-          role-to-assume: arn:aws:iam::992382829881:role/GHASecrets_develocity-provenance-governor-actions_all
-          secret-ids: |
-            WARP_CLIENT_ID,gha/_shared/_all/warp_basic_access_client_id
-            WARP_CLIENT_SECRET,gha/_shared/_all/warp_basic_access_client_secret
-
-      - name: Connect to Gradle internal network
-        uses: gradle/gradle-github-actions/warp-connect@46afa575b7b38083048d98686119ee23ab41125d
-        continue-on-error: true
-        with:
-          client_id: ${{ env.WARP_CLIENT_ID }}
-          client_secret: ${{ env.WARP_CLIENT_SECRET }}
-          organization: 'gradle'
-
-      - name: Setup Develocity for npm
-        uses: gradle/develocity-actions/setup-npm@0e1f30c14ab56d0c1ecf229a0ffc3eb3e40e4642 #v2.2
-        with:
-          develocity-injection-enabled: true
-          develocity-access-key: >
-            develocity.grdev.net=${{ secrets.DEVELOCITY_ACCESS_KEY }}
-          develocity-url: https://develocity.grdev.net
+      # Build Scan publishing is disabled: develocity-ext-github.grdev.net was removed on
+      # 2026-07-16, and this public repo cannot use the internal warp-connect action that
+      # internal repos use to reach develocity.grdev.net.
+      #
+      # To re-enable publishing:
+      #   1. Pick a target instance: develocity.grdev.net once a public-repo WARP path
+      #      exists, or ge.solutions-team.gradle.com (internet-reachable; used by the
+      #      public gradle/develocity-actions and gradle/actions repos).
+      #   2. Rotate the DEVELOCITY_ACCESS_KEY repo secret to a key issued by that instance.
+      #   3. Uncomment the steps below, updating the host in develocity-access-key and
+      #      develocity-url. For the WARP path, also add `id-token: write` to this job's
+      #      permissions and uncomment the Get Secrets and warp-connect steps.
+      #
+      # - name: Get Secrets
+      #   uses: gradle/actions-internal/get-aws-secrets@v1
+      #   if: github.repository_owner == 'gradle'
+      #   continue-on-error: true
+      #   with:
+      #     role-to-assume: arn:aws:iam::992382829881:role/GHASecrets_develocity-provenance-governor-actions_all
+      #     secret-ids: |
+      #       WARP_CLIENT_ID,gha/_shared/_all/warp_basic_access_client_id
+      #       WARP_CLIENT_SECRET,gha/_shared/_all/warp_basic_access_client_secret
+      #
+      # - name: Connect to Gradle internal network
+      #   uses: gradle/gradle-github-actions/warp-connect@46afa575b7b38083048d98686119ee23ab41125d
+      #   continue-on-error: true
+      #   with:
+      #     client_id: ${{ env.WARP_CLIENT_ID }}
+      #     client_secret: ${{ env.WARP_CLIENT_SECRET }}
+      #     organization: 'gradle'
+      #
+      # - name: Setup Develocity for npm
+      #   uses: gradle/develocity-actions/setup-npm@0e1f30c14ab56d0c1ecf229a0ffc3eb3e40e4642 #v2.2
+      #   with:
+      #     develocity-injection-enabled: true
+      #     develocity-access-key: >
+      #       develocity.grdev.net=${{ secrets.DEVELOCITY_ACCESS_KEY }}
+      #     develocity-url: https://develocity.grdev.net
 
       - name: Install Dependencies
         id: npm-ci
