@@ -16,9 +16,6 @@ jobs:
     name: Build and run tests
     runs-on: ubuntu-latest
 
-    env:
-      DEVELOCITY_URL: https://develocity-ext-github.grdev.net
-
     steps:
       - name: Checkout
         id: checkout
@@ -31,13 +28,8 @@ jobs:
           node-version-file: .node-version
           cache: npm
 
-      - name: Setup Develocity for npm
-        uses: gradle/develocity-actions/setup-npm@0e1f30c14ab56d0c1ecf229a0ffc3eb3e40e4642 #v2.2
-        with:
-          develocity-injection-enabled: true
-          develocity-access-key: >
-            develocity-ext-github.grdev.net=${{ secrets.DEVELOCITY_ACCESS_KEY }}
-          develocity-url: https://develocity-ext-github.grdev.net
+      # Build Scan publishing is disabled: develocity-ext-github.grdev.net was removed,
+      # and this public repo cannot reach develocity.grdev.net via the internal warp-connect action.
 
       - name: Install Dependencies
         id: npm-ci
