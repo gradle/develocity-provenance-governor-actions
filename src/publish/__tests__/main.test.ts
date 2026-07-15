@@ -37,8 +37,8 @@ describe('main.ts', () => {
     createPublisherReporter.mockImplementation(
       (): Reporter<never, never, never> => mockReporter
     )
-    core.getIDToken.mockImplementation(
-      (): Promise<string> => Promise.resolve('gha-token')
+    core.getIDToken.mockImplementation((): Promise<string> =>
+      Promise.resolve('gha-token')
     )
   })
 
