@@ -68,7 +68,8 @@ export interface Client {
     digest: string,
     repositoryUrl: string,
     buildScanIds: string[],
-    buildScanQueries: string[]
+    buildScanQueries: string[],
+    annotations?: Record<string, string>
   ): Promise<PublisherResult>
 
   evaluatePolicy(
@@ -105,6 +106,7 @@ class ApiClient implements Client {
    * @param repositoryUrl The repository the subject artifact was published to.
    * @param buildScanIds The build scan IDs to create attestations from.
    * @param buildScanQueries The build scan queries to create attestations from.
+   * @param annotations Annotations to attach to the request, used to select Fact Connector policies and stored on the attestation subject. Omitted from the payload when empty.
    * @returns Promise that resolves when the attestation is published
    */
   async publishAttestation(
@@ -115,19 +117,26 @@ class ApiClient implements Client {
     digest: string,
     repositoryUrl: string,
     buildScanIds: string[],
-    buildScanQueries: string[]
+    buildScanQueries: string[],
+    annotations?: Record<string, string>
   ): Promise<PublisherResult> {
     const publisherUrl = pkgNamespace
       ? `${this.baseUrl}packages/${pkgType}/${pkgNamespace}/${pkgName}/${pkgVersion}/attestations`
       : `${this.baseUrl}packages/${pkgType}/${pkgName}/${pkgVersion}/attestations`
 
+    // JSON.stringify drops undefined values, so an empty annotation set leaves
+    // the payload exactly as it was before annotations existed
     const payload = JSON.stringify({
       repositoryUrl: repositoryUrl,
       sha256: digest,
       buildScan: {
         ids: buildScanIds,
         queries: buildScanQueries
-      }
+      },
+      annotations:
+        annotations && Object.keys(annotations).length > 0
+          ? annotations
+          : undefined
     })
 
     console.log('Calling publisher: ', publisherUrl)

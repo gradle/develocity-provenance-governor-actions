@@ -3,7 +3,7 @@ import { createClient, Credentials } from '../client.js'
 import { PackageURL } from 'packageurl-js'
 import { createPublisherReporter } from './reporter.js'
 import { PublishRequestSubject } from './model.js'
-import { getOptionalInput } from '../helpers.js'
+import { getOptionalInput, parseAnnotations } from '../helpers.js'
 
 export async function run(): Promise<void> {
   try {
@@ -22,6 +22,10 @@ export async function run(): Promise<void> {
       pkgNamespace,
       pkgName,
       pkgVersion
+    )
+
+    const annotations = parseAnnotations(
+      core.getMultilineInput('annotations', { required: false }) ?? []
     )
 
     // collect inputs
@@ -65,7 +69,8 @@ export async function run(): Promise<void> {
       subjectDigest,
       repositoryUrl,
       buildScanIds ?? [],
-      buildScanQueries ?? []
+      buildScanQueries ?? [],
+      annotations
     )
 
     // create summary
