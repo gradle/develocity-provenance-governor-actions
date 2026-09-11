@@ -33,7 +33,7 @@
     "packageurl-js": "^2.0.1"
   },
   "devDependencies": {
-    "@eslint/compat": "^2.1.0",
+    "@eslint/compat": "^2.1.1",
     "@github/local-action": "^7.0.1",
     "@gradle-tech/develocity-agent": "https://develocity-npm-pkgs.gradle.com/gradle-develocity-agent-2.0.0-rc-1.tgz",
     "@jest/globals": "^30.5.1",
@@ -42,7 +42,7 @@
     "@rollup/plugin-typescript": "^12.3.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^20.19.43",
-    "@typescript-eslint/eslint-plugin": "^8.69.0",
+    "@typescript-eslint/eslint-plugin": "^8.70.0",
     "@typescript-eslint/parser": "^8.32.1",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
@@ -52,7 +52,7 @@
     "eslint-plugin-prettier": "^5.5.6",
     "jest": "^30.5.1",
     "make-coverage-badge": "^1.2.0",
-    "marked": "^18.0.11",
+    "marked": "^18.0.12",
     "prettier": "^3.9.6",
     "prettier-eslint": "^17.1.2",
     "rollup": "^4.63.1",
