@@ -107,7 +107,8 @@ describe('main.ts', () => {
       'digest11',
       'https://repo.example.com/',
       ['build-scan-id11', 'build-scan-id12'],
-      ['query 1', 'query 2']
+      ['query 1', 'query 2'],
+      {}
     )
     const subject = {
       name: 'pkg:type11/namespace11/name11@version11',
@@ -179,7 +180,8 @@ describe('main.ts', () => {
       'digest22',
       'https://repo.example.com/',
       ['build-scan-id21', 'build-scan-id22'],
-      []
+      [],
+      {}
     )
 
     const subject = {
@@ -194,5 +196,213 @@ describe('main.ts', () => {
     )
 
     expect(core.summary.write).toHaveBeenCalled()
+  })
+
+  describe('annotations input', () => {
+    // Returns the client the action under test will publish through.
+    function stubClient(): Client {
+      const payload = JSON.parse(
+        fs.readFileSync('src/publish/__fixtures__/success.json', 'utf8')
+      )
+      const client: Client = {
+        publishAttestation: jest.fn(() =>
+          Promise.resolve(new PublisherResult(200, true, payload))
+        ),
+        evaluatePolicy(): Promise<PolicyResult> {
+          throw new Error('Not implemented')
+        }
+      }
+      createClient.mockImplementation((): Client => client)
+      return client
+    }
+
+    // Mocks every input the action reads apart from the multiline ones.
+    function mockSubjectInputs(): void {
+      core.getInput
+        .mockClear()
+        .mockReturnValueOnce('oci') // subject-type
+        .mockReturnValueOnce('') // subject-namespace
+        .mockReturnValueOnce('name33') // subject-name
+        .mockReturnValueOnce('version33') // subject-version
+        .mockReturnValueOnce('digest33') // subject-digest
+        .mockReturnValueOnce('https://repo.example.com/') // subject-repository-url
+        .mockReturnValueOnce('https://attest.example.com/') // attestation-publisher-url
+        .mockReturnValueOnce('') // username
+        .mockReturnValueOnce('') // password
+    }
+
+    // Mocks the three multiline inputs, in the order the action reads them.
+    function mockAnnotationInput(annotations: string[]): void {
+      core.getMultilineInput
+        .mockClear()
+        .mockReturnValueOnce(['build-scan-id33']) // build-scan-ids
+        .mockReturnValueOnce([]) // build-scan-queries
+        .mockReturnValueOnce(annotations) // annotations
+    }
+
+    it('Passes parsed annotations to the client', async () => {
+      const client = stubClient()
+      mockSubjectInputs()
+      mockAnnotationInput([
+        'github.repository.owner=dv-demos',
+        'github.repository.name=apps-java-payment-calculator',
+        'github.run.id=29434974707'
+      ])
+
+      await run()
+
+      expect(core.setFailed).not.toHaveBeenCalled()
+      expect(client.publishAttestation).toHaveBeenNthCalledWith(
+        1,
+        'oci',
+        null,
+        'name33',
+        'version33',
+        'digest33',
+        'https://repo.example.com/',
+        ['build-scan-id33'],
+        [],
+        {
+          'github.repository.owner': 'dv-demos',
+          'github.repository.name': 'apps-java-payment-calculator',
+          'github.run.id': '29434974707'
+        }
+      )
+    })
+
+    it('Passes no annotations when the input is omitted', async () => {
+      const client = stubClient()
+      mockSubjectInputs()
+      mockAnnotationInput([])
+
+      await run()
+
+      expect(core.setFailed).not.toHaveBeenCalled()
+      expect(client.publishAttestation).toHaveBeenNthCalledWith(
+        1,
+        'oci',
+        null,
+        'name33',
+        'version33',
+        'digest33',
+        'https://repo.example.com/',
+        ['build-scan-id33'],
+        [],
+        {}
+      )
+    })
+
+    it('Skips blank annotation lines and trims keys', async () => {
+      const client = stubClient()
+      mockSubjectInputs()
+      mockAnnotationInput(['', '  github.run.id  =29434974707', '   '])
+
+      await run()
+
+      expect(core.setFailed).not.toHaveBeenCalled()
+      expect(client.publishAttestation).toHaveBeenNthCalledWith(
+        1,
+        'oci',
+        null,
+        'name33',
+        'version33',
+        'digest33',
+        'https://repo.example.com/',
+        ['build-scan-id33'],
+        [],
+        { 'github.run.id': '29434974707' }
+      )
+    })
+
+    it('Keeps = characters in an annotation value', async () => {
+      const client = stubClient()
+      mockSubjectInputs()
+      mockAnnotationInput([
+        'github.run.url=https://github.com/dv-demos/app/actions/runs/1?check_suite_focus=true'
+      ])
+
+      await run()
+
+      expect(core.setFailed).not.toHaveBeenCalled()
+      expect(client.publishAttestation).toHaveBeenNthCalledWith(
+        1,
+        'oci',
+        null,
+        'name33',
+        'version33',
+        'digest33',
+        'https://repo.example.com/',
+        ['build-scan-id33'],
+        [],
+        {
+          'github.run.url':
+            'https://github.com/dv-demos/app/actions/runs/1?check_suite_focus=true'
+        }
+      )
+    })
+
+    it('Warns on a duplicate annotation key and keeps the last value', async () => {
+      const client = stubClient()
+      mockSubjectInputs()
+      mockAnnotationInput(['github.run.id=1', 'github.run.id=2'])
+
+      await run()
+
+      expect(core.setFailed).not.toHaveBeenCalled()
+      expect(core.warning).toHaveBeenCalledWith(
+        "Duplicate annotation key 'github.run.id', the last value provided wins."
+      )
+      expect(client.publishAttestation).toHaveBeenNthCalledWith(
+        1,
+        'oci',
+        null,
+        'name33',
+        'version33',
+        'digest33',
+        'https://repo.example.com/',
+        ['build-scan-id33'],
+        [],
+        { 'github.run.id': '2' }
+      )
+    })
+
+    it('Fails on an annotation line without a separator', async () => {
+      const client = stubClient()
+      mockSubjectInputs()
+      mockAnnotationInput(['github.run.id 29434974707'])
+
+      await run()
+
+      expect(core.setFailed).toHaveBeenCalledWith(
+        "Action failed with error: Invalid annotation 'github.run.id 29434974707': expected a 'key=value' pair."
+      )
+      expect(client.publishAttestation).not.toHaveBeenCalled()
+    })
+
+    it('Fails on an annotation with an empty key', async () => {
+      const client = stubClient()
+      mockSubjectInputs()
+      mockAnnotationInput(['=29434974707'])
+
+      await run()
+
+      expect(core.setFailed).toHaveBeenCalledWith(
+        "Action failed with error: Invalid annotation '=29434974707': the key is empty."
+      )
+      expect(client.publishAttestation).not.toHaveBeenCalled()
+    })
+
+    it('Fails on an annotation key using the reserved request. prefix', async () => {
+      const client = stubClient()
+      mockSubjectInputs()
+      mockAnnotationInput(['Request.principal.claims.run_id=29434974707'])
+
+      await run()
+
+      expect(core.setFailed).toHaveBeenCalledWith(
+        "Action failed with error: Invalid annotation key 'Request.principal.claims.run_id': the 'request.' prefix is reserved by the Provenance Governor."
+      )
+      expect(client.publishAttestation).not.toHaveBeenCalled()
+    })
   })
 })

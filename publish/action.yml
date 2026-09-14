@@ -4,6 +4,13 @@ description:
   Provenance Governor instance.'
 
 inputs:
+  annotations:
+    description:
+      'The annotations to attach to the publish request. Provided one per line
+      as key=value pairs. Provenance Governor uses annotations to select Fact
+      Connector policies and stores them on the attestation subject. Keys must
+      not begin with the reserved "request." prefix.'
+    required: false
   attestation-publisher-url:
     description: 'The URL of the Develocity Provenance Governor instance'
     required: true
