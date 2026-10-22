@@ -29082,6 +29082,14 @@ function error$1(message, properties = {}) {
     issueCommand('error', toCommandProperties(properties), message instanceof Error ? message.toString() : message);
 }
 /**
+ * Adds a warning issue
+ * @param message warning issue message. Errors will be converted to string via toString()
+ * @param properties optional properties to add to the annotation.
+ */
+function warning(message, properties = {}) {
+    issueCommand('warning', toCommandProperties(properties), message instanceof Error ? message.toString() : message);
+}
+/**
  * Writes info to log with console.log.
  * @param message info message
  */
@@ -29159,19 +29167,25 @@ class ApiClient {
      * @param repositoryUrl The repository the subject artifact was published to.
      * @param buildScanIds The build scan IDs to create attestations from.
      * @param buildScanQueries The build scan queries to create attestations from.
+     * @param annotations Annotations to attach to the request, used to select Fact Connector policies and stored on the attestation subject. Omitted from the payload when empty.
      * @returns Promise that resolves when the attestation is published
      */
-    async publishAttestation(pkgType, pkgNamespace, pkgName, pkgVersion, digest, repositoryUrl, buildScanIds, buildScanQueries) {
+    async publishAttestation(pkgType, pkgNamespace, pkgName, pkgVersion, digest, repositoryUrl, buildScanIds, buildScanQueries, annotations) {
         const publisherUrl = pkgNamespace
             ? `${this.baseUrl}packages/${pkgType}/${pkgNamespace}/${pkgName}/${pkgVersion}/attestations`
             : `${this.baseUrl}packages/${pkgType}/${pkgName}/${pkgVersion}/attestations`;
+        // JSON.stringify drops undefined values, so an empty annotation set leaves
+        // the payload exactly as it was before annotations existed
         const payload = JSON.stringify({
             repositoryUrl: repositoryUrl,
             sha256: digest,
             buildScan: {
                 ids: buildScanIds,
                 queries: buildScanQueries
-            }
+            },
+            annotations: annotations && Object.keys(annotations).length > 0
+                ? annotations
+                : undefined
         });
         console.log('Calling publisher: ', publisherUrl);
         console.debug('Calling publisher with payload: ', payload);
@@ -31016,9 +31030,50 @@ class PublishRequestSubject {
     }
 }
 
+/**
+ * Annotation key prefix reserved by the Provenance Governor for values it
+ * derives itself, such as the claims of the caller's OIDC token.
+ */
+const RESERVED_ANNOTATION_PREFIX = 'request.';
 function getOptionalInput(name) {
     const value = getInput(name, { required: false });
     return value === '' ? null : value;
+}
+/**
+ * Parses multiline `key=value` annotation input.
+ *
+ * Each line splits on its first `=` so a value may contain further `=`
+ * characters, as a URL with a query string does. Blank lines are skipped, and a
+ * repeated key keeps the last value provided.
+ *
+ * @param lines The annotation lines, as returned by core.getMultilineInput
+ * @returns The parsed annotations, empty when no lines were provided
+ * @throws Error when a line has no `=`, has an empty key, or uses a key the
+ *   Provenance Governor reserves for itself
+ */
+function parseAnnotations(lines) {
+    const annotations = new Map();
+    for (const line of lines) {
+        if (line.trim() === '') {
+            continue;
+        }
+        const separator = line.indexOf('=');
+        if (separator === -1) {
+            throw new Error(`Invalid annotation '${line}': expected a 'key=value' pair.`);
+        }
+        const key = line.slice(0, separator).trim();
+        if (key === '') {
+            throw new Error(`Invalid annotation '${line}': the key is empty.`);
+        }
+        if (key.toLowerCase().startsWith(RESERVED_ANNOTATION_PREFIX)) {
+            throw new Error(`Invalid annotation key '${key}': the '${RESERVED_ANNOTATION_PREFIX}' prefix is reserved by the Provenance Governor.`);
+        }
+        if (annotations.has(key)) {
+            warning(`Duplicate annotation key '${key}', the last value provided wins.`);
+        }
+        annotations.set(key, line.slice(separator + 1).trim());
+    }
+    return Object.fromEntries(annotations);
 }
 
 async function run() {
@@ -31034,6 +31089,7 @@ async function run() {
             required: false
         });
         const subjectPurl = new packageurlJsExports.PackageURL(pkgType, pkgNamespace, pkgName, pkgVersion);
+        const annotations = parseAnnotations(getMultilineInput('annotations', { required: false }) ?? []);
         // collect inputs
         const subjectDigest = getInput('subject-digest', { required: true });
         const repositoryUrl = getInput('subject-repository-url', {
@@ -31057,7 +31113,7 @@ async function run() {
         endGroup();
         // publish the attestations
         const publisherClient = createClient(attestationPublisherUrl, credentials);
-        const result = await publisherClient.publishAttestation(pkgType, pkgNamespace, pkgName, pkgVersion, subjectDigest, repositoryUrl, buildScanIds ?? [], buildScanQueries ?? []);
+        const result = await publisherClient.publishAttestation(pkgType, pkgNamespace, pkgName, pkgVersion, subjectDigest, repositoryUrl, buildScanIds ?? [], buildScanQueries ?? [], annotations);
         // create summary
         const reporter = createPublisherReporter(repositoryUrl);
         const subject = new PublishRequestSubject(subjectPurl.toString(), {
